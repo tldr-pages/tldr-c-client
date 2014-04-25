@@ -1,27 +1,28 @@
-CC			= clang
+CXX			= clang++
 DEBUG		= -O3
 INCLUDE		= -I/usr/local/include -I/usr/local/opt/curl/include
-CFLAGS		= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
+CXXFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
 LDFLAGS		= -lcurl
 LDLIBS		= -L/usr/local/opt/curl/lib
 
-SRC			= tldr.c
-OBJ			= $(SRC:.c=.o)
-BINS		= $(SRC:.c=)
+SRC			= tldr.cpp
+OBJ			= $(SRC:.cpp=.o)
+BINS		= $(SRC:.cpp=)
+DSYM		= $(SRC:.cpp=.dSYM)
 
 
 .PHONE:		clean all
 
 tldr:		tldr.o
-	$(CC) $(LDFLAGS) -o tldr $(OBJ) $(LDLIBS)
+	$(CXX) $(LDFLAGS) -o tldr $(OBJ) $(LDLIBS)
 
-tldr.o:		tldr.c tldr.h
-	$(CC) $(CFLAGS) -c tldr.c
+tldr.o:		tldr.cpp tldr.h
+	$(CXX) $(CXXFLAGS) -c tldr.cpp
 
 all:		tldr
 
 clean:
-	rm -rf $(OBJ) *~ $(BINS)
+	rm -rf $(OBJ) *~ $(BINS) $(DSYM)
 
 dist-clean:	clean
 	rm -rf tldr
