@@ -4,12 +4,32 @@ tldr cpp client
 A `C++` command line client for tldr
 
 
+## Installing
+
+The client can be installed through homebrew.
+```
+brew tap leandros/tldr
+brew install tldr
+```
+
 ## Building
 
-Building `tldr` requires `libcurl` (you can get it through `brew install curl` or `apt-get install libcurl4-openssl-dev` or `apt-get libcurl-dev`).
-You can build it with `make all`.
+Building the `tldr` client is pretty straigh forward.
 
-    
+#### Requirements
+
+- `clang`
+- `libcurl` (`brew install curl` / `apt-get install libcurl-dev`)
+
+
+#### Compiling
+
+The default prefix for installation is `/usr/local/bin`.
+
+```
+make
+make install
+``` 
 
 ## Usage
 
