@@ -8,7 +8,7 @@ LDLIBS		= -L/usr/local/opt/curl/lib
 ifndef PREFIX
 	PREFIX	= /usr/local
 endif
-SRC			= tldr.cpp
+SRC			= tldr.cpp Helper.cpp
 OBJ			= $(SRC:.cpp=.o)
 BINS		= $(SRC:.cpp=)
 DSYM		= $(SRC:.cpp=.dSYM)
@@ -17,11 +17,16 @@ BINDIR		= $(PREFIX)/bin
 
 .PHONY:		clean all install
 
-tldr:		tldr.o
+tldr:		tldr.o Helper.o
 	$(CXX) $(LDFLAGS) -o tldr $(OBJ) $(LDLIBS)
 
 tldr.o:		tldr.cpp tldr.h
 	$(CXX) $(CXXFLAGS) -c tldr.cpp
+
+Helper.o:	Helper.cpp Helper.h
+	$(CXX) $(CXXFLAGS) -c Helper.cpp
+
+
 
 all:		tldr
 

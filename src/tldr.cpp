@@ -1,3 +1,6 @@
+#include "tldr.h"
+#include "Helper.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -16,24 +19,54 @@
 #define ANSI_COLOR_RESET_BG     "\x1b[49m"
 #define ANSI_COLOR_RESET_FG     "\x1b[39m"
 
-const std::string kBaseUrl = "http://raw.github.com/tldr-pages/tldr/master/pages";
 
-struct response {
-    char *str;
-    size_t len;
-};
+int main(int argc, char *argv[]) {
+    struct utsname sys;
+    uname(&sys);
+    
+    if (argc > 1) {
+        std::string arg(argv[1]);
+        std::string url = getUrlForArg(arg);
+        std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
 
+        std::string response = getContentForUrl(urlForPlatform);
+        if (response.empty()) {
+            response = getContentForUrl(url);
+        }
 
-void init_response(struct response *r) {
-    r->len = 0;
-    r->str = (char *) malloc(r->len + 1);
-    if (r->str == NULL) {
-        exit(EXIT_FAILURE);
+        Helper::replaceAll(response, "{{", ANSI_COLOR_WHITE);
+        Helper::replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
+
+        std::string stripPrefix("#");
+        std::string explainPrefix(">");
+        std::string commentPrefix("-");
+        std::string codePrefix("`");
+        std::stringstream ss(response);
+        std::string to;
+
+        std::cout << std::endl;
+        while(std::getline(ss, to, '\n')) {
+            if (to.compare(0, stripPrefix.size(), stripPrefix) == 0) {
+                // Do nothing!
+            } else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0) {
+                Helper::replaceAll(to, ">", ANSI_COLOR_WHITE);
+                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+            } else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0) {
+                Helper::replaceAll(to, "-", ANSI_COLOR_GREEN);
+                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+            } else if (to.compare(0, codePrefix.size(), codePrefix) == 0) {
+                to = to.substr(1, to.size());
+                to = to.substr(0, to.size() - 1);
+                std::cout << ANSI_COLOR_BLACK_BG << to << ANSI_COLOR_RESET_BG << std::endl << std::endl;
+            }
+        }
     }
-    r->str[0] = '\0';
 }
 
 
+// =====================================
+// URL determination.
+// =====================================
 std::string getUrlForArgAndPlatform(const std::string arg, const std::string platform) {
     int isLinux = !platform.compare("Linux");
     int isOSX = !platform.compare("Darwin");
@@ -55,6 +88,19 @@ std::string getUrlForArgAndPlatform(const std::string arg, const std::string pla
 
 std::string getUrlForArg(const std::string arg) {
     return getUrlForArgAndPlatform(arg, "common");
+}
+
+
+// =====================================
+// Curl Fetching.
+// =====================================
+void init_response(struct response *r) {
+    r->len = 0;
+    r->str = (char *) malloc(r->len + 1);
+    if (r->str == NULL) {
+        exit(EXIT_FAILURE);
+    }
+    r->str[0] = '\0';
 }
 
 size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r) {
@@ -104,56 +150,3 @@ std::string getContentForUrl(const std::string url) {
     return "";
 }
 
-void replaceAll(std::string &str, const std::string &from, const std::string &to) {
-    if(from.empty())
-        return;
-
-    size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
-        str.replace(start_pos, from.length(), to);
-        start_pos += to.length();
-    }
-}
-
-int main(int argc, char *argv[]) {
-    struct utsname sys;
-    uname(&sys);
-    
-    if (argc > 1) {
-        std::string arg(argv[1]);
-        std::string url = getUrlForArg(arg);
-        std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
-
-        std::string response = getContentForUrl(urlForPlatform);
-        if (response.empty()) {
-            response = getContentForUrl(url);
-        }
-
-        replaceAll(response, "{{", ANSI_COLOR_WHITE);
-        replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
-
-        std::string stripPrefix("#");
-        std::string explainPrefix(">");
-        std::string commentPrefix("-");
-        std::string codePrefix("`");
-        std::stringstream ss(response);
-        std::string to;
-
-        std::cout << std::endl;
-        while(std::getline(ss, to, '\n')) {
-            if (to.compare(0, stripPrefix.size(), stripPrefix) == 0) {
-                // Do nothing!
-            } else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0) {
-                replaceAll(to, ">", ANSI_COLOR_WHITE);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
-            } else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0) {
-                replaceAll(to, "-", ANSI_COLOR_GREEN);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
-            } else if (to.compare(0, codePrefix.size(), codePrefix) == 0) {
-                to = to.substr(1, to.size());
-                to = to.substr(0, to.size() - 1);
-                std::cout << ANSI_COLOR_BLACK_BG << to << ANSI_COLOR_RESET_BG << std::endl << std::endl;
-            }
-        }
-    }
-}
