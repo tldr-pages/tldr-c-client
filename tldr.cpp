@@ -34,13 +34,13 @@ void init_response(struct response *r) {
 
 
 std::string getUrlForArgAndPlatform(const std::string arg, const std::string platform) {
-    int isLinux = platform.compare("Linux");
-    int isOSX = platform.compare("Darwin");
+    int isLinux = !platform.compare("Linux");
+    int isOSX = !platform.compare("Darwin");
 
     std::string platformUrlDelimiter;
-    if (isLinux == 0) {
+    if (isLinux) {
         platformUrlDelimiter = "linux";
-    } else if (isOSX == 0) {
+    } else if (isOSX) {
         platformUrlDelimiter = "osx";
     } else {
         platformUrlDelimiter = "common";
