@@ -8,7 +8,7 @@ A `C++` command line client for tldr
 
 The client can be installed through homebrew.
 ```
-brew tap leandros/tldr
+brew tap tldr-pages/tldr
 brew install tldr
 ```
 
