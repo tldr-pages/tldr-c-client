@@ -19,7 +19,7 @@ Building the `tldr` client is pretty straigh forward.
 #### Requirements
 
 - `clang`
-- `libcurl` (`brew install curl` / `apt-get install libcurl-dev`)
+- `libcurl` (`brew install curl` / `apt-get install libcurl-dev` / `apt-get install libcurl4-openssl-dev`)
 
 
 #### Compiling
@@ -27,6 +27,7 @@ Building the `tldr` client is pretty straigh forward.
 The default prefix for installation is `/usr/local/bin`.
 
 ```
+cd src
 make
 make install
 ``` 
