@@ -43,8 +43,8 @@ int main(int argc, char *argv[]) {
         std::string codePrefix("`");
         std::stringstream ss(response);
         std::string to;
+        int firstComment = 0;
 
-        std::cout << std::endl;
         while(std::getline(ss, to, '\n')) {
             if (to.compare(0, stripPrefix.size(), stripPrefix) == 0) {
                 // Do nothing!
@@ -52,6 +52,11 @@ int main(int argc, char *argv[]) {
                 Helper::replaceAll(to, ">", ANSI_COLOR_WHITE);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             } else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0) {
+                if (firstComment == 0) {
+                    std::cout << std::endl;
+                    firstComment = 1;
+                }
+
                 Helper::replaceAll(to, "-", ANSI_COLOR_GREEN);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             } else if (to.compare(0, codePrefix.size(), codePrefix) == 0) {
