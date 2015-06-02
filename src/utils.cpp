@@ -1,11 +1,8 @@
-#include "Helper.h"
+#include "utils.h"
 
-#include <string>
-
-
-void Helper::replaceAll(std::string &str, const std::string &from, const std::string &to) {
-    if(from.empty())
-        return;
+void replaceAll(std::string& str, std::string const& from, std::string const& to)
+{
+    if (from.empty()) return;
 
     size_t start_pos = 0;
     while((start_pos = str.find(from, start_pos)) != std::string::npos) {

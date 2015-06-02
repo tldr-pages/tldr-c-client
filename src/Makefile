@@ -1,36 +1,30 @@
 CXX			= clang++
 DEBUG		= -O3
 INCLUDE		= -I/usr/local/include -I/usr/local/opt/curl/include
-CXXFLAGS	= $(DEBUG) -Wall $(INCLUDE) -Winline -pipe
+CXXFLAGS	= $(DEBUG) -Wall $(INCLUDE)
 LDFLAGS		= -lcurl
 LDLIBS		= -L/usr/local/opt/curl/lib
 
 ifndef PREFIX
 	PREFIX	= /usr/local
 endif
-SRC			= tldr.cpp Helper.cpp
+SRC			= tldr.cpp utils.cpp
 OBJ			= $(SRC:.cpp=.o)
-BINS		= $(SRC:.cpp=)
 DSYM		= $(SRC:.cpp=.dSYM)
+BIN			= tldr
 BINDIR		= $(PREFIX)/bin
 
 
-.PHONY:		clean all install
+all: $(SRC) $(BIN)
 
-tldr:		tldr.o Helper.o
-	$(CXX) $(LDFLAGS) -o tldr $(OBJ) $(LDLIBS)
+$(BIN): $(OBJ)
+	$(CXX) $(LDFLAGS) $(LDLIBS) $(OBJ) -o $@
 
-tldr.o:		tldr.cpp tldr.h
-	$(CXX) $(CXXFLAGS) -c tldr.cpp
-
-Helper.o:	Helper.cpp Helper.h
-	$(CXX) $(CXXFLAGS) -c Helper.cpp
+.cpp.o:
+	$(CXX) $(CXXFLAGS) -c $<
 
 
-
-all:		tldr
-
-install:	all
+install: all
 	install -d $(BINDIR)
 	install tldr $(BINDIR)
 
