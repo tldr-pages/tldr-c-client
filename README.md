@@ -7,8 +7,7 @@ A `C++` command line client for tldr
 
 On OS X, the client can be installed through [homebrew](http://brew.sh/).
 ```
-brew tap tldr-pages/tldr
-brew install tldr
+brew install tldr-pages/tldr/tldr
 ```
 
 ## Building
