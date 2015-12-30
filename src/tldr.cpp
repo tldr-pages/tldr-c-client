@@ -1,6 +1,3 @@
-#include "tldr.h"
-#include "utils.h"
-
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -11,20 +8,45 @@
 #include <curl/curl.h>
 #include <sys/utsname.h>
 
-static const char * const ANSI_COLOR_RESET_FG            = "\x1b[39m";
+static const char* const ANSI_COLOR_RESET_FG            = "\x1b[39m";
 
-static const char * const ANSI_COLOR_TITLE_FG            = ANSI_COLOR_RESET_FG;
-static const char * const ANSI_COLOR_EXPLANATION_FG      = ANSI_COLOR_RESET_FG;
-static const char * const ANSI_COLOR_COMMENT_FG          = "\x1b[32m";
+static const char* const ANSI_COLOR_TITLE_FG            = ANSI_COLOR_RESET_FG;
+static const char* const ANSI_COLOR_EXPLANATION_FG      = ANSI_COLOR_RESET_FG;
+static const char* const ANSI_COLOR_COMMENT_FG          = "\x1b[32m";
 
-static const char * const ANSI_COLOR_CODE_FG             = "\x1b[31m";
-static const char * const ANSI_COLOR_CODE_PLACEHOLDER_FG = "\x1b[34m";
+static const char* const ANSI_COLOR_CODE_FG             = "\x1b[31m";
+static const char* const ANSI_COLOR_CODE_PLACEHOLDER_FG = "\x1b[34m";
 
-static const char * const ANSI_BOLD_ON                   = "\x1b[1m";
-static const char * const ANSI_BOLD_OFF                  = "\x1b[22m";
+static const char* const ANSI_BOLD_ON                   = "\x1b[1m";
+static const char* const ANSI_BOLD_OFF                  = "\x1b[22m";
 
 
-int main(int argc, char *argv[])
+// Constants.
+std::string const kBaseUrl =
+    "http://raw.github.com/tldr-pages/tldr/master/pages";
+
+// cURL.
+struct response
+{
+    char* str;
+    size_t len;
+};
+
+void init_response(struct response* r);
+size_t writeCallback(void* ptr, size_t size, size_t nmemb, struct response* r);
+
+// Fetching.
+std::string getUrlForArgAndPlatform(std::string const& arg,
+                                    std::string const& platform);
+std::string getUrlForArg(std::string const& arg);
+std::string getContentForUrl(std::string const& url);
+
+// Utilities.
+void replaceAll(std::string& str, std::string const& from,
+                std::string const& to);
+
+
+int main(int argc, char* argv[])
 {
     struct utsname sys;
     uname(&sys);
@@ -36,7 +58,7 @@ int main(int argc, char *argv[])
         std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
 
         std::string response = getContentForUrl(urlForPlatform);
-        if (response.empty()) response = getContentForUrl(url);
+        if (response.empty()) { response = getContentForUrl(url); }
 
         replaceAll(response, "{{", ANSI_COLOR_CODE_PLACEHOLDER_FG);
         replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
@@ -49,7 +71,7 @@ int main(int argc, char *argv[])
         std::string to;
         bool firstComment = true;
 
-        while(std::getline(ss, to, '\n'))
+        while (std::getline(ss, to, '\n'))
         {
             // Title
             if (to.compare(0, stripPrefix.size(), stripPrefix) == 0)
@@ -102,15 +124,16 @@ int main(int argc, char *argv[])
 // =====================================
 // URL determination.
 // =====================================
-std::string getUrlForArgAndPlatform(std::string const& arg, std::string const& platform)
+std::string getUrlForArgAndPlatform(std::string const& arg,
+                                    std::string const& platform)
 {
     int isLinux = !platform.compare("Linux");
     int isOSX = !platform.compare("Darwin");
 
     std::string platformUrlDelimiter;
-    if (isLinux) platformUrlDelimiter = "linux";
-    else if (isOSX) platformUrlDelimiter = "osx";
-    else platformUrlDelimiter = "common";
+    if (isLinux) { platformUrlDelimiter = "linux"; }
+    else if (isOSX) { platformUrlDelimiter = "osx"; }
+    else { platformUrlDelimiter = "common"; }
 
     std::string url(kBaseUrl);
     url += "/" + platformUrlDelimiter + "/" + arg + ".md";
@@ -127,10 +150,10 @@ std::string getUrlForArg(std::string const& arg)
 // =====================================
 // Curl Fetching.
 // =====================================
-void init_response(struct response *r)
+void init_response(struct response* r)
 {
     r->len = 0;
-    r->str = (char *) malloc(r->len + 1);
+    r->str = (char*) malloc(r->len + 1);
     if (r->str == NULL)
     {
         exit(EXIT_FAILURE);
@@ -139,10 +162,10 @@ void init_response(struct response *r)
     r->str[0] = '\0';
 }
 
-size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r)
+size_t writeCallback(void* ptr, size_t size, size_t nmemb, struct response* r)
 {
     size_t new_len = r->len + (size * nmemb);
-    r->str = (char *) realloc(r->str, new_len + 1);
+    r->str = (char*) realloc(r->str, new_len + 1);
     if (r->str == NULL)
     {
         exit(EXIT_FAILURE);
@@ -157,7 +180,7 @@ size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r)
 
 std::string getContentForUrl(std::string const& url)
 {
-    CURL *curl;
+    CURL* curl;
     CURLcode res;
     struct response response;
     init_response(&response);
@@ -194,3 +217,16 @@ std::string getContentForUrl(std::string const& url)
     return "";
 }
 
+
+void replaceAll(std::string& str, std::string const& from,
+                std::string const& to)
+{
+    if (from.empty()) { return; }
+
+    size_t start_pos = 0;
+    while ((start_pos = str.find(from, start_pos)) != std::string::npos)
+    {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+}

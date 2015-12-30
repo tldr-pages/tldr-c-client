@@ -8,7 +8,7 @@ LDLIBS		= -L/usr/local/opt/curl/lib
 ifndef PREFIX
 	PREFIX	= /usr/local
 endif
-SRC			= tldr.cpp utils.cpp
+SRC			= tldr.cpp
 OBJ			= $(SRC:.cpp=.o)
 DSYM		= $(SRC:.cpp=.dSYM)
 BIN			= tldr
