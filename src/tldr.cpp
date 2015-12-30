@@ -11,13 +11,13 @@
 #include <curl/curl.h>
 #include <sys/utsname.h>
 
-#define ANSI_COLOR_BLACK_BG     "\x1b[40m"
-#define ANSI_COLOR_RED          "\x1b[31m"
-#define ANSI_COLOR_GREEN        "\x1b[32m"
-#define ANSI_COLOR_WHITE        "\x1b[37m"
-#define ANSI_COLOR_RESET_ALL    "\x1b[0m"
-#define ANSI_COLOR_RESET_BG     "\x1b[49m"
-#define ANSI_COLOR_RESET_FG     "\x1b[39m"
+static const char * const ANSI_COLOR_RESET_FG            = "\x1b[39m";
+
+static const char * const ANSI_COLOR_EXPLANATION_FG      = ANSI_COLOR_RESET_FG;
+static const char * const ANSI_COLOR_COMMENT_FG          = "\x1b[32m";
+
+static const char * const ANSI_COLOR_CODE_FG             = "\x1b[31m";
+static const char * const ANSI_COLOR_CODE_PLACEHOLDER_FG = "\x1b[34m";
 
 
 int main(int argc, char *argv[])
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         std::string response = getContentForUrl(urlForPlatform);
         if (response.empty()) response = getContentForUrl(url);
 
-        replaceAll(response, "{{", ANSI_COLOR_WHITE);
+        replaceAll(response, "{{", ANSI_COLOR_CODE_PLACEHOLDER_FG);
         replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
 
         std::string const stripPrefix("#");
@@ -47,15 +47,18 @@ int main(int argc, char *argv[])
 
         while(std::getline(ss, to, '\n'))
         {
+            // Title
             if (to.compare(0, stripPrefix.size(), stripPrefix) == 0)
             {
                 // Do nothing!
             }
+            // Command explanation
             else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
-                replaceAll(to, ">", ANSI_COLOR_WHITE);
+                replaceAll(to, ">", ANSI_COLOR_EXPLANATION_FG);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             }
+            // Example comment
             else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0)
             {
                 if (firstComment)
@@ -64,14 +67,22 @@ int main(int argc, char *argv[])
                     firstComment = false;
                 }
 
-                replaceAll(to, "-", ANSI_COLOR_GREEN);
+                replaceAll(to, "-", ANSI_COLOR_COMMENT_FG);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             }
+            // Code example
             else if (to.compare(0, codePrefix.size(), codePrefix) == 0)
             {
-                to = to.substr(1, to.size());
+                // Remove trailing backtick (`).
                 to = to.substr(0, to.size() - 1);
-                std::cout << ANSI_COLOR_BLACK_BG << to << ANSI_COLOR_RESET_BG << std::endl << std::endl;
+
+                // Replace first backtick (`) with three spaces for aligned indentation.
+                replaceAll(to, "`", "   ");
+                std::cout << ANSI_COLOR_CODE_FG
+                          << to
+                          << ANSI_COLOR_RESET_FG
+                          << std::endl
+                          << std::endl;
             }
         }
     }
