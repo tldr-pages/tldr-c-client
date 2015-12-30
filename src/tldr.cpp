@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
         std::string const codePrefix("`");
         std::stringstream ss(response);
         std::string to;
-        int firstComment = 0;
+        bool firstComment = true;
 
         while(std::getline(ss, to, '\n'))
         {
@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
             }
             else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0)
             {
-                if (firstComment == 0)
+                if (firstComment)
                 {
                     std::cout << std::endl;
-                    firstComment = 1;
+                    firstComment = false;
                 }
 
                 replaceAll(to, "-", ANSI_COLOR_GREEN);
