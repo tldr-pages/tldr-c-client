@@ -18,6 +18,7 @@
 #define ANSI_COLOR_RESET_BG     "\x1b[49m"
 #define ANSI_COLOR_RESET_FG     "\x1b[39m"
 
+using namespace std;
 
 int main(int argc, char *argv[])
 {
@@ -26,25 +27,25 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
     {
-        std::string arg(argv[1]);
-        std::string url = getUrlForArg(arg);
-        std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
+        string arg(argv[1]);
+        string url = getUrlForArg(arg);
+        string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
 
-        std::string response = getContentForUrl(urlForPlatform);
+        string response = getContentForUrl(urlForPlatform);
         if (response.empty()) response = getContentForUrl(url);
 
         replaceAll(response, "{{", ANSI_COLOR_WHITE);
         replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
 
-        std::string const stripPrefix("#");
-        std::string const explainPrefix(">");
-        std::string const commentPrefix("-");
-        std::string const codePrefix("`");
-        std::stringstream ss(response);
-        std::string line;
+        string const stripPrefix("#");
+        string const explainPrefix(">");
+        string const commentPrefix("-");
+        string const codePrefix("`");
+        stringstream ss(response);
+        string line;
         int firstComment = 0;
 
-        while(std::getline(ss, line, '\n'))
+        while(getline(ss, line, '\n'))
         {
             if (line.compare(0, stripPrefix.size(), stripPrefix) == 0)
             {
@@ -53,24 +54,24 @@ int main(int argc, char *argv[])
             else if (line.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
                 replaceAll(line, explainPrefix, ANSI_COLOR_WHITE);
-                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
+                cout << line << ANSI_COLOR_RESET_FG << endl;
             }
             else if (line.compare(0, commentPrefix.size(), commentPrefix) == 0)
             {
                 if (firstComment == 0)
                 {
-                    std::cout << std::endl;
+                    cout << endl;
                     firstComment = 1;
                 }
 
                 replaceAll(line, commentPrefix, ANSI_COLOR_GREEN);
-                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
+                cout << line << ANSI_COLOR_RESET_FG << endl;
             }
             else if (line.compare(0, codePrefix.size(), codePrefix) == 0)
             {
                 line = line.substr(1, line.size());
                 line = line.substr(0, line.size() - 1);
-                std::cout << ANSI_COLOR_BLACK_BG << line << ANSI_COLOR_RESET_BG << std::endl << std::endl;
+                cout << ANSI_COLOR_BLACK_BG << line << ANSI_COLOR_RESET_BG << endl << endl;
             }
         }
     }
@@ -80,33 +81,33 @@ int main(int argc, char *argv[])
 // =====================================
 // URL determination.
 // =====================================
-std::string getUrlForArgAndPlatform(std::string const& arg, std::string const& platform)
+string getUrlForArgAndPlatform(string const& arg, string const& platform)
 {
     int isLinux = !platform.compare("Linux");
     int isOSX = !platform.compare("Darwin");
 
-    std::string platformUrlDelimiter;
+    string platformUrlDelimiter;
     if (isLinux) platformUrlDelimiter = "linux";
     else if (isOSX) platformUrlDelimiter = "osx";
     else platformUrlDelimiter = "common";
 
-    std::string url(kBaseUrl);
+    string url(kBaseUrl);
     url += "/" + platformUrlDelimiter + "/" + arg + ".md";
 
     return url;
 }
 
-std::string getUrlForArg(std::string const& arg)
+string getUrlForArg(string const& arg)
 {
     return getUrlForArgAndPlatform(arg, "common");
 }
 
-void replaceAll(std::string& str, std::string const& from, std::string const& to)
+void replaceAll(string& str, string const& from, string const& to)
 {
     if (from.empty()) return;
 
     size_t start_pos = 0;
-    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
         str.replace(start_pos, from.length(), to);
         start_pos += to.length();
     }
@@ -118,11 +119,11 @@ void replaceAll(std::string& str, std::string const& from, std::string const& to
 size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r)
 {
     size_t extra_len = size * nmemb;
-    r->str += std::string(reinterpret_cast<std::string::pointer>(ptr), extra_len);
+    r->str += string(reinterpret_cast<string::pointer>(ptr), extra_len);
     return extra_len;
 }
 
-std::string getContentForUrl(std::string const& url)
+string getContentForUrl(string const& url)
 {
     CURL *curl;
     CURLcode res;
