@@ -46,7 +46,12 @@ int main(int argc, char* argv[])
 
     if (argc > 1)
     {
+        int i = 2;
         std::string arg(argv[1]);
+        while (i < argc) {
+            arg += "-" + std::string(argv[i++]);
+        }
+
         std::string url = getUrlForArg(arg);
         std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
 
