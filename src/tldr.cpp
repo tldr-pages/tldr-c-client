@@ -13,11 +13,15 @@
 
 static const char * const ANSI_COLOR_RESET_FG            = "\x1b[39m";
 
+static const char * const ANSI_COLOR_TITLE_FG            = ANSI_COLOR_RESET_FG;
 static const char * const ANSI_COLOR_EXPLANATION_FG      = ANSI_COLOR_RESET_FG;
 static const char * const ANSI_COLOR_COMMENT_FG          = "\x1b[32m";
 
 static const char * const ANSI_COLOR_CODE_FG             = "\x1b[31m";
 static const char * const ANSI_COLOR_CODE_PLACEHOLDER_FG = "\x1b[34m";
+
+static const char * const ANSI_BOLD_ON                   = "\x1b[1m";
+static const char * const ANSI_BOLD_OFF                  = "\x1b[22m";
 
 
 int main(int argc, char *argv[])
@@ -50,7 +54,13 @@ int main(int argc, char *argv[])
             // Title
             if (to.compare(0, stripPrefix.size(), stripPrefix) == 0)
             {
-                // Do nothing!
+                replaceAll(to, "#", ANSI_COLOR_TITLE_FG);
+                std::cout << std::endl
+                          << ANSI_BOLD_ON
+                          << to
+                          << ANSI_BOLD_OFF
+                          << ANSI_COLOR_RESET_FG
+                          << std::endl;
             }
             // Command explanation
             else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
