@@ -28,6 +28,10 @@ int main(int argc, char *argv[])
     if (argc > 1)
     {
         string arg(argv[1]);
+        int k = 2;
+        while (k < argc) {
+            arg += "-" + string(argv[k++]);
+        }
         string url = getUrlForArg(arg);
         string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
 
