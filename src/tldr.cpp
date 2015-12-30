@@ -1,5 +1,4 @@
 #include "tldr.h"
-#include "utils.h"
 
 #include <iostream>
 #include <string>
@@ -19,6 +18,7 @@
 #define ANSI_COLOR_RESET_BG     "\x1b[49m"
 #define ANSI_COLOR_RESET_FG     "\x1b[39m"
 
+using namespace std;
 
 int main(int argc, char *argv[])
 {
@@ -27,51 +27,55 @@ int main(int argc, char *argv[])
 
     if (argc > 1)
     {
-        std::string arg(argv[1]);
-        std::string url = getUrlForArg(arg);
-        std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
+        string arg(argv[1]);
+        int k = 2;
+        while (k < argc) {
+            arg += "-" + string(argv[k++]);
+        }
+        string url = getUrlForArg(arg);
+        string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
 
-        std::string response = getContentForUrl(urlForPlatform);
+        string response = getContentForUrl(urlForPlatform);
         if (response.empty()) response = getContentForUrl(url);
 
         replaceAll(response, "{{", ANSI_COLOR_WHITE);
         replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
 
-        std::string const stripPrefix("#");
-        std::string const explainPrefix(">");
-        std::string const commentPrefix("-");
-        std::string const codePrefix("`");
-        std::stringstream ss(response);
-        std::string to;
+        string const stripPrefix("#");
+        string const explainPrefix(">");
+        string const commentPrefix("-");
+        string const codePrefix("`");
+        stringstream ss(response);
+        string line;
         int firstComment = 0;
 
-        while(std::getline(ss, to, '\n'))
+        while(getline(ss, line, '\n'))
         {
-            if (to.compare(0, stripPrefix.size(), stripPrefix) == 0)
+            if (line.compare(0, stripPrefix.size(), stripPrefix) == 0)
             {
                 // Do nothing!
             }
-            else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
+            else if (line.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
-                replaceAll(to, ">", ANSI_COLOR_WHITE);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+                replaceAll(line, explainPrefix, ANSI_COLOR_WHITE);
+                cout << line << ANSI_COLOR_RESET_FG << endl;
             }
-            else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0)
+            else if (line.compare(0, commentPrefix.size(), commentPrefix) == 0)
             {
                 if (firstComment == 0)
                 {
-                    std::cout << std::endl;
+                    cout << endl;
                     firstComment = 1;
                 }
 
-                replaceAll(to, "-", ANSI_COLOR_GREEN);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+                replaceAll(line, commentPrefix, ANSI_COLOR_GREEN);
+                cout << line << ANSI_COLOR_RESET_FG << endl;
             }
-            else if (to.compare(0, codePrefix.size(), codePrefix) == 0)
+            else if (line.compare(0, codePrefix.size(), codePrefix) == 0)
             {
-                to = to.substr(1, to.size());
-                to = to.substr(0, to.size() - 1);
-                std::cout << ANSI_COLOR_BLACK_BG << to << ANSI_COLOR_RESET_BG << std::endl << std::endl;
+                line = line.substr(1, line.size());
+                line = line.substr(0, line.size() - 1);
+                cout << ANSI_COLOR_BLACK_BG << line << ANSI_COLOR_RESET_BG << endl << endl;
             }
         }
     }
@@ -81,69 +85,67 @@ int main(int argc, char *argv[])
 // =====================================
 // URL determination.
 // =====================================
-std::string getUrlForArgAndPlatform(std::string const& arg, std::string const& platform)
+string getUrlForArgAndPlatform(string const& arg, string const& platform)
 {
     int isLinux = !platform.compare("Linux");
     int isOSX = !platform.compare("Darwin");
 
-    std::string platformUrlDelimiter;
+    string platformUrlDelimiter;
     if (isLinux) platformUrlDelimiter = "linux";
     else if (isOSX) platformUrlDelimiter = "osx";
     else platformUrlDelimiter = "common";
 
-    std::string url(kBaseUrl);
+    string url(kBaseUrl);
     url += "/" + platformUrlDelimiter + "/" + arg + ".md";
 
     return url;
 }
 
-std::string getUrlForArg(std::string const& arg)
+string getUrlForArg(string const& arg)
 {
     return getUrlForArgAndPlatform(arg, "common");
 }
 
+void replaceAll(string& str, string const& from, string const& to)
+{
+    if (from.empty()) return;
+
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+}
 
 // =====================================
 // Curl Fetching.
 // =====================================
-void init_response(struct response *r)
-{
-    r->len = 0;
-    r->str = (char *) malloc(r->len + 1);
-    if (r->str == NULL)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    r->str[0] = '\0';
-}
 
 size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r)
 {
-    size_t new_len = r->len + (size * nmemb);
-    r->str = (char *) realloc(r->str, new_len + 1);
-    if (r->str == NULL)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    memcpy(r->str + r->len, ptr, size * nmemb);
-    r->str[new_len] = '\0';
-    r->len = new_len;
-
-    return size * nmemb;
+    size_t extra_len = size * nmemb;
+    r->str += string(reinterpret_cast<string::pointer>(ptr), extra_len);
+    return extra_len;
 }
 
-std::string getContentForUrl(std::string const& url)
+struct curl_holder
+{
+    CURL *curl_;
+    curl_holder(CURL *curl) : curl_(curl) {}
+    ~curl_holder() { curl_easy_cleanup(curl_); }
+};
+
+string getContentForUrl(string const& url)
 {
     CURL *curl;
     CURLcode res;
     struct response response;
-    init_response(&response);
 
     curl = curl_easy_init();
     if (curl)
     {
+        curl_holder autocleanup(curl);
+
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
@@ -157,17 +159,13 @@ std::string getContentForUrl(std::string const& url)
 
             if (httpCode == 200)
             {
-                curl_easy_cleanup(curl);
-                return std::string(response.str);
+                return response.str;
             }
             else
             {
-                curl_easy_cleanup(curl);
                 return "";
             }
         }
-
-        curl_easy_cleanup(curl);
     }
 
     return "";
