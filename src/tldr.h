@@ -18,3 +18,4 @@ std::string getUrlForArgAndPlatform(std::string const& arg, std::string const& p
 std::string getUrlForArg(std::string const& arg);
 std::string getContentForUrl(std::string const& url);
 
+void replaceAll(std::string& str, std::string const& from, std::string const& to);
