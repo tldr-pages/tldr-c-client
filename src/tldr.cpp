@@ -25,7 +25,13 @@ static const char* const ANSI_BOLD_OFF                  = "\x1b[22m";
 std::string const kBaseUrl =
     "http://raw.github.com/tldr-pages/tldr/master/pages";
 
-void init_response(struct response* r);
+// cURL
+struct curl_holder
+{
+    CURL *curl_;
+    curl_holder(CURL *curl) : curl_(curl) {}
+    ~curl_holder() { curl_easy_cleanup(curl_); }
+};
 size_t writeCallback(char* raw, size_t size, size_t nmemb, std::string* data);
 
 // Fetching.
@@ -165,6 +171,7 @@ std::string getContentForUrl(std::string const& url)
     curl = curl_easy_init();
     if (curl)
     {
+        curl_holder holder(curl);
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
@@ -178,17 +185,13 @@ std::string getContentForUrl(std::string const& url)
 
             if (httpCode == 200)
             {
-                curl_easy_cleanup(curl);
                 return response;
             }
             else
             {
-                curl_easy_cleanup(curl);
                 return "";
             }
         }
-
-        curl_easy_cleanup(curl);
     }
 
     return "";
