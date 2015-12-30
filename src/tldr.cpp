@@ -41,21 +41,21 @@ int main(int argc, char *argv[])
         std::string const commentPrefix("-");
         std::string const codePrefix("`");
         std::stringstream ss(response);
-        std::string to;
+        std::string line;
         int firstComment = 0;
 
-        while(std::getline(ss, to, '\n'))
+        while(std::getline(ss, line, '\n'))
         {
-            if (to.compare(0, stripPrefix.size(), stripPrefix) == 0)
+            if (line.compare(0, stripPrefix.size(), stripPrefix) == 0)
             {
                 // Do nothing!
             }
-            else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
+            else if (line.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
-                replaceAll(to, explainPrefix, ANSI_COLOR_WHITE);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+                replaceAll(line, explainPrefix, ANSI_COLOR_WHITE);
+                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
             }
-            else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0)
+            else if (line.compare(0, commentPrefix.size(), commentPrefix) == 0)
             {
                 if (firstComment == 0)
                 {
@@ -63,14 +63,14 @@ int main(int argc, char *argv[])
                     firstComment = 1;
                 }
 
-                replaceAll(to, commentPrefix, ANSI_COLOR_GREEN);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+                replaceAll(line, commentPrefix, ANSI_COLOR_GREEN);
+                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
             }
-            else if (to.compare(0, codePrefix.size(), codePrefix) == 0)
+            else if (line.compare(0, codePrefix.size(), codePrefix) == 0)
             {
-                to = to.substr(1, to.size());
-                to = to.substr(0, to.size() - 1);
-                std::cout << ANSI_COLOR_BLACK_BG << to << ANSI_COLOR_RESET_BG << std::endl << std::endl;
+                line = line.substr(1, line.size());
+                line = line.substr(0, line.size() - 1);
+                std::cout << ANSI_COLOR_BLACK_BG << line << ANSI_COLOR_RESET_BG << std::endl << std::endl;
             }
         }
     }
