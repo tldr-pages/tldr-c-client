@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
             }
             else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
-                replaceAll(to, ">", ANSI_COLOR_WHITE);
+                replaceAll(to, explainPrefix, ANSI_COLOR_WHITE);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             }
             else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0)
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
                     firstComment = 1;
                 }
 
-                replaceAll(to, "-", ANSI_COLOR_GREEN);
+                replaceAll(to, commentPrefix, ANSI_COLOR_GREEN);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             }
             else if (to.compare(0, codePrefix.size(), codePrefix) == 0)
