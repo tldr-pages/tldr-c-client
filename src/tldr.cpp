@@ -61,30 +61,30 @@ int main(int argc, char* argv[])
         std::string const commentPrefix("-");
         std::string const codePrefix("`");
         std::stringstream ss(response);
-        std::string to;
+        std::string line;
         bool firstComment = true;
 
-        while (std::getline(ss, to, '\n'))
+        while (std::getline(ss, line, '\n'))
         {
             // Title
-            if (to.compare(0, stripPrefix.size(), stripPrefix) == 0)
+            if (line.compare(0, stripPrefix.size(), stripPrefix) == 0)
             {
-                replaceAll(to, "#", ANSI_COLOR_TITLE_FG);
+                replaceAll(line, "#", ANSI_COLOR_TITLE_FG);
                 std::cout << std::endl
                           << ANSI_BOLD_ON
-                          << to
+                          << line
                           << ANSI_BOLD_OFF
                           << ANSI_COLOR_RESET_FG
                           << std::endl;
             }
             // Command explanation
-            else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
+            else if (line.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
-                replaceAll(to, explainPrefix, ANSI_COLOR_EXPLANATION_FG);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+                replaceAll(line, explainPrefix, ANSI_COLOR_EXPLANATION_FG);
+                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
             }
             // Example comment
-            else if (to.compare(0, commentPrefix.size(), commentPrefix) == 0)
+            else if (line.compare(0, commentPrefix.size(), commentPrefix) == 0)
             {
                 if (firstComment)
                 {
@@ -92,19 +92,19 @@ int main(int argc, char* argv[])
                     firstComment = false;
                 }
 
-                replaceAll(to, commentPrefix, ANSI_COLOR_COMMENT_FG);
-                std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
+                replaceAll(line, commentPrefix, ANSI_COLOR_COMMENT_FG);
+                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
             }
             // Code example
-            else if (to.compare(0, codePrefix.size(), codePrefix) == 0)
+            else if (line.compare(0, codePrefix.size(), codePrefix) == 0)
             {
                 // Remove trailing backtick (`).
-                to = to.substr(0, to.size() - 1);
+                line = line.substr(0, line.size() - 1);
 
                 // Replace first backtick (`) with three spaces for aligned indentation.
-                replaceAll(to, "`", "   ");
+                replaceAll(line, "`", "   ");
                 std::cout << ANSI_COLOR_CODE_FG
-                          << to
+                          << line
                           << ANSI_COLOR_RESET_FG
                           << std::endl
                           << std::endl;
