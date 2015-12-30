@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
             // Command explanation
             else if (to.compare(0, explainPrefix.size(), explainPrefix) == 0)
             {
-                replaceAll(to, ">", ANSI_COLOR_EXPLANATION_FG);
+                replaceAll(to, explainPrefix, ANSI_COLOR_EXPLANATION_FG);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             }
             // Example comment
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
                     firstComment = false;
                 }
 
-                replaceAll(to, "-", ANSI_COLOR_COMMENT_FG);
+                replaceAll(to, commentPrefix, ANSI_COLOR_COMMENT_FG);
                 std::cout << to << ANSI_COLOR_RESET_FG << std::endl;
             }
             // Code example
