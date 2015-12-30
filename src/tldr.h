@@ -6,8 +6,7 @@ std::string const kBaseUrl = "http://raw.github.com/tldr-pages/tldr/master/pages
 
 // cURL.
 struct response {
-    char *str;
-    size_t len;
+	std::string str;
 };
 
 void init_response(struct response *r);

@@ -115,32 +115,11 @@ void replaceAll(std::string& str, std::string const& from, std::string const& to
 // =====================================
 // Curl Fetching.
 // =====================================
-void init_response(struct response *r)
-{
-    r->len = 0;
-    r->str = (char *) malloc(r->len + 1);
-    if (r->str == NULL)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    r->str[0] = '\0';
-}
-
 size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r)
 {
-    size_t new_len = r->len + (size * nmemb);
-    r->str = (char *) realloc(r->str, new_len + 1);
-    if (r->str == NULL)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    memcpy(r->str + r->len, ptr, size * nmemb);
-    r->str[new_len] = '\0';
-    r->len = new_len;
-
-    return size * nmemb;
+    size_t extra_len = size * nmemb;
+    r->str += std::string(reinterpret_cast<std::string::pointer>(ptr), extra_len);
+    return extra_len;
 }
 
 std::string getContentForUrl(std::string const& url)
@@ -148,7 +127,6 @@ std::string getContentForUrl(std::string const& url)
     CURL *curl;
     CURLcode res;
     struct response response;
-    init_response(&response);
 
     curl = curl_easy_init();
     if (curl)
@@ -167,7 +145,7 @@ std::string getContentForUrl(std::string const& url)
             if (httpCode == 200)
             {
                 curl_easy_cleanup(curl);
-                return std::string(response.str);
+                return response.str;
             }
             else
             {
