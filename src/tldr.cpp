@@ -120,12 +120,20 @@ void replaceAll(string& str, string const& from, string const& to)
 // =====================================
 // Curl Fetching.
 // =====================================
+
 size_t writeCallback(void *ptr, size_t size, size_t nmemb, struct response *r)
 {
     size_t extra_len = size * nmemb;
     r->str += string(reinterpret_cast<string::pointer>(ptr), extra_len);
     return extra_len;
 }
+
+struct curl_holder
+{
+    CURL *curl_;
+    curl_holder(CURL *curl) : curl_(curl) {}
+    ~curl_holder() { curl_easy_cleanup(curl_); }
+};
 
 string getContentForUrl(string const& url)
 {
@@ -136,6 +144,8 @@ string getContentForUrl(string const& url)
     curl = curl_easy_init();
     if (curl)
     {
+        curl_holder autocleanup(curl);
+
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
@@ -149,17 +159,13 @@ string getContentForUrl(string const& url)
 
             if (httpCode == 200)
             {
-                curl_easy_cleanup(curl);
                 return response.str;
             }
             else
             {
-                curl_easy_cleanup(curl);
                 return "";
             }
         }
-
-        curl_easy_cleanup(curl);
     }
 
     return "";
