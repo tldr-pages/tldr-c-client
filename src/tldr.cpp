@@ -25,15 +25,8 @@ static const char* const ANSI_BOLD_OFF                  = "\x1b[22m";
 std::string const kBaseUrl =
     "http://raw.github.com/tldr-pages/tldr/master/pages";
 
-// cURL.
-struct response
-{
-    char* str;
-    size_t len;
-};
-
 void init_response(struct response* r);
-size_t writeCallback(void* ptr, size_t size, size_t nmemb, struct response* r);
+size_t writeCallback(char* raw, size_t size, size_t nmemb, std::string* data);
 
 // Fetching.
 std::string getUrlForArgAndPlatform(std::string const& arg,
@@ -150,31 +143,11 @@ std::string getUrlForArg(std::string const& arg)
 // =====================================
 // Curl Fetching.
 // =====================================
-void init_response(struct response* r)
+size_t writeCallback(char* raw, size_t size, size_t nmemb, std::string* data)
 {
-    r->len = 0;
-    r->str = (char*) malloc(r->len + 1);
-    if (r->str == NULL)
-    {
-        exit(EXIT_FAILURE);
-    }
+    if (data == NULL) { return 0; }
 
-    r->str[0] = '\0';
-}
-
-size_t writeCallback(void* ptr, size_t size, size_t nmemb, struct response* r)
-{
-    size_t new_len = r->len + (size * nmemb);
-    r->str = (char*) realloc(r->str, new_len + 1);
-    if (r->str == NULL)
-    {
-        exit(EXIT_FAILURE);
-    }
-
-    memcpy(r->str + r->len, ptr, size * nmemb);
-    r->str[new_len] = '\0';
-    r->len = new_len;
-
+    data->append(raw, size * nmemb);
     return size * nmemb;
 }
 
@@ -182,8 +155,7 @@ std::string getContentForUrl(std::string const& url)
 {
     CURL* curl;
     CURLcode res;
-    struct response response;
-    init_response(&response);
+    std::string response;
 
     curl = curl_easy_init();
     if (curl)
@@ -202,7 +174,7 @@ std::string getContentForUrl(std::string const& url)
             if (httpCode == 200)
             {
                 curl_easy_cleanup(curl);
-                return std::string(response.str);
+                return response;
             }
             else
             {
@@ -218,6 +190,9 @@ std::string getContentForUrl(std::string const& url)
 }
 
 
+// =====================================
+// Utilities.
+// =====================================
 void replaceAll(std::string& str, std::string const& from,
                 std::string const& to)
 {
@@ -230,3 +205,4 @@ void replaceAll(std::string& str, std::string const& from,
         start_pos += to.length();
     }
 }
+
