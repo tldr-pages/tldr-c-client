@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 {
     if (argc <= 1)
     {
-        std::cout << "usage: tldr <command>" << std::endl;
+        std::cout << "usage: " << argv[0] << " <command>" << std::endl;
         std::cout << "Which page do you want to see?" << std::endl;
         std::cout << "try: tldr tldr" << std::endl;
         return EXIT_FAILURE;
