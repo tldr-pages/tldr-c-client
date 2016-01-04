@@ -1,0 +1,16 @@
+addons:
+    apt:
+        packages:
+            - libcurl4-openssl-dev
+
+language: cpp
+compiler:
+    - clang
+
+script: cd src && make
+install: true
+
+os:
+    - linux
+    - osx
+sudo: false
