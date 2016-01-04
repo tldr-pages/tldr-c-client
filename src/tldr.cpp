@@ -47,81 +47,97 @@ void replaceAll(std::string& str, std::string const& from,
 
 int main(int argc, char* argv[])
 {
+    if (argc <= 1)
+    {
+        std::cout << "usage: " << argv[0] << " <command>" << std::endl;
+        std::cout << "Which page do you want to see?" << std::endl;
+        std::cout << "try: " << argv[0] << " tldr" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     struct utsname sys;
     uname(&sys);
 
-    if (argc > 1)
+    int i = 2;
+    std::string arg(argv[1]);
+    while (i < argc) {
+        arg += "-" + std::string(argv[i++]);
+    }
+
+    std::string url = getUrlForArg(arg);
+    std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
+
+    std::string response = getContentForUrl(urlForPlatform);
+    if (response.empty())
     {
-        int i = 2;
-        std::string arg(argv[1]);
-        while (i < argc) {
-            arg += "-" + std::string(argv[i++]);
-        }
+        response = getContentForUrl(url);
+    }
 
-        std::string url = getUrlForArg(arg);
-        std::string urlForPlatform = getUrlForArgAndPlatform(arg, sys.sysname);
+    if (response.empty())
+    {
+        std::cout << "This page doesn't exist yet!" << std::endl;
+        std::cout << "Submit new pages here: https://github.com/tldr-pages/tldr" << std::endl;
+        return EXIT_FAILURE;
+    }
 
-        std::string response = getContentForUrl(urlForPlatform);
-        if (response.empty()) { response = getContentForUrl(url); }
+    replaceAll(response, "{{", ANSI_COLOR_CODE_PLACEHOLDER_FG);
+    replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
 
-        replaceAll(response, "{{", ANSI_COLOR_CODE_PLACEHOLDER_FG);
-        replaceAll(response, "}}", ANSI_COLOR_RESET_FG);
+    std::string const stripPrefix("#");
+    std::string const explainPrefix(">");
+    std::string const commentPrefix("-");
+    std::string const codePrefix("`");
+    std::stringstream ss(response);
+    std::string line;
+    bool firstComment = true;
 
-        std::string const stripPrefix("#");
-        std::string const explainPrefix(">");
-        std::string const commentPrefix("-");
-        std::string const codePrefix("`");
-        std::stringstream ss(response);
-        std::string line;
-        bool firstComment = true;
-
-        while (std::getline(ss, line, '\n'))
+    while (std::getline(ss, line, '\n'))
+    {
+        // Title
+        if (line.compare(0, stripPrefix.size(), stripPrefix) == 0)
         {
-            // Title
-            if (line.compare(0, stripPrefix.size(), stripPrefix) == 0)
+            replaceAll(line, "#", ANSI_COLOR_TITLE_FG);
+            std::cout << std::endl
+                      << ANSI_BOLD_ON
+                      << line
+                      << ANSI_BOLD_OFF
+                      << ANSI_COLOR_RESET_FG
+                      << std::endl;
+        }
+        // Command explanation
+        else if (line.compare(0, explainPrefix.size(), explainPrefix) == 0)
+        {
+            replaceAll(line, explainPrefix, ANSI_COLOR_EXPLANATION_FG);
+            std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
+        }
+        // Example comment
+        else if (line.compare(0, commentPrefix.size(), commentPrefix) == 0)
+        {
+            if (firstComment)
             {
-                replaceAll(line, "#", ANSI_COLOR_TITLE_FG);
-                std::cout << std::endl
-                          << ANSI_BOLD_ON
-                          << line
-                          << ANSI_BOLD_OFF
-                          << ANSI_COLOR_RESET_FG
-                          << std::endl;
+                std::cout << std::endl;
+                firstComment = false;
             }
-            // Command explanation
-            else if (line.compare(0, explainPrefix.size(), explainPrefix) == 0)
-            {
-                replaceAll(line, explainPrefix, ANSI_COLOR_EXPLANATION_FG);
-                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
-            }
-            // Example comment
-            else if (line.compare(0, commentPrefix.size(), commentPrefix) == 0)
-            {
-                if (firstComment)
-                {
-                    std::cout << std::endl;
-                    firstComment = false;
-                }
 
-                replaceAll(line, commentPrefix, ANSI_COLOR_COMMENT_FG);
-                std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
-            }
-            // Code example
-            else if (line.compare(0, codePrefix.size(), codePrefix) == 0)
-            {
-                // Remove trailing backtick (`).
-                line = line.substr(0, line.size() - 1);
+            replaceAll(line, commentPrefix, ANSI_COLOR_COMMENT_FG);
+            std::cout << line << ANSI_COLOR_RESET_FG << std::endl;
+        }
+        // Code example
+        else if (line.compare(0, codePrefix.size(), codePrefix) == 0)
+        {
+            // Remove trailing backtick (`).
+            line = line.substr(0, line.size() - 1);
 
-                // Replace first backtick (`) with three spaces for aligned indentation.
-                replaceAll(line, "`", "   ");
-                std::cout << ANSI_COLOR_CODE_FG
-                          << line
-                          << ANSI_COLOR_RESET_FG
-                          << std::endl
-                          << std::endl;
-            }
+            // Replace first backtick (`) with three spaces for aligned indentation.
+            replaceAll(line, "`", "   ");
+            std::cout << ANSI_COLOR_CODE_FG
+                      << line
+                      << ANSI_COLOR_RESET_FG
+                      << std::endl
+                      << std::endl;
         }
     }
+    return EXIT_SUCCESS;
 }
 
 
