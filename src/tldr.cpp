@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     {
         std::cout << "usage: " << argv[0] << " <command>" << std::endl;
         std::cout << "Which page do you want to see?" << std::endl;
-        std::cout << "try: " << arg[0] << " tldr" << std::endl;
+        std::cout << "try: " << argv[0] << " tldr" << std::endl;
         return EXIT_FAILURE;
     }
 
