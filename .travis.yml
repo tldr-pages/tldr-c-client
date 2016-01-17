@@ -2,10 +2,12 @@ addons:
     apt:
         packages:
             - libcurl4-openssl-dev
+            - libzip-dev
 
-language: cpp
+language: c
 compiler:
     - clang
+    - gcc
 
 script: cd src && make
 install: true
