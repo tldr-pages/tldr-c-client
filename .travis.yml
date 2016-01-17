@@ -15,7 +15,7 @@ addons:
             - libcurl4-openssl-dev
             - libzip-dev
 
-before install:
+before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install curl; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libzip; fi
