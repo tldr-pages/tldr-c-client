@@ -108,14 +108,13 @@ main(int argc, char** argv)
     int c;
     int option_index;
 
+    check_localdate();
     if (argc < 2)
     {
         print_usage(argv[0]);
         return EXIT_FAILURE;
     }
 
-
-    check_localdate();
     while (1)
     {
         option_index = 0;
