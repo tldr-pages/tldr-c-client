@@ -1,7 +1,7 @@
-tldr cpp client
+tldr c client
 =============
 
-A `C++` command line client for tldr
+A `C` command line client for tldr
 
 [![Build Status](https://travis-ci.org/tldr-pages/tldr-cpp-client.svg)](https://travis-ci.org/tldr-pages/tldr-cpp-client)
 
