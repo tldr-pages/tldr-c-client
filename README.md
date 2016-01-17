@@ -20,6 +20,7 @@ Building the `tldr` client is pretty straightforward.
 
 - `clang`
 - `libcurl` (`brew install curl` / `apt-get install libcurl-dev` / `apt-get install libcurl4-openssl-dev`)
+- `libzip` (`brew install libzip` / `apt-get install libzip-dev`)
 
 #### Compiling
 
@@ -33,4 +34,12 @@ make install
 
 ## Usage
 
-`tldr <command>`
+```
+usage: tldr [-v] [--version] [--help] [--update] <search>
+
+available commands:
+    --version    print version and exit
+    --help       print help and exit
+    --update     update local database
+```
+
