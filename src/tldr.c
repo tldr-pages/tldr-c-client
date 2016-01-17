@@ -1,3 +1,5 @@
+#define _BSD_SOURCE
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
