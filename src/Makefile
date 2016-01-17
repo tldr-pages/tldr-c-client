@@ -1,8 +1,8 @@
 CC			= clang
 DEBUG		= -g -O0
-INCLUDE		= -I/usr/local/include -I/usr/local/opt/curl/include $(shell pkg-config --cflags libzip)
+INCLUDE		= -I/usr/local/include -I/usr/include -I/usr/local/opt/curl/include $(shell pkg-config --cflags libzip)
 CCFLAGS		= $(DEBUG) -Wall -Wextra -fno-strict-aliasing -march=native -std=c89 -pedantic $(INCLUDE)
-LDFLAGS		= -lcurl -lzip
+LDFLAGS		= -lcurl -lzip -lm
 LDLIBS		= -L/usr/local/opt/curl/lib
 
 ifndef PREFIX

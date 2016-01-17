@@ -330,8 +330,8 @@ parse_tldrpage(char const* input)
 int
 print_tldrpage(char const* input)
 {
-    int linux;
-    int darwin;
+    int islinux;
+    int isdarwin;
     char* output;
     char* platform;
     char url[1024];
@@ -345,11 +345,11 @@ print_tldrpage(char const* input)
     struct stat sb;
 
     uname(&sys);
-    linux = strcmp(sys.sysname, "Linux") == 0;
-    darwin = strcmp(sys.sysname, "Darwin") == 0;
+    islinux = strcmp(sys.sysname, "Linux") == 0;
+    isdarwin = strcmp(sys.sysname, "Darwin") == 0;
 
-    if (linux) { platform = "linux"; }
-    else if (darwin) { platform = "osx"; }
+    if (islinux) { platform = "linux"; }
+    else if (isdarwin) { platform = "osx"; }
     else { platform = "common"; }
 
     if ((homedir = getenv("HOME")) == NULL)
@@ -706,9 +706,9 @@ _unzip(char const* path, char const* outpath)
     int err;
     int i, len;
     int filelen;
-    zip_t* archive;
-    zip_file_t* file;
-    zip_stat_t stat;
+    struct zip* archive;
+    struct zip_file* file;
+    struct zip_stat stat;
     int fd;
     size_t sum;
     char buf[4096];
