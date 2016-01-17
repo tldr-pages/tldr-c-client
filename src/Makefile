@@ -6,6 +6,8 @@ INCLUDE		:= -I/usr/local/include
 INCLUDE		+= -I/usr/include
 INCLUDE		+= -I/usr/local/opt/curl/include
 INCLUDE		+= -I/usr/local/opt/libzip/include
+INCLUDE		+= -I/usr/local/Cellar/libzip/1.0.1/include
+INCLUDE		+= -I/usr/local/Cellar/libzip/1.0.1/lib/libzip/include
 INCLUDE		+= $(shell pkg-config --cflags libzip)
 
 CCFLAGS		= $(DEBUG) -Wall -Wextra -fno-strict-aliasing -march=native -std=c89 -pedantic $(INCLUDE)
