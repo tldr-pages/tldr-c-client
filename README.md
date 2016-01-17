@@ -21,7 +21,7 @@ Building the `tldr` client is pretty straightforward.
 
 #### Requirements
 
-- `clang`
+- `clang`/`gcc`
 - `libcurl` (`brew install curl` / `apt-get install libcurl-dev` / `apt-get install libcurl4-openssl-dev`)
 - `libzip` (`brew install libzip` / `apt-get install libzip-dev`)
 
