@@ -464,7 +464,8 @@ int check_localdate()
     {
         fprintf(stdout, "%s", ANSI_BOLD_ON);
         fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
-        fprintf(stdout, "Local data is older than two weeks, use --update to update it.\n\n");
+        fprintf(stdout,
+                "Local data is older than two weeks, use --update to update it.\n\n");
         fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
         fprintf(stdout, "%s", ANSI_BOLD_OFF);
     }
@@ -813,6 +814,13 @@ progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
     return 0;
 }
 
+int old_progress_callback(void* p, double dltotal, double dlnow,
+                          double ultotal, double ulnow)
+{
+    return progress_callback(p, (curl_off_t)dltotal, (curl_off_t)dlnow,
+                             (curl_off_t)ultotal, (curl_off_t)ulnow);
+}
+
 int download_file(char const* url, char const* outfile, int verbose)
 {
     CURL* curl;
@@ -841,9 +849,15 @@ int download_file(char const* url, char const* outfile, int verbose)
             filename[len] = '\0';
             base = basename(filename);
 
-            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0);
+#if LIBCURL_VERSION_NUM >= 0x072000
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
             curl_easy_setopt(curl, CURLOPT_XFERINFOFUNCTION, &progress_callback);
             curl_easy_setopt(curl, CURLOPT_XFERINFODATA, base);
+#else
+            curl_easy_setopt(curl, CURLOPT_NOPROGRESS, 0L);
+            curl_easy_setopt(curl, CURLOPT_PROGRESSFUNCTION, &old_progress_callback);
+            curl_easy_setopt(curl, CURLOPT_PROGRESSDATA, base);
+#endif
         }
 
         res = curl_easy_perform(curl);
@@ -944,4 +958,3 @@ int download_content(char const* url, char** out, int verbose)
     *out = NULL;
     return 1;
 }
-
