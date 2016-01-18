@@ -2,22 +2,23 @@ CC			?= clang
 DEBUG		?= -g -O0 -march=native
 
 # Include Directories
-INCLUDE		:= -I/usr/local/include
+INCLUDE		:= $(shell pkg-config --cflags libzip)
 INCLUDE		+= -I/usr/include
+INCLUDE		+= -I/usr/local/include
 INCLUDE		+= -I/usr/local/opt/curl/include
 INCLUDE		+= -I/usr/local/opt/libzip/include
-INCLUDE		+= $(shell pkg-config --cflags libzip)
 
 # Compiler Flags
-CFLAGS		:= $(DEBUG)
+CFLAGS		:= $(CFLAGS) $(DEBUG) $(INCLUDE)
 CFLAGS		+= -Wall -Wextra -fno-strict-aliasing -std=c89 -pedantic
-CFLAGS		+= $(INCLUDE)
 
 # Linker Flags
-LDFLAGS		:= -lcurl -lzip -lm
+LDFLAGS		:= $(LDFLAGS)
+LDFLAGS		+= -lcurl -lzip -lm
 
 # Lib Search Directories
-LDLIBS		:= -L/usr/local/opt/curl/lib
+LDLIBS		:= $(LDLIBS)
+LDLIBS		+= -L/usr/local/opt/curl/lib
 LDLIBS		+= -L/usr/local/opt/libzip/lib
 
 
