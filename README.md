@@ -9,9 +9,13 @@ A `C` command line client for tldr
 
 On OS X, the client can be installed through [homebrew](http://brew.sh/).
 
-To get the latest version:
 ```
 brew tap tldr-pages/tldr
+
+# To install the latest stable release
+brew install tldr
+
+# To install latest development version
 brew install tldr --HEAD
 ```
 
