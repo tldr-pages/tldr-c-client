@@ -1,6 +1,9 @@
 # Executable
 tldr
 
+# .dsym files
+*.dSYM
+
 # Object files
 *.o
 *.ko
