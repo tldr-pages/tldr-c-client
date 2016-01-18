@@ -22,7 +22,7 @@ brew install tldr --HEAD
 To build the latest version from source:
 ```
 if [[ "`uname`" == "Darwin"  ]]; then brew install curl libzip pkg-config; fi
-if [[ "`uname`" == "Linux" ]]; then apt-get install libcurl4-openssl-dev libzip-dev; fi
+if [[ "`uname`" == "Linux" ]]; then apt-get install libcurl4-openssl-dev libzip-dev pkg-config; fi
 git clone https://github.com/tldr-pages/tldr-cpp-client.git tldr-c-client
 cd tldr-c-client/src
 make

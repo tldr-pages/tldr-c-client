@@ -18,6 +18,8 @@ LDFLAGS		+= -lcurl -lzip -lm
 
 # Lib Search Directories
 LDLIBS		:= $(LDLIBS)
+LDLIBS		+= -L/usr/lib
+LDLIBS		+= -L/usr/local/lib
 LDLIBS		+= -L/usr/local/opt/curl/lib
 LDLIBS		+= -L/usr/local/opt/libzip/lib
 

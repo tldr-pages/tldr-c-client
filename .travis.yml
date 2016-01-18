@@ -14,11 +14,13 @@ addons:
         packages:
             - libcurl4-openssl-dev
             - libzip-dev
+            - pkg-config
 
 before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install curl; fi
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libzip; fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install pkg-config; fi
 
 script:
     - cd src
