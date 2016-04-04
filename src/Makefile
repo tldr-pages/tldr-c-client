@@ -11,7 +11,7 @@ INCLUDE		+= -I/usr/local/opt/libzip/include
 
 # Compiler Flags
 CFLAGS		:= $(CFLAGS) $(DEBUG) $(INCLUDE)
-CFLAGS		+= -W -Wall -Wextra -Wpedantic -pedantic -ansi
+CFLAGS		+= -W -Wall -Wextra -pedantic -ansi
 CFLAGS		+= -Wstrict-overflow -fno-strict-aliasing
 
 # Linker Flags
