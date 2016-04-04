@@ -46,8 +46,27 @@
     #error "Unknown Compiler"
 #endif
 
-static const char* const BASE_URL =
-    "https://raw.github.com/tldr-pages/tldr/master/pages";
+#define BASE_URL "https://raw.github.com/tldr-pages/tldr/master/pages"
+#define BASE_URL_LEN (sizeof(BASE_URL) - 1)
+
+#define ZIP_URL "https://github.com/tldr-pages/tldr/archive/master.zip"
+#define ZIP_URL_LEN (sizeof(ZIP_URL_LEN) - 1)
+
+#define TMP_DIR "/tmp/tldrXXXXXX"
+#define TMP_DIR_LEN (sizeof(TMP_DIR) - 1)
+
+#define TMP_FILE "/master.zip"
+#define TMP_FILE_LEN (sizeof(TMP_FILE) - 1)
+
+#define TLDR_DIR "/tldr-master"
+#define TLDR_DIR_LEN (sizeof(TLDR_DIR) - 1)
+
+#define TLDR_HOME "/.tldr"
+#define TLDR_HOME_LEN (sizeof(TLDR_HOME) - 1)
+
+#define TLDR_EXT "/.tldr/tldr-master/pages/"
+#define TLDR_EXT_LEN (sizeof(TLDR_EXT) - 1)
+
 
 static const char* const ANSI_COLOR_RESET_FG            = "\x1b[39m";
 static const char* const ANSI_COLOR_TITLE_FG            = "\x1b[39m";
@@ -62,23 +81,25 @@ static const char* const ANSI_BOLD_OFF                  = "\x1b[22m";
 double _round(double arg);
 int _rm(char const* path);
 int _unzip(char const* path, char const* outpath);
+char const* _gethome(void);
 
 /* Output */
-int construct_url(char* buf, int buflen, char const* input,
+int construct_url(char* buf, size_t buflen, char const* input,
                   char const* platform);
-int construct_path(char* buf, int buflen, char const* home, char const* input,
+int construct_path(char* buf, size_t buflen, char const* home, char const* input,
                    char const* platform);
 int parse_tldrpage(char const* input);
 int print_tldrpage(char const* input);
 
 /* Help and usage */
-void print_version();
-void print_usage();
+void print_version(char const* arg);
+void print_usage(char const* arg);
 
 /* functionality */
-int check_localdate();
-int update_localdate();
+int check_localdate(void);
+int update_localdate(void);
 int update_localdb(int verbose);
+int clear_localdb(int verbose);
 int get_file_content(char const* path, char** out, int verbose);
 
 /* cURL */
@@ -88,10 +109,11 @@ int download_file(char const* url, char const* outfile, int verbose);
 int download_content(char const* url, char** out, int verbose);
 
 /* getopt */
-int help_flag = 0;
-int version_flag = 0;
-int verbose_flag = 0;
-int update_flag = 0;
+static int help_flag;
+static int version_flag;
+static int verbose_flag;
+static int update_flag;
+static int clear_flag;
 static struct option long_options[] =
 {
     { "help", no_argument, &help_flag, 1 },
@@ -99,6 +121,7 @@ static struct option long_options[] =
     { "verbose", no_argument, &verbose_flag, 1 },
 
     { "update", no_argument, &update_flag, 1 },
+    { "clear-cache", no_argument, &clear_flag, 1 },
     { 0, 0, 0, 0 }
 };
 
@@ -149,12 +172,18 @@ main(int argc, char** argv)
     }
     if (version_flag)
     {
-        print_version();
+        print_version(argv[0]);
         return EXIT_SUCCESS;
     }
     if (update_flag)
     {
         if (update_localdb(verbose_flag))
+        { return EXIT_FAILURE; }
+        return EXIT_SUCCESS;
+    }
+    if (clear_flag)
+    {
+        if (clear_localdb(verbose_flag))
         { return EXIT_FAILURE; }
         return EXIT_SUCCESS;
     }
@@ -189,11 +218,11 @@ main(int argc, char** argv)
 }
 
 int
-construct_url(char* buf, int buflen, char const* input, char const* platform)
+construct_url(char* buf, size_t buflen, char const* input, char const* platform)
 {
-    int baselen;
-    int delimlen;
-    int inputlen;
+    size_t baselen;
+    size_t delimlen;
+    size_t inputlen;
 
     baselen = strlen(BASE_URL);
     delimlen = strlen(platform);
@@ -212,29 +241,26 @@ construct_url(char* buf, int buflen, char const* input, char const* platform)
 }
 
 int
-construct_path(char* buf, int buflen, char const* home, char const* input,
+construct_path(char* buf, size_t buflen, char const* home, char const* input,
                char const* platform)
 {
-    int homelen;
-    int inputlen;
-    int platformlen;
-    int extensionlen;
-    char* extension = "/.tldr/tldr-master/pages/";
+    size_t homelen;
+    size_t inputlen;
+    size_t platformlen;
 
     homelen = strlen(home);
     inputlen = strlen(input);
     platformlen = strlen(platform);
-    extensionlen = strlen(extension);
-    if ((homelen + inputlen + platformlen + extensionlen + 4) > buflen)
+    if ((homelen + inputlen + platformlen + TLDR_EXT_LEN + 4) > buflen)
     { return 1; }
 
     memcpy(buf, home, homelen);
-    memcpy(buf + homelen, extension, extensionlen);
-    memcpy(buf + homelen + extensionlen, platform, platformlen);
-    memcpy(buf + homelen + extensionlen + platformlen, "/", 1);
-    memcpy(buf + homelen + extensionlen + platformlen + 1, input, inputlen);
-    memcpy(buf + homelen + extensionlen + platformlen + 1 + inputlen, ".md", 3);
-    buf[homelen + extensionlen + platformlen + inputlen + 4] = '\0';
+    memcpy(buf + homelen, TLDR_EXT, TLDR_EXT_LEN);
+    memcpy(buf + homelen + TLDR_EXT_LEN, platform, platformlen);
+    memcpy(buf + homelen + TLDR_EXT_LEN + platformlen, "/", 1);
+    memcpy(buf + homelen + TLDR_EXT_LEN + platformlen + 1, input, inputlen);
+    memcpy(buf + homelen + TLDR_EXT_LEN + platformlen + 1 + inputlen, ".md", 3);
+    buf[homelen + TLDR_EXT_LEN + platformlen + inputlen + 4] = '\0';
 
     return 0;
 }
@@ -249,7 +275,7 @@ parse_tldrpage(char const* input)
     len = strlen(input);
 
     fprintf(stdout, "\n");
-    for (i = 0; i < len; i++)
+    for (i = 0; i < len; ++i)
     {
         c = input[i];
         if (start == -1)
@@ -336,10 +362,8 @@ print_tldrpage(char const* input)
     char url[1024];
     struct utsname sys;
 
-    int homelen;
-    char* homedir;
-    int tldrlen;
-    char* tldrdir = "/.tldr/tldr-master/pages/";
+    size_t homelen;
+    char const* homedir;
     char directory[1024];
     struct stat sb;
 
@@ -351,16 +375,13 @@ print_tldrpage(char const* input)
     else if (isdarwin) { platform = "osx"; }
     else { platform = "common"; }
 
-    if ((homedir = getenv("HOME")) == NULL)
-    {
-        homedir = getpwuid(getuid())->pw_dir;
-    }
+    homedir = _gethome();
+    if (homedir == NULL) { return 1; }
 
     homelen = strlen(homedir);
-    tldrlen = strlen(tldrdir);
     memcpy(directory, homedir, homelen);
-    memcpy(directory + homelen, tldrdir, tldrlen);
-    directory[homelen + tldrlen] = '\0';
+    memcpy(directory + homelen, TLDR_EXT, TLDR_EXT_LEN);
+    directory[homelen + TLDR_EXT_LEN] = '\0';
 
     if (stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode))
     {
@@ -405,28 +426,32 @@ print_tldrpage(char const* input)
 }
 
 void
-print_version()
+print_version(char const* arg)
 {
-    fprintf(stdout, "tldr version %s\n", VERSION_PRETTY);
+    fprintf(stdout, "%s %s\n", arg, VERSION_PRETTY);
+    fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
+    fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
 }
 
 void
 print_usage(char const* arg)
 {
-    char const* out = "usage: %s [-v] [--version] [--help] [--update] <search>\n\n";
+    char const* out = "usage: %s [-v] [<command>] <search>\n\n";
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "   --version    print version and exit\n");
-    fprintf(stdout, "   --help       print help and exit\n");
-    fprintf(stdout, "   --update     update local database\n");
+    fprintf(stdout, "    %-15s %-30s\n", "--version", "print version and exit");
+    fprintf(stdout, "    %-15s %-30s\n", "--help", "print this help and exit");
+    fprintf(stdout, "    %-15s %-30s\n", "--update", "update local database");
+    fprintf(stdout, "    %-15s %-30s\n", "--clear-cache", "clear local database");
 }
 
-int check_localdate()
+int
+check_localdate(void)
 {
     FILE* fp;
-    int homelen;
-    char* homedir;
-    int extlen;
+    size_t homelen;
+    char const* homedir;
+    size_t extlen;
     char* extpath = "/.tldr/date";
     char outdir[1024];
     char buffer[1024];
@@ -435,10 +460,8 @@ int check_localdate()
     time_t curtime;
     time_t difftime;
 
-    if ((homedir = getenv("HOME")) == NULL)
-    {
-        homedir = getpwuid(getuid())->pw_dir;
-    }
+    homedir = _gethome();
+    if (homedir == NULL) { return 1; }
 
     homelen = strlen(homedir);
     extlen = strlen(extpath);
@@ -476,22 +499,21 @@ error:
     return -1;
 }
 
-int update_localdate()
+int
+update_localdate(void)
 {
     FILE* fp;
-    int homelen;
-    char* homedir;
-    int extlen;
+    size_t homelen;
+    char const* homedir;
+    size_t extlen;
     char* extpath = "/.tldr/date";
     char outdir[1024];
     size_t written;
     char timestr[32];
     time_t curtime;
 
-    if ((homedir = getenv("HOME")) == NULL)
-    {
-        homedir = getpwuid(getuid())->pw_dir;
-    }
+    homedir = _gethome();
+    if (homedir == NULL) { return 1; }
 
     homelen = strlen(homedir);
     extlen = strlen(extpath);
@@ -524,25 +546,16 @@ update_localdb(int verbose)
     char outfile[255];
     char outhome[255];
     char const* homedir;
-    char* url = "https://github.com/tldr-pages/tldr/archive/master.zip";
-    char* dir = "/tmp/tldrXXXXXX";
-    char* file = "/master.zip";
-    char* tldrdir = "/tldr-master";
-    char* tldrhomedir = "/.tldr";
-    int homedirlen;
-    int dirlen = strlen(dir);
-    int filelen = strlen(file);
-    int tldrdirlen = strlen(tldrdir);
-    int tldrhomedirlen = strlen(tldrhomedir);
+    size_t homedirlen;
 
-    memcpy(outfile, dir, dirlen);
+    memcpy(outfile, TMP_DIR, TMP_DIR_LEN);
     if (!mkdtemp(outfile)) { return 1; }
 
-    memcpy(outpath, outfile, dirlen);
-    memcpy(outfile + dirlen, file, filelen);
-    outfile[dirlen + filelen] = '\0';
+    memcpy(outpath, outfile, TMP_DIR_LEN);
+    memcpy(outfile + TMP_DIR_LEN, TMP_FILE, TMP_FILE_LEN);
+    outfile[TMP_DIR_LEN + TMP_FILE_LEN] = '\0';
 
-    if (download_file(url, outfile, verbose))
+    if (download_file(ZIP_URL, outfile, verbose))
     { return 1; }
 
     if (_unzip(outfile, outpath))
@@ -551,19 +564,17 @@ update_localdb(int verbose)
         return 1;
     }
 
-    memcpy(tmp, outpath, dirlen);
-    memcpy(tmp + dirlen, tldrdir, tldrdirlen);
-    tmp[dirlen + tldrdirlen] = '\0';
+    memcpy(tmp, outpath, TMP_DIR_LEN);
+    memcpy(tmp + TMP_DIR_LEN, TLDR_DIR, TLDR_DIR_LEN);
+    tmp[TMP_DIR_LEN + TLDR_DIR_LEN] = '\0';
 
-    if ((homedir = getenv("HOME")) == NULL)
-    {
-        homedir = getpwuid(getuid())->pw_dir;
-    }
+    homedir = _gethome();
+    if (homedir == NULL) { return 1; }
 
     homedirlen = strlen(homedir);
     memcpy(outhome, homedir, homedirlen);
-    memcpy(outhome + homedirlen, tldrhomedir, tldrhomedirlen);
-    outhome[homedirlen + tldrhomedirlen] = '\0';
+    memcpy(outhome + homedirlen, TLDR_HOME, TLDR_HOME_LEN);
+    outhome[homedirlen + TLDR_HOME_LEN] = '\0';
     if (mkdir(outhome, 0755) > 0)
     {
         if (errno != EEXIST)
@@ -573,9 +584,9 @@ update_localdb(int verbose)
         }
     }
 
-    memcpy(outhome + homedirlen + tldrhomedirlen, tldrdir, tldrdirlen);
-    outhome[homedirlen + tldrhomedirlen + tldrdirlen] = '/';
-    outhome[homedirlen + tldrhomedirlen + tldrdirlen + 1] = '\0';
+    memcpy(outhome + homedirlen + TLDR_HOME_LEN, TLDR_DIR, TLDR_DIR_LEN);
+    outhome[homedirlen + TLDR_HOME_LEN + TLDR_DIR_LEN] = '/';
+    outhome[homedirlen + TLDR_HOME_LEN + TLDR_DIR_LEN + 1] = '\0';
     if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
     {
         if (_rm(outhome)) { return 1; }
@@ -591,6 +602,27 @@ update_localdb(int verbose)
     { return 1; }
 
     update_localdate();
+    return 0;
+}
+
+int
+clear_localdb(int verbose)
+{
+    char tmp[255];
+    char const* homedir;
+    size_t homedirlen;
+
+    ((void)verbose);
+    homedir = _gethome();
+    if (homedir == NULL) { return 1; }
+
+    homedirlen = strlen(homedir);
+    memcpy(tmp, homedir, homedirlen);
+    memcpy(tmp + homedirlen, TLDR_HOME, TLDR_HOME_LEN);
+    tmp[homedirlen + TLDR_HOME_LEN] = '\0';
+    if (_rm(tmp)) { return 1; }
+
+    fprintf(stdout, "Successfully removed %s\n", tmp);
     return 0;
 }
 
@@ -661,7 +693,7 @@ _rm(char const* path)
                 case FTS_NS:
                 case FTS_DNR:
                 case FTS_ERR:
-                    fprintf(stderr, "Error: %s: fts_read error: %s\n",
+                    fprintf(stderr, "Error: %s: error: %s\n",
                             cur->fts_accpath, strerror(cur->fts_errno));
                     return 1;
 
@@ -704,14 +736,14 @@ _unzip(char const* path, char const* outpath)
 {
     int err;
     int i, len;
-    int filelen;
+    size_t filelen;
     struct zip* archive;
     struct zip_file* file;
     struct zip_stat stat;
     int fd;
     size_t sum;
     char buf[4096];
-    int outlen;
+    size_t outlen;
     char tmp[FILENAME_MAX];
 
     archive = zip_open(path, 0, &err);
@@ -786,6 +818,22 @@ error:
     return 1;
 }
 
+char const*
+_gethome(void)
+{
+    char const* homedir = NULL;
+    if ((homedir = getenv("HOME")) == NULL)
+    {
+        struct passwd* uid;
+        if ((uid = getpwuid(getuid())) != NULL)
+        {
+            homedir = uid->pw_dir;
+        }
+    }
+
+    return homedir;
+}
+
 int
 progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
                   curl_off_t ultotal, curl_off_t ulnow)
@@ -813,14 +861,16 @@ progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
     return 0;
 }
 
-int old_progress_callback(void* p, double dltotal, double dlnow,
+int
+old_progress_callback(void* p, double dltotal, double dlnow,
                           double ultotal, double ulnow)
 {
     return progress_callback(p, (curl_off_t)dltotal, (curl_off_t)dlnow,
                              (curl_off_t)ultotal, (curl_off_t)ulnow);
 }
 
-int download_file(char const* url, char const* outfile, int verbose)
+int
+download_file(char const* url, char const* outfile, int verbose)
 {
     CURL* curl;
     CURLcode res;
@@ -885,7 +935,8 @@ struct curl_string
     size_t len;
 };
 
-void curl_string_init(struct curl_string* str)
+void
+curl_string_init(struct curl_string* str)
 {
     str->len = 0;
     str->str = malloc(1024);
@@ -894,7 +945,8 @@ void curl_string_init(struct curl_string* str)
     str->str[1024] = '\0';
 }
 
-size_t write_function(void* ptr, size_t size, size_t nmemb, void* stream)
+size_t
+write_function(void* ptr, size_t size, size_t nmemb, void* stream)
 {
     struct curl_string* str = (struct curl_string*)stream;
     size_t newlen = str->len + size * nmemb;
@@ -909,7 +961,8 @@ size_t write_function(void* ptr, size_t size, size_t nmemb, void* stream)
     return size * nmemb;
 }
 
-int download_content(char const* url, char** out, int verbose)
+int
+download_content(char const* url, char** out, int verbose)
 {
     CURL* curl;
     CURLcode res;
@@ -957,3 +1010,4 @@ int download_content(char const* url, char** out, int verbose)
     *out = NULL;
     return 1;
 }
+
