@@ -89,7 +89,7 @@ int construct_url(char* buf, size_t buflen, char const* input,
 int construct_path(char* buf, size_t buflen, char const* home, char const* input,
                    char const* platform);
 int parse_tldrpage(char const* input);
-int print_tldrpage(char const* input);
+int print_tldrpage(char const* input, char const* platform);
 
 /* Help and usage */
 void print_version(char const* arg);
@@ -114,6 +114,8 @@ static int version_flag;
 static int verbose_flag;
 static int update_flag;
 static int clear_flag;
+static int platform_flag;
+static char pbuf[64];
 static struct option long_options[] =
 {
     { "help", no_argument, &help_flag, 1 },
@@ -122,6 +124,7 @@ static struct option long_options[] =
 
     { "update", no_argument, &update_flag, 1 },
     { "clear-cache", no_argument, &clear_flag, 1 },
+    { "platform", required_argument, 0, 'p' },
     { 0, 0, 0, 0 }
 };
 
@@ -157,7 +160,18 @@ main(int argc, char** argv)
                 break;
 
             case '?':
-                help_flag = 1;
+                /* do not set help flag, only show getopt error */
+                /* help_flag = 1; */
+                break;
+
+            case 'p':
+            {
+                size_t len = strlen(optarg);
+                if (len > 64) { exit(EXIT_FAILURE); }
+                memcpy(pbuf, optarg, len);
+                pbuf[len] = '\0';
+                platform_flag = 1;
+            }
                 break;
 
             default:
@@ -165,7 +179,8 @@ main(int argc, char** argv)
         }
     }
 
-    if (help_flag)
+    /* show help, if platform was supplied, but no further argument */
+    if (help_flag || (platform_flag && (optind == argc)))
     {
         print_usage(argv[0]);
         return EXIT_SUCCESS;
@@ -206,7 +221,7 @@ main(int argc, char** argv)
         }
 
         buf[sum - 1] = '\0';
-        if (print_tldrpage(buf))
+        if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL))
         {
             fprintf(stdout, "This page doesn't exist yet!\n");
             fprintf(stdout, "Submit new pages here: https://github.com/tldr-pages/tldr\n");
@@ -353,14 +368,14 @@ parse_tldrpage(char const* input)
 }
 
 int
-print_tldrpage(char const* input)
+print_tldrpage(char const* input, char const* poverride)
 {
     int islinux;
     int isdarwin;
     char* output;
-    char* platform;
     char url[1024];
     struct utsname sys;
+    char const* platform;
 
     size_t homelen;
     char const* homedir;
@@ -371,9 +386,24 @@ print_tldrpage(char const* input)
     islinux = strcmp(sys.sysname, "Linux") == 0;
     isdarwin = strcmp(sys.sysname, "Darwin") == 0;
 
-    if (islinux) { platform = "linux"; }
-    else if (isdarwin) { platform = "osx"; }
-    else { platform = "common"; }
+    if (poverride == NULL)
+    {
+        if (islinux) { platform = "linux"; }
+        else if (isdarwin) { platform = "osx"; }
+        else { platform = "common"; }
+    }
+    else
+    {
+        platform = poverride;
+        if (strcmp(platform, "linux") != 0
+                && strcmp(platform, "osx") != 0
+                && strcmp(platform, "common") != 0)
+        {
+            fprintf(stderr, "Error: platform %s is unsupported\n", platform);
+            fprintf(stderr, "Supported platforms: linux / osx / common\n");
+            exit(EXIT_FAILURE);
+        }
+    }
 
     homedir = _gethome();
     if (homedir == NULL) { return 1; }
@@ -439,10 +469,12 @@ print_usage(char const* arg)
     char const* out = "usage: %s [-v] [<command>] <search>\n\n";
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-15s %-30s\n", "--version", "print version and exit");
-    fprintf(stdout, "    %-15s %-30s\n", "--help", "print this help and exit");
-    fprintf(stdout, "    %-15s %-30s\n", "--update", "update local database");
-    fprintf(stdout, "    %-15s %-30s\n", "--clear-cache", "clear local database");
+    fprintf(stdout, "    %-20s %-30s\n", "--version", "print version and exit");
+    fprintf(stdout, "    %-20s %-30s\n", "--help", "print this help and exit");
+    fprintf(stdout, "    %-20s %-30s\n", "--update", "update local database");
+    fprintf(stdout, "    %-20s %-30s\n", "--clear-cache", "clear local database");
+    fprintf(stdout, "    %-20s %-30s\n", "--platform=<platform>",
+            "select platform, supported are linux / osx / common");
 }
 
 int
