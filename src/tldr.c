@@ -30,18 +30,18 @@
 #endif
 
 #if defined(_WIN32)
-
+    /* nothing yet */
 #elif __APPLE__
     #include "TargetConditionals.h"
     #if TARGET_OS_MAC
-
+        /* nothing yet */
     #endif
 #elif __linux__
-
+    /* nothing yet */
 #elif __unix__
-
+    /* nothing yet */
 #elif defined(_POSIX_VERSION)
-
+    /* nothing yet */
 #else
     #error "Unknown Compiler"
 #endif
@@ -425,6 +425,8 @@ print_tldrpage(char const* input, char const* poverride)
     if (homedir == NULL) { return 1; }
 
     homelen = strlen(homedir);
+    if ((homelen + TLDR_EXT_LEN + 1) > 1024) { return 1; }
+
     memcpy(directory, homedir, homelen);
     memcpy(directory + homelen, TLDR_EXT, TLDR_EXT_LEN);
     directory[homelen + TLDR_EXT_LEN] = '\0';
@@ -511,6 +513,8 @@ check_localdate(void)
     if (homedir == NULL) { return 1; }
 
     homelen = strlen(homedir);
+    if ((homelen + TLDR_DATE_LEN + 1) > 1024) { return 1; }
+
     memcpy(outdir, homedir, homelen);
     memcpy(outdir + homelen, TLDR_DATE, TLDR_DATE_LEN);
     outdir[homelen + TLDR_DATE_LEN] = '\0';
@@ -686,6 +690,9 @@ clear_localdb(int verbose)
     if (homedir == NULL) { return 1; }
 
     homedirlen = strlen(homedir);
+    if ((homedirlen + TLDR_HOME_LEN + 1) > 255) 
+    { return 1; }
+
     memcpy(tmp, homedir, homedirlen);
     memcpy(tmp + homedirlen, TLDR_HOME, TLDR_HOME_LEN);
     tmp[homedirlen + TLDR_HOME_LEN] = '\0';
