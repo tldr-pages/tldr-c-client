@@ -202,6 +202,11 @@ main(int argc, char** argv)
         { return EXIT_FAILURE; }
         return EXIT_SUCCESS;
     }
+    if (verbose_flag && optind >= argc)
+    {
+        print_version(argv[0]);
+        return EXIT_SUCCESS;
+    }
 
     if (optind < argc)
     {
@@ -469,11 +474,12 @@ print_usage(char const* arg)
     char const* out = "usage: %s [-v] [<command>] <search>\n\n";
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
+    fprintf(stdout, "    %-20s %-30s\n", "-v", "print verbose output");
     fprintf(stdout, "    %-20s %-30s\n", "--version", "print version and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "--help", "print this help and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "--update", "update local database");
-    fprintf(stdout, "    %-20s %-30s\n", "--clear-cache", "clear local database");
-    fprintf(stdout, "    %-20s %-30s\n", "--platform=<platform>",
+    fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
+    fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
+    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
+    fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=<platform>",
             "select platform, supported are linux / osx / common");
 }
 
