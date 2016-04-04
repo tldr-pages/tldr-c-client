@@ -44,7 +44,7 @@ all: $(BIN)
 	$(CC) $(CFLAGS) -c $< $(OUTPUT) -o $@
 
 $(BIN): $(OBJ)
-	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
+	$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 
 install: all
