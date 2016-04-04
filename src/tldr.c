@@ -377,6 +377,7 @@ print_tldrpage(char const* input, char const* poverride)
 {
     int islinux;
     int isdarwin;
+    int issun;
     char* output;
     char url[1024];
     struct utsname sys;
@@ -390,11 +391,13 @@ print_tldrpage(char const* input, char const* poverride)
     uname(&sys);
     islinux = strcmp(sys.sysname, "Linux") == 0;
     isdarwin = strcmp(sys.sysname, "Darwin") == 0;
+    issun = strcmp(sys.sysname, "SunOS") == 0;
 
     if (poverride == NULL)
     {
         if (islinux) { platform = "linux"; }
         else if (isdarwin) { platform = "osx"; }
+        else if (issun) { platform = "sunos"; }
         else { platform = "common"; }
     }
     else
@@ -402,10 +405,11 @@ print_tldrpage(char const* input, char const* poverride)
         platform = poverride;
         if (strcmp(platform, "linux") != 0
                 && strcmp(platform, "osx") != 0
-                && strcmp(platform, "common") != 0)
+                && strcmp(platform, "common") != 0
+                && strcmp(platform, "sunos") != 0)
         {
             fprintf(stderr, "Error: platform %s is unsupported\n", platform);
-            fprintf(stderr, "Supported platforms: linux / osx / common\n");
+            fprintf(stderr, "Supported platforms: linux / osx / sunos / common\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -480,7 +484,7 @@ print_usage(char const* arg)
     fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
     fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=<platform>",
-            "select platform, supported are linux / osx / common");
+            "select platform, supported are linux / osx / sunos / common");
 }
 
 int
