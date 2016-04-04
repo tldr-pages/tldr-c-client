@@ -1,9 +1,9 @@
 tldr c client
 =============
 
-A `C` command line client for tldr
-
 [![Build Status](https://travis-ci.org/tldr-pages/tldr-cpp-client.svg)](https://travis-ci.org/tldr-pages/tldr-cpp-client)
+
+A `C` command line client for tldr
 
 ## Installing
 
@@ -56,11 +56,14 @@ make
 ## Usage
 
 ```
-usage: tldr [-v] [--version] [--help] [--update] <search>
+usage: tldr [-v] [<command>] <search>
 
 available commands:
-    --version    print version and exit
-    --help       print help and exit
-    --update     update local database
+    -v                   print verbose output
+    --version            print version and exit
+    -h, --help           print this help and exit
+    -u, --update         update local database
+    -c, --clear-cache    clear local database
+    -p, --platform=<platform> select platform, supported are linux / osx / common
 ```
 
