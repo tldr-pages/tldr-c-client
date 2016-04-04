@@ -1,5 +1,6 @@
-CC			?= clang
-DEBUG		?= -g -O0 -march=native
+CC			?= gcc
+DEBUG		?= -ggdb -O0 -march=native
+OUTPUT		:= -MMD -MP
 
 # Include Directories
 INCLUDE		:= $(shell pkg-config --cflags libzip)
@@ -10,7 +11,8 @@ INCLUDE		+= -I/usr/local/opt/libzip/include
 
 # Compiler Flags
 CFLAGS		:= $(CFLAGS) $(DEBUG) $(INCLUDE)
-CFLAGS		+= -Wall -Wextra -fno-strict-aliasing -std=c89 -pedantic
+CFLAGS		+= -W -Wall -Wextra -Wpedantic -pedantic -ansi
+CFLAGS		+= -Wstrict-overflow -fno-strict-aliasing
 
 # Linker Flags
 LDFLAGS		:= $(LDFLAGS)
@@ -25,32 +27,33 @@ LDLIBS		+= -L/usr/local/opt/libzip/lib
 
 
 PREFIX		?= /usr/local
-SRC			:= tldr.c
+SRC			:= $(wildcard *.c)
 OBJ			:= $(SRC:.c=.o)
-DSYM		:= $(SRC:.c=.o.dSYM)
+DEP			:= $(SRC:.c=.d)
+DSYM		:= $(SRC:.c=.dSYM)
 BIN			:= tldr
 BINDIR		:= $(PREFIX)/bin
 
+.PHONY: clean format
+.DEFAULT_GOAL := all
 
-all: $(SRC) $(BIN)
+
+all: $(BIN)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< $(OUTPUT) -o $@
 
 $(BIN): $(OBJ)
-	$(CC) $(LDFLAGS) $(LDLIBS) $(OBJ) -o $@
-
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+	$(CC) $(LDFLAGS) $(LDLIBS) -o $@ $^
 
 
 install: all
 	install -d $(BINDIR)
 	install tldr $(BINDIR)
 
-
-.PHONY: clean dist-clean
-
 clean:
-	rm -rf $(OBJ) *~ $(BINS) $(DSYM)
+	rm -rf $(OBJ) *~ $(BINS) $(DSYM) $(DEP) $(BIN)
 
-dist-clean:	clean
-	rm -rf $(BIN)
+format:
+	astyle --options=.astylerc *.c
 

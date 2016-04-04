@@ -10,6 +10,9 @@ tldr
 *.obj
 *.elf
 
+# Dependency files
+*.d
+
 # Libraries
 *.lib
 *.a

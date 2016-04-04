@@ -1,0 +1,99 @@
+# For full docs:
+# http://astyle.sourceforge.net/astyle.html
+#
+
+# General Options:
+# - Only display errors
+# - Redirect stderr to stdout
+# - Enforce linux lineendings
+# - Preserve file modification date
+# - Do not create file backups, everything should be VCSed anyway
+--quiet
+--errors-to-stdout
+--lineend=linux
+--preserve-date
+--suffix=none
+
+# Style
+#
+# bsd:
+# int main(void)
+# {
+#     if (true)
+#     {
+#         return 0;
+#     }
+# }
+#
+# kr:
+# int main(void)
+# {
+#     if (true) {
+#         return 0;
+#     }
+# }
+--style=bsd
+
+# Indent with 4 spaces, convert tabs to spaces
+--indent=spaces=4
+--convert-tabs
+
+# Attach brackets to extern c: `extern "C" {`
+--attach-extern-c
+
+# Attach brackets to namespaces: `namespace foo {`
+--attach-namespaces
+
+
+# Indent swiches, preprocessor blocks, and defines
+--indent-switches
+--indent-preproc-block
+--indent-preproc-define
+
+# All comments have to be properly indented
+--indent-col1-comments
+
+# Do not indent conditionals
+--min-conditional-indent=0
+
+# Indent statements to be aligned up to 40 cols
+--max-instatement-indent=40
+
+# Paddings around operators, parentheses, and a header
+# (header means `if`, `while`, etc. Example: `if (true)`, instead of `if(true)`)
+--pad-oper
+--pad-paren-in
+--pad-header
+
+# and remove all not requested padding
+--unpad-paren
+
+# doesn't seem to preserve any lines, will just remove any empty lines!
+# --delete-empty-lines
+
+# Pointer alignment
+--align-pointer=type
+--align-reference=type
+
+# Break elseifs / closing brackets
+# might be useful with style=kr
+#--break-closing-brackets
+#--break-elseifs
+
+# Make sure to always add brackets to if,for,while etc statements
+# we do not want to repeat goto fail;
+--keep-one-line-blocks
+--keep-one-line-statements
+--add-one-line-brackets
+
+# Obvious 80 col length maximum
+--max-code-length=80
+--break-after-logical
+
+
+# objective-c options
+--align-method-colon
+--pad-method-prefix
+--pad-method-colon=none
+
+
