@@ -61,10 +61,13 @@
 #define TLDR_DIR "/tldr-master"
 #define TLDR_DIR_LEN (sizeof(TLDR_DIR) - 1)
 
-#define TLDR_HOME "/.tldr"
+#define TLDR_HOME "/.tldrc"
 #define TLDR_HOME_LEN (sizeof(TLDR_HOME) - 1)
 
-#define TLDR_EXT "/.tldr/tldr-master/pages/"
+#define TLDR_DATE "/.tldrc/date"
+#define TLDR_DATE_LEN (sizeof(TLDR_DATE) - 1)
+
+#define TLDR_EXT "/.tldrc/tldr-master/pages/"
 #define TLDR_EXT_LEN (sizeof(TLDR_EXT) - 1)
 
 
@@ -98,6 +101,7 @@ void print_usage(char const* arg);
 /* functionality */
 int check_localdate(void);
 int update_localdate(void);
+int has_localdb(void);
 int update_localdb(int verbose);
 int clear_localdb(int verbose);
 int get_file_content(char const* path, char** out, int verbose);
@@ -226,6 +230,9 @@ main(int argc, char** argv)
         }
 
         buf[sum - 1] = '\0';
+
+        if (!has_localdb())
+        { update_localdb(verbose_flag); }
         if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL))
         {
             fprintf(stdout, "This page doesn't exist yet!\n");
@@ -493,8 +500,6 @@ check_localdate(void)
     FILE* fp;
     size_t homelen;
     char const* homedir;
-    size_t extlen;
-    char* extpath = "/.tldr/date";
     char outdir[1024];
     char buffer[1024];
     size_t read, len;
@@ -506,10 +511,9 @@ check_localdate(void)
     if (homedir == NULL) { return 1; }
 
     homelen = strlen(homedir);
-    extlen = strlen(extpath);
     memcpy(outdir, homedir, homelen);
-    memcpy(outdir + homelen, extpath, extlen);
-    outdir[homelen + extlen] = '\0';
+    memcpy(outdir + homelen, TLDR_DATE, TLDR_DATE_LEN);
+    outdir[homelen + TLDR_DATE_LEN] = '\0';
 
     fp = fopen(outdir, "rb");
     if (!fp) { return -1; }
@@ -577,6 +581,29 @@ update_localdate(void)
 error:
     fclose(fp);
     return 1;
+}
+
+int
+has_localdb(void)
+{
+    struct stat s;
+    size_t homelen;
+    char const* homedir;
+    char outhome[255];
+
+    homedir = _gethome();
+    if (homedir == NULL) { return 0; }
+
+    homelen = strlen(homedir);
+    memcpy(outhome, homedir, homelen);
+    memcpy(outhome + homelen, TLDR_HOME, TLDR_HOME_LEN);
+    outhome[homelen + TLDR_HOME_LEN] = '\0';
+    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
+    {
+        return 1;
+    }
+
+    return 0;
 }
 
 int
