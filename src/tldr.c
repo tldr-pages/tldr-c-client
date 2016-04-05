@@ -89,7 +89,8 @@ char const* _gethome(void);
 /* Output */
 int construct_url(char* buf, size_t buflen, char const* input,
                   char const* platform);
-int construct_path(char* buf, size_t buflen, char const* home, char const* input,
+int construct_path(char* buf, size_t buflen, char const* home,
+                   char const* input,
                    char const* platform);
 int parse_tldrpage(char const* input);
 int print_tldrpage(char const* input, char const* platform);
@@ -176,7 +177,7 @@ main(int argc, char** argv)
                 pbuf[len] = '\0';
                 platform_flag = 1;
             }
-                break;
+            break;
 
             default:
                 abort();
@@ -236,7 +237,8 @@ main(int argc, char** argv)
         if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL))
         {
             fprintf(stdout, "This page doesn't exist yet!\n");
-            fprintf(stdout, "Submit new pages here: https://github.com/tldr-pages/tldr\n");
+            fprintf(stdout,
+                    "Submit new pages here: https://github.com/tldr-pages/tldr\n");
             return EXIT_FAILURE;
         }
     }
@@ -245,7 +247,8 @@ main(int argc, char** argv)
 }
 
 int
-construct_url(char* buf, size_t buflen, char const* input, char const* platform)
+construct_url(char* buf, size_t buflen, char const* input,
+              char const* platform)
 {
     size_t baselen;
     size_t delimlen;
@@ -411,9 +414,9 @@ print_tldrpage(char const* input, char const* poverride)
     {
         platform = poverride;
         if (strcmp(platform, "linux") != 0
-                && strcmp(platform, "osx") != 0
-                && strcmp(platform, "common") != 0
-                && strcmp(platform, "sunos") != 0)
+            && strcmp(platform, "osx") != 0
+            && strcmp(platform, "common") != 0
+            && strcmp(platform, "sunos") != 0)
         {
             fprintf(stderr, "Error: platform %s is unsupported\n", platform);
             fprintf(stderr, "Supported platforms: linux / osx / sunos / common\n");
@@ -478,7 +481,8 @@ print_version(char const* arg)
 {
     fprintf(stdout, "%s %s\n", arg, VERSION_PRETTY);
     fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
-    fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
+    fprintf(stdout,
+            "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
 }
 
 void
@@ -489,9 +493,11 @@ print_usage(char const* arg)
     fprintf(stdout, "available commands:\n");
     fprintf(stdout, "    %-20s %-30s\n", "-v", "print verbose output");
     fprintf(stdout, "    %-20s %-30s\n", "--version", "print version and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
+    fprintf(stdout, "    %-20s %-30s\n", "-h, --help",
+            "print this help and exit");
     fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
+    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache",
+            "clear local database");
     fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=<platform>",
             "select platform, supported are linux / osx / sunos / common");
 }
@@ -690,7 +696,7 @@ clear_localdb(int verbose)
     if (homedir == NULL) { return 1; }
 
     homedirlen = strlen(homedir);
-    if ((homedirlen + TLDR_HOME_LEN + 1) > 255) 
+    if ((homedirlen + TLDR_HOME_LEN + 1) > 255)
     { return 1; }
 
     memcpy(tmp, homedir, homedirlen);
@@ -939,7 +945,7 @@ progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
 
 int
 old_progress_callback(void* p, double dltotal, double dlnow,
-                          double ultotal, double ulnow)
+                      double ultotal, double ulnow)
 {
     return progress_callback(p, (curl_off_t)dltotal, (curl_off_t)dlnow,
                              (curl_off_t)ultotal, (curl_off_t)ulnow);
@@ -1086,4 +1092,3 @@ download_content(char const* url, char** out, int verbose)
     *out = NULL;
     return 1;
 }
-
