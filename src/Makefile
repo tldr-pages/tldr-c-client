@@ -1,5 +1,5 @@
 CC			?= gcc
-DEBUG		?= -ggdb -O0 -march=native
+DEBUG		:= -ggdb -O0 -march=native
 OUTPUT		:= -MMD -MP
 
 # Include Directories
@@ -49,7 +49,7 @@ $(BIN): $(OBJ)
 
 install: all
 	install -d $(BINDIR)
-	install tldr $(BINDIR)
+	install $(BIN) $(BINDIR)
 
 clean:
 	rm -rf $(OBJ) *~ $(BINS) $(DSYM) $(DEP) $(BIN)

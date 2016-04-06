@@ -46,6 +46,9 @@
     #error "Unknown Compiler"
 #endif
 
+#define STRBUFSIZ 512
+#define URLBUFSIZ 1024
+
 #define BASE_URL "https://raw.github.com/tldr-pages/tldr/master/pages"
 #define BASE_URL_LEN (sizeof(BASE_URL) - 1)
 
@@ -85,6 +88,7 @@ double _round(double arg);
 int _rm(char const* path);
 int _unzip(char const* path, char const* outpath);
 char const* _gethome(void);
+int sstrncat(char* dest, size_t* pos, size_t max, char const* src, size_t len);
 
 /* Output */
 int construct_url(char* buf, size_t buflen, char const* input,
@@ -250,22 +254,21 @@ int
 construct_url(char* buf, size_t buflen, char const* input,
               char const* platform)
 {
-    size_t baselen;
-    size_t delimlen;
-    size_t inputlen;
+    size_t len;
 
-    baselen = strlen(BASE_URL);
-    delimlen = strlen(platform);
-    inputlen = strlen(input);
-    if ((baselen + delimlen + inputlen + 5) > buflen) { return 1; }
-
-    memcpy(buf, BASE_URL, baselen);
-    memcpy(buf + baselen, "/", 1);
-    memcpy(buf + baselen + 1, platform, delimlen);
-    memcpy(buf + baselen + 1 + delimlen, "/", 1);
-    memcpy(buf + baselen + 2 + delimlen, input, inputlen);
-    memcpy(buf + baselen + 2 + delimlen + inputlen, ".md", 3);
-    buf[baselen + 2 + delimlen + inputlen + 3] = '\0';
+    len = 0;
+    if (sstrncat(buf, &len, buflen, BASE_URL, BASE_URL_LEN))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, "/", 1))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, platform, strlen(platform)))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, "/", 1))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, input, strlen(input)))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, ".md", 3))
+    { return 1; }
 
     return 0;
 }
@@ -274,23 +277,21 @@ int
 construct_path(char* buf, size_t buflen, char const* home, char const* input,
                char const* platform)
 {
-    size_t homelen;
-    size_t inputlen;
-    size_t platformlen;
+    size_t len;
 
-    homelen = strlen(home);
-    inputlen = strlen(input);
-    platformlen = strlen(platform);
-    if ((homelen + inputlen + platformlen + TLDR_EXT_LEN + 4) > buflen)
+    len = 0;
+    if (sstrncat(buf, &len, buflen, home, strlen(home)))
     { return 1; }
-
-    memcpy(buf, home, homelen);
-    memcpy(buf + homelen, TLDR_EXT, TLDR_EXT_LEN);
-    memcpy(buf + homelen + TLDR_EXT_LEN, platform, platformlen);
-    memcpy(buf + homelen + TLDR_EXT_LEN + platformlen, "/", 1);
-    memcpy(buf + homelen + TLDR_EXT_LEN + platformlen + 1, input, inputlen);
-    memcpy(buf + homelen + TLDR_EXT_LEN + platformlen + 1 + inputlen, ".md", 3);
-    buf[homelen + TLDR_EXT_LEN + platformlen + inputlen + 4] = '\0';
+    if (sstrncat(buf, &len, buflen, TLDR_EXT, TLDR_EXT_LEN))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, platform, strlen(platform)))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, "/", 1))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, input, strlen(input)))
+    { return 1; }
+    if (sstrncat(buf, &len, buflen, ".md", 3))
+    { return 1; }
 
     return 0;
 }
@@ -389,13 +390,12 @@ print_tldrpage(char const* input, char const* poverride)
     int isdarwin;
     int issun;
     char* output;
-    char url[1024];
+    char url[URLBUFSIZ];
     struct utsname sys;
     char const* platform;
-
-    size_t homelen;
     char const* homedir;
-    char directory[1024];
+    size_t len;
+    char directory[STRBUFSIZ];
     struct stat sb;
 
     uname(&sys);
@@ -427,16 +427,15 @@ print_tldrpage(char const* input, char const* poverride)
     homedir = _gethome();
     if (homedir == NULL) { return 1; }
 
-    homelen = strlen(homedir);
-    if ((homelen + TLDR_EXT_LEN + 1) > 1024) { return 1; }
-
-    memcpy(directory, homedir, homelen);
-    memcpy(directory + homelen, TLDR_EXT, TLDR_EXT_LEN);
-    directory[homelen + TLDR_EXT_LEN] = '\0';
+    len = 0;
+    if (sstrncat(directory, &len, STRBUFSIZ, homedir, strlen(homedir)))
+    { return 1; }
+    if (sstrncat(directory, &len, STRBUFSIZ, TLDR_EXT, TLDR_EXT_LEN))
+    { return 1; }
 
     if (stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode))
     {
-        construct_path(url, 1024, homedir, input, platform);
+        construct_path(url, URLBUFSIZ, homedir, input, platform);
         if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode))
         {
             if (!get_file_content(url, &output, 0))
@@ -448,7 +447,7 @@ print_tldrpage(char const* input, char const* poverride)
         }
         else
         {
-            construct_path(url, 1024, homedir, input, "common");
+            construct_path(url, URLBUFSIZ, homedir, input, "common");
             if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode))
             {
                 if (!get_file_content(url, &output, 0))
@@ -461,11 +460,14 @@ print_tldrpage(char const* input, char const* poverride)
         }
     }
 
-    construct_url(url, 1024, input, platform);
+    construct_url(url, URLBUFSIZ, input, platform);
+
+    /* make clang's static analyzer happy */
+    output = NULL;
     download_content(url, &output, 0);
     if (output == NULL)
     {
-        construct_url(url, 1024, input, "common");
+        construct_url(url, URLBUFSIZ, input, "common");
         download_content(url, &output, 0);
         if (output == NULL) { return 1; }
     }
@@ -506,10 +508,10 @@ int
 check_localdate(void)
 {
     FILE* fp;
-    size_t homelen;
+    size_t curlen;
     char const* homedir;
-    char outdir[1024];
-    char buffer[1024];
+    char outdir[STRBUFSIZ];
+    char buffer[STRBUFSIZ];
     size_t read, len;
     time_t oldtime;
     time_t curtime;
@@ -518,12 +520,11 @@ check_localdate(void)
     homedir = _gethome();
     if (homedir == NULL) { return 1; }
 
-    homelen = strlen(homedir);
-    if ((homelen + TLDR_DATE_LEN + 1) > 1024) { return 1; }
-
-    memcpy(outdir, homedir, homelen);
-    memcpy(outdir + homelen, TLDR_DATE, TLDR_DATE_LEN);
-    outdir[homelen + TLDR_DATE_LEN] = '\0';
+    curlen = 0;
+    if (sstrncat(outdir, &curlen, STRBUFSIZ, homedir, strlen(homedir)))
+    { return 1; }
+    if (sstrncat(outdir, &curlen, STRBUFSIZ, TLDR_DATE, TLDR_DATE_LEN))
+    { return 1; }
 
     fp = fopen(outdir, "rb");
     if (!fp) { return -1; }
@@ -559,11 +560,9 @@ int
 update_localdate(void)
 {
     FILE* fp;
-    size_t homelen;
+    size_t len;
     char const* homedir;
-    size_t extlen;
-    char* extpath = "/.tldr/date";
-    char outdir[1024];
+    char outdir[STRBUFSIZ];
     size_t written;
     char timestr[32];
     time_t curtime;
@@ -571,11 +570,11 @@ update_localdate(void)
     homedir = _gethome();
     if (homedir == NULL) { return 1; }
 
-    homelen = strlen(homedir);
-    extlen = strlen(extpath);
-    memcpy(outdir, homedir, homelen);
-    memcpy(outdir + homelen, extpath, extlen);
-    outdir[homelen + extlen] = '\0';
+    len = 0;
+    if (sstrncat(outdir, &len, STRBUFSIZ, homedir, strlen(homedir)))
+    { return 1; }
+    if (sstrncat(outdir, &len, STRBUFSIZ, TLDR_DATE, TLDR_DATE_LEN))
+    { return 1; }
 
     fp = fopen(outdir, "w");
     if (!fp) { return 1; }
@@ -597,17 +596,19 @@ int
 has_localdb(void)
 {
     struct stat s;
-    size_t homelen;
+    size_t len;
     char const* homedir;
-    char outhome[255];
+    char outhome[STRBUFSIZ];
 
     homedir = _gethome();
     if (homedir == NULL) { return 0; }
 
-    homelen = strlen(homedir);
-    memcpy(outhome, homedir, homelen);
-    memcpy(outhome + homelen, TLDR_HOME, TLDR_HOME_LEN);
-    outhome[homelen + TLDR_HOME_LEN] = '\0';
+    len = 0;
+    if (sstrncat(outhome, &len, STRBUFSIZ, homedir, strlen(homedir)))
+    { return 0; }
+    if (sstrncat(outhome, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
+    { return 0; }
+
     if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
     {
         return 1;
@@ -620,19 +621,27 @@ int
 update_localdb(int verbose)
 {
     struct stat s;
-    char tmp[255];
-    char outpath[255];
-    char outfile[255];
-    char outhome[255];
+    char tmp[STRBUFSIZ];
+    char outpath[STRBUFSIZ];
+    char outfile[STRBUFSIZ];
+    char outhome[STRBUFSIZ];
     char const* homedir;
-    size_t homedirlen;
+    size_t outlen;
 
-    memcpy(outfile, TMP_DIR, TMP_DIR_LEN);
+    outlen = 0;
+    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN))
+    { return 1; }
     if (!mkdtemp(outfile)) { return 1; }
 
-    memcpy(outpath, outfile, TMP_DIR_LEN);
-    memcpy(outfile + TMP_DIR_LEN, TMP_FILE, TMP_FILE_LEN);
-    outfile[TMP_DIR_LEN + TMP_FILE_LEN] = '\0';
+    outlen = 0;
+
+    /* it's guaranteed, that outfile is only TMP_DIR_LEN long */
+    if (sstrncat(outpath, &outlen, STRBUFSIZ, outfile, TMP_DIR_LEN))
+    { return 1; }
+
+    outlen = TMP_DIR_LEN;
+    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN))
+    { return 1; }
 
     if (download_file(ZIP_URL, outfile, verbose))
     { return 1; }
@@ -643,17 +652,21 @@ update_localdb(int verbose)
         return 1;
     }
 
-    memcpy(tmp, outpath, TMP_DIR_LEN);
-    memcpy(tmp + TMP_DIR_LEN, TLDR_DIR, TLDR_DIR_LEN);
-    tmp[TMP_DIR_LEN + TLDR_DIR_LEN] = '\0';
+    outlen = 0;
+    if (sstrncat(tmp, &outlen, STRBUFSIZ, outpath, strlen(outpath)))
+    { return 1; }
+    if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+    { return 1; }
 
     homedir = _gethome();
     if (homedir == NULL) { return 1; }
 
-    homedirlen = strlen(homedir);
-    memcpy(outhome, homedir, homedirlen);
-    memcpy(outhome + homedirlen, TLDR_HOME, TLDR_HOME_LEN);
-    outhome[homedirlen + TLDR_HOME_LEN] = '\0';
+    outlen = 0;
+    if (sstrncat(outhome, &outlen, STRBUFSIZ, homedir, strlen(homedir)))
+    { return 1; }
+    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
+    { return 1; }
+
     if (mkdir(outhome, 0755) > 0)
     {
         if (errno != EEXIST)
@@ -663,9 +676,11 @@ update_localdb(int verbose)
         }
     }
 
-    memcpy(outhome + homedirlen + TLDR_HOME_LEN, TLDR_DIR, TLDR_DIR_LEN);
-    outhome[homedirlen + TLDR_HOME_LEN + TLDR_DIR_LEN] = '/';
-    outhome[homedirlen + TLDR_HOME_LEN + TLDR_DIR_LEN + 1] = '\0';
+    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+    { return 1; }
+    if (sstrncat(outhome, &outlen, STRBUFSIZ, "/", 1))
+    { return 1; }
+
     if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
     {
         if (_rm(outhome)) { return 1; }
@@ -687,21 +702,20 @@ update_localdb(int verbose)
 int
 clear_localdb(int verbose)
 {
-    char tmp[255];
+    size_t len;
+    char tmp[STRBUFSIZ];
     char const* homedir;
-    size_t homedirlen;
 
     ((void)verbose);
     homedir = _gethome();
     if (homedir == NULL) { return 1; }
 
-    homedirlen = strlen(homedir);
-    if ((homedirlen + TLDR_HOME_LEN + 1) > 255)
+    len = 0;
+    if (sstrncat(tmp, &len, STRBUFSIZ, homedir, strlen(homedir)))
+    { return 1; }
+    if (sstrncat(tmp, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
     { return 1; }
 
-    memcpy(tmp, homedir, homedirlen);
-    memcpy(tmp + homedirlen, TLDR_HOME, TLDR_HOME_LEN);
-    tmp[homedirlen + TLDR_HOME_LEN] = '\0';
     if (_rm(tmp)) { return 1; }
 
     fprintf(stdout, "Successfully removed %s\n", tmp);
@@ -824,9 +838,10 @@ _unzip(char const* path, char const* outpath)
     struct zip_stat stat;
     int fd;
     size_t sum;
+    size_t slen;
     char buf[4096];
     size_t outlen;
-    char tmp[FILENAME_MAX];
+    char tmp[STRBUFSIZ];
 
     archive = zip_open(path, 0, &err);
     if (!archive) { return 1; }
@@ -841,10 +856,14 @@ _unzip(char const* path, char const* outpath)
         }
 
         filelen = strlen(stat.name);
-        memcpy(tmp, outpath, outlen);
-        memcpy(tmp + outlen, "/", 1);
-        memcpy(tmp + outlen + 1, stat.name, filelen);
-        tmp[outlen + filelen + 1] = '\0';
+
+        slen = 0;
+        if (sstrncat(tmp, &slen, STRBUFSIZ, outpath, outlen))
+        { goto error; }
+        if (sstrncat(tmp, &slen, STRBUFSIZ, "/", 1))
+        { goto error; }
+        if (sstrncat(tmp, &slen, STRBUFSIZ, stat.name, filelen))
+        { goto error; }
 
         if (tmp[outlen + filelen + 1 - 1] == '/')
         {
@@ -914,6 +933,17 @@ _gethome(void)
     }
 
     return homedir;
+}
+
+int
+sstrncat(char* dest, size_t* pos, size_t max, char const* src, size_t len)
+{
+    if ((*pos + len) > max) { return 1; }
+    memcpy(dest + *pos, src, len);
+    *(dest + *pos + len) = '\0';
+
+    *pos += len;
+    return 0;
 }
 
 int
