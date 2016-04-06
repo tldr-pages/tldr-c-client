@@ -26,6 +26,5 @@ before_install:
     - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libzip; fi
 
 script:
-    - cd src
-    - DEBUG= make all
+    - make V=1 DEBUG=
 
