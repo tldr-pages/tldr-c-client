@@ -85,38 +85,42 @@ static const char* const ANSI_BOLD_ON                   = "\x1b[1m";
 static const char* const ANSI_BOLD_OFF                  = "\x1b[22m";
 
 /* utility functions */
-double _round(double arg);
-int _rm(char const* path);
-int _unzip(char const* path, char const* outpath);
-char const* _gethome(void);
-int sstrncat(char* dest, size_t* pos, size_t max, char const* src, size_t len);
+double      _round              (double arg);
+int         _rm                 (char const* path);
+int         _unzip              (char const* path, char const* outpath);
+char const* _gethome            (void);
+int         sstrncat            (char* dest, size_t* pos, size_t max,
+                                 char const* src, size_t len);
 
 /* Output */
-int construct_url(char* buf, size_t buflen, char const* input,
-                  char const* platform);
-int construct_path(char* buf, size_t buflen, char const* home,
-                   char const* input,
-                   char const* platform);
-int parse_tldrpage(char const* input);
-int print_tldrpage(char const* input, char const* platform);
+int         construct_url       (char* buf, size_t buflen, char const* input,
+                                 char const* platform);
+int         construct_path      (char* buf, size_t buflen, char const* home,
+                                 char const* input,
+                                 char const* platform);
+int         parse_tldrpage      (char const* input);
+int         print_tldrpage      (char const* input, char const* platform);
+int         print_localpage     (char const* path);
 
 /* Help and usage */
-void print_version(char const* arg);
-void print_usage(char const* arg);
+void        print_version       (char const* arg);
+void        print_usage         (char const* arg);
 
 /* functionality */
-int check_localdate(void);
-int update_localdate(void);
-int has_localdb(void);
-int update_localdb(int verbose);
-int clear_localdb(int verbose);
-int get_file_content(char const* path, char** out, int verbose);
+int         check_localdate     (void);
+int         update_localdate    (void);
+int         has_localdb         (void);
+int         update_localdb      (int verbose);
+int         clear_localdb       (int verbose);
+int         get_file_content    (char const* path, char** out, int verbose);
 
 /* cURL */
-int progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
-                      curl_off_t ultotal, curl_off_t ulnow);
-int download_file(char const* url, char const* outfile, int verbose);
-int download_content(char const* url, char** out, int verbose);
+int progress_callback           (void* clientp, curl_off_t dltotal,
+                                 curl_off_t dlnow,
+                                 curl_off_t ultotal, curl_off_t ulnow);
+int download_file               (char const* url, char const* outfile,
+                                 int verbose);
+int download_content            (char const* url, char** out, int verbose);
 
 /* getopt */
 static int help_flag;
@@ -125,7 +129,8 @@ static int verbose_flag;
 static int update_flag;
 static int clear_flag;
 static int platform_flag;
-static char pbuf[64];
+static int render_flag;
+static char pbuf[STRBUFSIZ];
 static struct option long_options[] =
 {
     { "help", no_argument, &help_flag, 1 },
@@ -135,6 +140,7 @@ static struct option long_options[] =
     { "update", no_argument, &update_flag, 1 },
     { "clear-cache", no_argument, &clear_flag, 1 },
     { "platform", required_argument, 0, 'p' },
+    { "render", required_argument, 0, 'r' },
     { 0, 0, 0, 0 }
 };
 
@@ -142,6 +148,7 @@ int
 main(int argc, char** argv)
 {
     int c;
+    int missing_arg;
     int option_index;
 
     check_localdate();
@@ -177,10 +184,20 @@ main(int argc, char** argv)
             case 'p':
             {
                 size_t len = strlen(optarg);
-                if (len > 64) { exit(EXIT_FAILURE); }
+                if (len > STRBUFSIZ) { exit(EXIT_FAILURE); }
                 memcpy(pbuf, optarg, len);
                 pbuf[len] = '\0';
                 platform_flag = 1;
+            }
+            break;
+
+            case 'r':
+            {
+                size_t len = strlen(optarg);
+                if (len > STRBUFSIZ) { exit(EXIT_FAILURE); }
+                memcpy(pbuf, optarg, len);
+                pbuf[len] = '\0';
+                render_flag = 1;
             }
             break;
 
@@ -190,7 +207,8 @@ main(int argc, char** argv)
     }
 
     /* show help, if platform was supplied, but no further argument */
-    if (help_flag || (platform_flag && (optind == argc)))
+    missing_arg = (platform_flag && (optind == argc));
+    if (help_flag || missing_arg)
     {
         print_usage(argv[0]);
         return EXIT_SUCCESS;
@@ -215,6 +233,12 @@ main(int argc, char** argv)
     if (verbose_flag && optind >= argc)
     {
         print_version(argv[0]);
+        return EXIT_SUCCESS;
+    }
+    if (render_flag)
+    {
+        if (print_localpage(pbuf))
+        { return EXIT_FAILURE; }
         return EXIT_SUCCESS;
     }
 
@@ -479,30 +503,48 @@ print_tldrpage(char const* input, char const* poverride)
     return 0;
 }
 
+int
+print_localpage(char const* path)
+{
+    char* output = NULL;
+    if (!get_file_content(path, &output, 0))
+    {
+        parse_tldrpage(output);
+        free(output);
+        return 0;
+    }
+
+    return 0;
+}
+
 void
 print_version(char const* arg)
 {
+    /* *INDENT-OFF* */
     fprintf(stdout, "%s %s\n", arg, VERSION_PRETTY);
     fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
-    fprintf(stdout,
-            "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
+    fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
+    /* *INDENT-ON* */
 }
 
 void
 print_usage(char const* arg)
 {
-    char const* out = "usage: %s [-v] [<command>] <search>\n\n";
+    char const* out = "usage: %s [-v] [OPTION]... SEARCH\n\n";
+
+    /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
     fprintf(stdout, "    %-20s %-30s\n", "-v", "print verbose output");
     fprintf(stdout, "    %-20s %-30s\n", "--version", "print version and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "-h, --help",
-            "print this help and exit");
+    fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache",
-            "clear local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=<platform>",
+    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
+    fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / common");
+    fprintf(stdout, "    %-20s %-30s\n", "-r, --render=PATH",
+            "render a local page for testing purposes");
+    /* *INDENT-ON* */
 }
 
 int

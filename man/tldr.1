@@ -1,0 +1,48 @@
+.\" Manpage for tldr.
+.\" Contact ag@arvid.io to correct errors or typos.
+.mso www.tmac
+.TH TLDR 1
+.SH NAME
+tldr \- A collection of simplified and community-driven man pages.
+.SH SYNOPSIS
+.B tldr
+[\fB\-v\fR]
+[\fIOPTION\fR]... \fISEARCH\fR
+.SH DESCRIPTION
+tldr is a collection of simplified and community-driven man pages, for commonly
+used commandline tools.
+.SH OPTIONS
+.TP
+.BR \-v
+verbose output
+.TP
+.BR \-\-version
+output version information and exit
+.TP
+.BR \-h ", " \-\-help
+display help and exit
+.TP
+.BR \-u ", " \-\-update
+update local database and exit
+.TP
+.BR \-c ", " \-\-clear-cache
+remove local database and exit
+.TP
+.BR \-p ", " \-\-platform=\fIPLATFORM\fR
+select platform, supported are \fIlinux\fR / \fIosx\fR / \fIsunos\fR / \fIcommon\fR
+.TP
+.BR \-r ", " \-\-render=\fIPATH\fR
+render a local page for testing purposes
+.SH EXIT STATUS
+0 on success, any other positive value otherwise
+.SH SEE ALSO
+The source is available at:
+.URL "https://github.com/tldr-pages/tldr-cpp-client" "" ""
+.SH REPORTING BUGS
+Report bugs through the Github repository:
+.URL "https://github.com/tldr-pages/tldr-cpp-client" "" "."
+.SH COPYRIGHT
+The MIT License (MIT)
+
+Copyright (c) 2016 Arvid Gerstmann.
+

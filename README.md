@@ -24,7 +24,7 @@ To build the latest version from source:
 if [[ "`uname`" == "Darwin"  ]]; then brew install curl libzip pkg-config; fi
 if [[ "`uname`" == "Linux" ]]; then apt-get install libcurl4-openssl-dev libzip-dev pkg-config; fi
 git clone https://github.com/tldr-pages/tldr-cpp-client.git tldr-c-client
-cd tldr-c-client/src
+cd tldr-c-client
 make
 make install
 ```
@@ -45,18 +45,19 @@ Building the `tldr` client is pretty straightforward.
 
 #### Compiling
 
-The [`Makefile`](https://github.com/tldr-pages/tldr-cpp-client/blob/master/src/Makefile) in the `src` directory has all you need
-for builing the project.
+The [`Makefile`](https://github.com/tldr-pages/tldr-cpp-client/blob/master/Makefile)
+in the root directory has all you need for builing the project.
+
+Just call `make` and `tldr` will build itself.
 
 ```
-cd src
 make
 ```
 
 ## Usage
 
 ```
-usage: tldr [-v] [<command>] <search>
+usage: ./tldr [-v] [OPTION]... SEARCH
 
 available commands:
     -v                   print verbose output
@@ -64,6 +65,7 @@ available commands:
     -h, --help           print this help and exit
     -u, --update         update local database
     -c, --clear-cache    clear local database
-    -p, --platform=<platform> select platform, supported are linux / osx / common
+    -p, --platform=PLATFORM select platform, supported are linux / osx / sunos / common
+    -r, --render=PATH    render a local page for testing purposes
 ```
 
