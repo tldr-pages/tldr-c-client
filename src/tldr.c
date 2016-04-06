@@ -20,7 +20,7 @@
 
 #define VERSION_TAG "v1.2.0"
 #ifndef VERSION
-    #define VERSION_PRETTY "Version Unknown"
+    #define VERSION_PRETTY ""
 #else
     #define VERSION_PRETTY VERSION
 #endif
@@ -522,7 +522,10 @@ void
 print_version(char const* arg)
 {
     /* *INDENT-OFF* */
-    fprintf(stdout, "%s %s (%s)\n", arg, VERSION_TAG, VERSION_PRETTY);
+    if (strcmp("", VERSION_PRETTY) == 0)
+    { fprintf(stdout, "%s %s\n", arg, VERSION_TAG); }
+    else
+    { fprintf(stdout, "%s %s (%s)\n", arg, VERSION_TAG, VERSION_PRETTY); };
     fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
     fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
     /* *INDENT-ON* */
