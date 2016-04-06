@@ -12,11 +12,11 @@ On OS X, the client can be installed through [homebrew](http://brew.sh/).
 ```
 brew tap tldr-pages/tldr
 
-# To install the latest stable release
-brew install tldr
-
 # To install latest development version
 brew install tldr --HEAD
+
+# To install the latest stable release
+brew install tldr
 ```
 
 To build the latest version from source:
