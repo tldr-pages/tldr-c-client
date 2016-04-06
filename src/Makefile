@@ -2,6 +2,9 @@ CC			?= gcc
 DEBUG		:= -ggdb -O0 -march=native
 OUTPUT		:= -MMD -MP
 
+# Version
+VER			?= $(shell git describe --tags --always --dirty)
+
 # Include Directories
 INCLUDE		:= $(shell pkg-config --cflags libzip)
 INCLUDE		+= -I/usr/include
@@ -10,7 +13,7 @@ INCLUDE		+= -I/usr/local/opt/curl/include
 INCLUDE		+= -I/usr/local/opt/libzip/include
 
 # Compiler Flags
-CFLAGS		:= $(CFLAGS) $(DEBUG) $(INCLUDE)
+CFLAGS		:= $(CFLAGS) $(DEBUG) $(INCLUDE) -DVERSION='"$(VER)"'
 CFLAGS		+= -W -Wall -Wextra -pedantic -ansi
 CFLAGS		+= -Wstrict-overflow -fno-strict-aliasing
 

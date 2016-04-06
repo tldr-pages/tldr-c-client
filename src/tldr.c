@@ -18,10 +18,11 @@
 #include <pwd.h>
 #include <time.h>
 
-#define VERSION_MAJOR 1
-#define VERSION_MINOR 1
-#define VERSION_PATCH 0
-#define VERSION_PRETTY "v1.1.0"
+#ifndef VERSION
+    #define VERSION_PRETTY "Version Unknown"
+#else
+    #define VERSION_PRETTY VERSION
+#endif
 
 #if defined(_WIN32)
     #define BINARY O_BINARY
