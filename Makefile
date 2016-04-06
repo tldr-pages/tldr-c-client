@@ -31,7 +31,7 @@ ALL_CFLAGS		+= -Wundef -Wshadow -Wc++-compat -Wcast-qual -Wcast-align
 ALL_CFLAGS		+= -Wconversion -Wsign-conversion -Wjump-misses-init
 ALL_CFLAGS		+= -Wno-multichar -Wpacked -Wstrict-overflow -Wvla
 ALL_CFLAGS		+= -Wformat -Wno-format-zero-length -Wstrict-prototypes
-ALL_CFLAGS		+= -Wno-unknown-warning-option
+ALL_CFLAGS		+= -Wno-unknown-warning-option -Wno-cast-qual
 
 # Version Generation
 VER				:= $(shell git describe --tags --always --dirty)

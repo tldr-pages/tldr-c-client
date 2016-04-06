@@ -107,7 +107,7 @@ void        print_version       (char const* arg);
 void        print_usage         (char const* arg);
 
 /* functionality */
-int         check_localdate     (void);
+long        check_localdate     (void);
 int         update_localdate    (void);
 int         has_localdb         (void);
 int         update_localdb      (int verbose);
@@ -244,7 +244,7 @@ main(int argc, char** argv)
 
     if (optind < argc)
     {
-        int len, sum;
+        size_t len, sum;
         char buf[4096];
 
         sum = 0;
@@ -328,7 +328,7 @@ parse_tldrpage(char const* input)
     int i, len;
     int start = -1;
 
-    len = strlen(input);
+    len = (int)strlen(input);
 
     fprintf(stdout, "\n");
     for (i = 0; i < len; ++i)
@@ -547,7 +547,7 @@ print_usage(char const* arg)
     /* *INDENT-ON* */
 }
 
-int
+long
 check_localdate(void)
 {
     FILE* fp;
@@ -561,19 +561,19 @@ check_localdate(void)
     time_t difftime;
 
     homedir = _gethome();
-    if (homedir == NULL) { return 1; }
+    if (homedir == NULL) { return -1; }
 
     curlen = 0;
     if (sstrncat(outdir, &curlen, STRBUFSIZ, homedir, strlen(homedir)))
-    { return 1; }
+    { return -1; }
     if (sstrncat(outdir, &curlen, STRBUFSIZ, TLDR_DATE, TLDR_DATE_LEN))
-    { return 1; }
+    { return -1; }
 
     fp = fopen(outdir, "rb");
     if (!fp) { return -1; }
 
     if (fseek(fp, 0, SEEK_END)) { goto error; }
-    len = ftell(fp);
+    if ((len = (size_t)ftell(fp)) == (size_t)EOF) { goto error; }
     if (fseek(fp, 0, SEEK_SET)) { goto error; }
 
     read = fread(buffer, 1, len, fp);
@@ -777,7 +777,7 @@ get_file_content(char const* path, char** out, int verbose)
     if (!fp) { return 1; }
 
     if (fseek(fp, 0, SEEK_END)) { goto error; }
-    len = ftell(fp);
+    if ((len = (size_t)ftell(fp)) == (size_t)EOF) { goto error; }
     if (fseek(fp, 0, SEEK_SET)) { goto error; }
 
     *out = malloc(len);
@@ -874,7 +874,7 @@ int
 _unzip(char const* path, char const* outpath)
 {
     int err;
-    int i, len;
+    long i, len;
     size_t filelen;
     struct zip* archive;
     struct zip_file* file;
@@ -893,7 +893,7 @@ _unzip(char const* path, char const* outpath)
     len = zip_get_num_entries(archive, 0);
     for (i = 0; i < len; i++)
     {
-        if (zip_stat_index(archive, i, 0, &stat))
+        if (zip_stat_index(archive, (zip_uint64_t)i, 0, &stat))
         {
             goto error;
         }
@@ -918,7 +918,7 @@ _unzip(char const* path, char const* outpath)
         }
         else
         {
-            file = zip_fopen_index(archive, i, 0);
+            file = zip_fopen_index(archive, (zip_uint64_t)i, 0);
             if (!file)
             {
                 fprintf(stderr, "Error: Opening zip content: %s", tmp);
@@ -936,7 +936,7 @@ _unzip(char const* path, char const* outpath)
             sum = 0;
             while (sum != stat.size)
             {
-                filelen = zip_fread(file, buf, 4096);
+                filelen = (size_t)zip_fread(file, buf, 4096);
                 if (len < 0)
                 {
                     fprintf(stderr, "Error: Reading file: %s\n", tmp);
@@ -999,7 +999,7 @@ progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
     if (dltotal <= 0) { return 0; }
 
     progress = dlnow / dltotal;
-    total = _round(progress * 40.0);
+    total = (int)_round(progress * 40.0);
 
     printf("%s [", (char*)clientp);
     for (i = 0; i < total; i++)
@@ -1033,7 +1033,8 @@ download_file(char const* url, char const* outfile, int verbose)
     curl = curl_easy_init();
     if (curl)
     {
-        int len, ret = 1;
+        size_t len;
+        int ret = 1;
         FILE* file;
         char* base;
         char filename[FILENAME_MAX];
