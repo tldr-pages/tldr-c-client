@@ -70,8 +70,8 @@ to access directory (like your home directory), and source it in your `.bashrc` 
 Example for zsh:
 
 ```
-mv autocomplete/autocomplete.zsh ~/.autocomplete.zsh
-echo "source ~/.autocomplete.zsh" >> ~/.zshrc
+mv autocomplete/complete.zsh ~/.tldr.complete
+echo "source ~/.tldr.complete" >> ~/.zshrc
 ```
 
 
