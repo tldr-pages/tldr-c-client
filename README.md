@@ -54,6 +54,28 @@ Just call `make` and `tldr` will build itself.
 make
 ```
 
+## Autocompletion
+
+Autocompletion is supported for both `bash` and `zsh`, and can be added by sourcing
+the correct autocompletion file.
+
+Both files `autocomplete.zsh` and `autocomplete.bash` are in the `autocomplete`
+folder in the root of the repository.
+
+#### Installation
+
+To install the autocompletion, just move the script for your shell to a an easy
+to access directory (like your home directory), and source it in your `.bashrc` or `.zshrc`.
+
+Example for zsh:
+
+```
+mv autocomplete/autocomplete.zsh ~/.autocomplete.zsh
+echo "source ~/.autocomplete.zsh" >> ~/.zshrc
+```
+
+
+
 ## Usage
 
 ```
@@ -68,4 +90,10 @@ available commands:
     -p, --platform=PLATFORM select platform, supported are linux / osx / sunos / common
     -r, --render=PATH    render a local page for testing purposes
 ```
+
+## License
+
+The MIT License (MIT)
+
+Copyright (C) 2016 Arvid Gerstmann
 
