@@ -132,8 +132,7 @@ static int clear_flag;
 static int platform_flag;
 static int render_flag;
 static char pbuf[STRBUFSIZ];
-static struct option long_options[] =
-{
+static struct option long_options[] = {
     { "help", no_argument, &help_flag, 1 },
     { "version", no_argument, &version_flag, 1 },
     { "verbose", no_argument, &verbose_flag, 1 },
@@ -153,14 +152,12 @@ main(int argc, char** argv)
     int option_index;
 
     check_localdate();
-    if (argc < 2)
-    {
+    if (argc < 2) {
         print_usage(argv[0]);
         return EXIT_FAILURE;
     }
 
-    while (1)
-    {
+    while (1) {
         option_index = 0;
         c = getopt_long_only(argc, argv, "v", long_options, &option_index);
 
@@ -168,8 +165,7 @@ main(int argc, char** argv)
         if (c == -1)
         { break; }
 
-        switch (c)
-        {
+        switch (c) {
             case 0:
                 break;
 
@@ -182,8 +178,7 @@ main(int argc, char** argv)
                 /* help_flag = 1; */
                 break;
 
-            case 'p':
-            {
+            case 'p': {
                 size_t len = strlen(optarg);
                 if (len > STRBUFSIZ) { exit(EXIT_FAILURE); }
                 memcpy(pbuf, optarg, len);
@@ -192,8 +187,7 @@ main(int argc, char** argv)
             }
             break;
 
-            case 'r':
-            {
+            case 'r': {
                 size_t len = strlen(optarg);
                 if (len > STRBUFSIZ) { exit(EXIT_FAILURE); }
                 memcpy(pbuf, optarg, len);
@@ -209,48 +203,40 @@ main(int argc, char** argv)
 
     /* show help, if platform was supplied, but no further argument */
     missing_arg = (platform_flag && (optind == argc));
-    if (help_flag || missing_arg)
-    {
+    if (help_flag || missing_arg) {
         print_usage(argv[0]);
         return EXIT_SUCCESS;
     }
-    if (version_flag)
-    {
+    if (version_flag) {
         print_version(argv[0]);
         return EXIT_SUCCESS;
     }
-    if (update_flag)
-    {
+    if (update_flag) {
         if (update_localdb(verbose_flag))
         { return EXIT_FAILURE; }
         return EXIT_SUCCESS;
     }
-    if (clear_flag)
-    {
+    if (clear_flag) {
         if (clear_localdb(verbose_flag))
         { return EXIT_FAILURE; }
         return EXIT_SUCCESS;
     }
-    if (verbose_flag && optind >= argc)
-    {
+    if (verbose_flag && optind >= argc) {
         print_version(argv[0]);
         return EXIT_SUCCESS;
     }
-    if (render_flag)
-    {
+    if (render_flag) {
         if (print_localpage(pbuf))
         { return EXIT_FAILURE; }
         return EXIT_SUCCESS;
     }
 
-    if (optind < argc)
-    {
+    if (optind < argc) {
         size_t len, sum;
         char buf[4096];
 
         sum = 0;
-        while (optind < argc)
-        {
+        while (optind < argc) {
             if (sum >= 4096) { exit(EXIT_FAILURE); }
 
             len = strlen(argv[optind]);
@@ -264,8 +250,7 @@ main(int argc, char** argv)
 
         if (!has_localdb())
         { update_localdb(verbose_flag); }
-        if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL))
-        {
+        if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL)) {
             fprintf(stdout, "This page doesn't exist yet!\n");
             fprintf(stdout,
                     "Submit new pages here: https://github.com/tldr-pages/tldr\n");
@@ -332,13 +317,10 @@ parse_tldrpage(char const* input)
     len = (int)strlen(input);
 
     fprintf(stdout, "\n");
-    for (i = 0; i < len; ++i)
-    {
+    for (i = 0; i < len; ++i) {
         c = input[i];
-        if (start == -1)
-        {
-            switch (c)
-            {
+        if (start == -1) {
+            switch (c) {
                 case '>':
                     start = i;
                     fprintf(stdout, "%s", ANSI_COLOR_EXPLANATION_FG);
@@ -361,21 +343,16 @@ parse_tldrpage(char const* input)
                     fprintf(stdout, "%s", ANSI_COLOR_TITLE_FG);
                     continue;
             }
-        }
-        else if (start > -1)
-        {
-            if (input[i] == '{' && input[i + 1] == '{')
-            {
+        } else if (start > -1) {
+            if (input[i] == '{' && input[i + 1] == '{') {
                 fprintf(stdout, "%.*s", i - (start + 1), input + (start + 1));
                 fprintf(stdout, "%s", ANSI_BOLD_OFF);
                 fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
                 fprintf(stdout, "%s", ANSI_COLOR_CODE_PLACEHOLDER_FG);
 
                 start = i;
-                for (i = i + 1; i < len; i++)
-                {
-                    if (input[i] == '}' && input[i + 1] == '}')
-                    {
+                for (i = i + 1; i < len; i++) {
+                    if (input[i] == '}' && input[i + 1] == '}') {
                         fprintf(stdout, "%.*s", i - (start + 2), input + (start + 2));
                         fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
                         fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
@@ -388,8 +365,7 @@ parse_tldrpage(char const* input)
             }
         }
 
-        if (c == '\n' && start > -1)
-        {
+        if (c == '\n' && start > -1) {
             if (input[i - 1] == '`')
             { fprintf(stdout, "%.*s", i - (start + 2), input + (start + 1)); }
             else if (input[start] == '-')
@@ -429,21 +405,17 @@ print_tldrpage(char const* input, char const* poverride)
     isdarwin = strcmp(sys.sysname, "Darwin") == 0;
     issun = strcmp(sys.sysname, "SunOS") == 0;
 
-    if (poverride == NULL)
-    {
+    if (poverride == NULL) {
         if (islinux) { platform = "linux"; }
         else if (isdarwin) { platform = "osx"; }
         else if (issun) { platform = "sunos"; }
         else { platform = "common"; }
-    }
-    else
-    {
+    } else {
         platform = poverride;
         if (strcmp(platform, "linux") != 0
             && strcmp(platform, "osx") != 0
             && strcmp(platform, "common") != 0
-            && strcmp(platform, "sunos") != 0)
-        {
+            && strcmp(platform, "sunos") != 0) {
             fprintf(stderr, "Error: platform %s is unsupported\n", platform);
             fprintf(stderr, "Supported platforms: linux / osx / sunos / common\n");
             exit(EXIT_FAILURE);
@@ -459,25 +431,18 @@ print_tldrpage(char const* input, char const* poverride)
     if (sstrncat(directory, &len, STRBUFSIZ, TLDR_EXT, TLDR_EXT_LEN))
     { return 1; }
 
-    if (stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode))
-    {
+    if (stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode)) {
         construct_path(url, URLBUFSIZ, homedir, input, platform);
-        if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode))
-        {
-            if (!get_file_content(url, &output, 0))
-            {
+        if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode)) {
+            if (!get_file_content(url, &output, 0)) {
                 parse_tldrpage(output);
                 free(output);
                 return 0;
             }
-        }
-        else
-        {
+        } else {
             construct_path(url, URLBUFSIZ, homedir, input, "common");
-            if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode))
-            {
-                if (!get_file_content(url, &output, 0))
-                {
+            if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode)) {
+                if (!get_file_content(url, &output, 0)) {
                     parse_tldrpage(output);
                     free(output);
                     return 0;
@@ -491,8 +456,7 @@ print_tldrpage(char const* input, char const* poverride)
     /* make clang's static analyzer happy */
     output = NULL;
     download_content(url, &output, 0);
-    if (output == NULL)
-    {
+    if (output == NULL) {
         construct_url(url, URLBUFSIZ, input, "common");
         download_content(url, &output, 0);
         if (output == NULL) { return 1; }
@@ -508,8 +472,7 @@ int
 print_localpage(char const* path)
 {
     char* output = NULL;
-    if (!get_file_content(path, &output, 0))
-    {
+    if (!get_file_content(path, &output, 0)) {
         parse_tldrpage(output);
         free(output);
         return 0;
@@ -586,8 +549,7 @@ check_localdate(void)
     curtime = time(NULL);
     oldtime = strtol(buffer, NULL, 10);
     difftime = curtime - oldtime;
-    if (difftime > (60 * 60 * 24 * 7 * 2))
-    {
+    if (difftime > (60 * 60 * 24 * 7 * 2)) {
         fprintf(stdout, "%s", ANSI_BOLD_ON);
         fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
         fprintf(stdout,
@@ -656,8 +618,7 @@ has_localdb(void)
     if (sstrncat(outhome, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
     { return 0; }
 
-    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
-    {
+    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode)) {
         return 1;
     }
 
@@ -693,8 +654,7 @@ update_localdb(int verbose)
     if (download_file(ZIP_URL, outfile, verbose))
     { return 1; }
 
-    if (_unzip(outfile, outpath))
-    {
+    if (_unzip(outfile, outpath)) {
         _rm(outpath);
         return 1;
     }
@@ -714,10 +674,8 @@ update_localdb(int verbose)
     if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
     { return 1; }
 
-    if (mkdir(outhome, 0755) > 0)
-    {
-        if (errno != EEXIST)
-        {
+    if (mkdir(outhome, 0755) > 0) {
+        if (errno != EEXIST) {
             _rm(outpath);
             return 1;
         }
@@ -728,13 +686,11 @@ update_localdb(int verbose)
     if (sstrncat(outhome, &outlen, STRBUFSIZ, "/", 1))
     { return 1; }
 
-    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
-    {
+    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode)) {
         if (_rm(outhome)) { return 1; }
     }
 
-    if (rename(tmp, outhome))
-    {
+    if (rename(tmp, outhome)) {
         _rm(outpath);
         return 1;
     }
@@ -807,12 +763,9 @@ _round(double arg)
     double fractional;
 
     fractional = modf(arg, &integer);
-    if (fractional < 0.5)
-    {
+    if (fractional < 0.5) {
         return floor(arg);
-    }
-    else
-    {
+    } else {
         return ceil(arg);
     }
 }
@@ -827,12 +780,9 @@ _rm(char const* path)
     paths[1] = NULL;
 
     tree = fts_open(paths, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
-    if (tree != NULL)
-    {
-        while ((cur = fts_read(tree)) != NULL)
-        {
-            switch (cur->fts_info)
-            {
+    if (tree != NULL) {
+        while ((cur = fts_read(tree)) != NULL) {
+            switch (cur->fts_info) {
                 case FTS_NS:
                 case FTS_DNR:
                 case FTS_ERR:
@@ -857,8 +807,7 @@ _rm(char const* path)
                 case FTS_SL:
                 case FTS_SLNONE:
                 case FTS_DEFAULT:
-                    if (remove(cur->fts_accpath) < 0)
-                    {
+                    if (remove(cur->fts_accpath) < 0) {
                         fprintf(stderr, "Error: %s: Failed to remove: %s\n",
                                 strerror(errno), cur->fts_path);
                         return 1;
@@ -895,10 +844,8 @@ _unzip(char const* path, char const* outpath)
 
     outlen = strlen(outpath);
     len = zip_get_num_entries(archive, 0);
-    for (i = 0; i < len; i++)
-    {
-        if (zip_stat_index(archive, (zip_uint64_t)i, 0, &stat))
-        {
+    for (i = 0; i < len; i++) {
+        if (zip_stat_index(archive, (zip_uint64_t)i, 0, &stat)) {
             goto error;
         }
 
@@ -912,37 +859,29 @@ _unzip(char const* path, char const* outpath)
         if (sstrncat(tmp, &slen, STRBUFSIZ, stat.name, filelen))
         { goto error; }
 
-        if (tmp[outlen + filelen + 1 - 1] == '/')
-        {
-            if (mkdir(tmp, 0755))
-            {
+        if (tmp[outlen + filelen + 1 - 1] == '/') {
+            if (mkdir(tmp, 0755)) {
                 fprintf(stderr, "Error: Creating directory: %s\n", tmp);
                 goto error;
             }
-        }
-        else
-        {
+        } else {
             file = zip_fopen_index(archive, (zip_uint64_t)i, 0);
-            if (!file)
-            {
+            if (!file) {
                 fprintf(stderr, "Error: Opening zip content: %s", tmp);
                 goto error;
             }
 
             fd = open(tmp, O_RDWR | O_TRUNC | O_CREAT | BINARY, 0644);
-            if (fd < 0)
-            {
+            if (fd < 0) {
                 fprintf(stderr, "Error: Opening file: %s\n", tmp);
                 zip_fclose(file);
                 goto error;
             }
 
             sum = 0;
-            while (sum != stat.size)
-            {
+            while (sum != stat.size) {
                 filelen = (size_t)zip_fread(file, buf, 4096);
-                if (len < 0)
-                {
+                if (len < 0) {
                     fprintf(stderr, "Error: Reading file: %s\n", tmp);
                     close(fd);
                     zip_fclose(file);
@@ -970,11 +909,9 @@ char const*
 _gethome(void)
 {
     char const* homedir = NULL;
-    if ((homedir = getenv("HOME")) == NULL)
-    {
+    if ((homedir = getenv("HOME")) == NULL) {
         struct passwd* uid;
-        if ((uid = getpwuid(getuid())) != NULL)
-        {
+        if ((uid = getpwuid(getuid())) != NULL) {
             homedir = uid->pw_dir;
         }
     }
@@ -1006,12 +943,10 @@ progress_callback(void* clientp, curl_off_t dltotal, curl_off_t dlnow,
     total = (int)_round(progress * 40.0);
 
     printf("%s [", (char*)clientp);
-    for (i = 0; i < total; i++)
-    {
+    for (i = 0; i < total; i++) {
         printf("=");
     }
-    for (; i < 40; i++)
-    {
+    for (; i < 40; i++) {
         printf(" ");
     }
     printf("] %.0f%%\r", progress * 100.0f);
@@ -1035,8 +970,7 @@ download_file(char const* url, char const* outfile, int verbose)
     CURLcode res;
 
     curl = curl_easy_init();
-    if (curl)
-    {
+    if (curl) {
         size_t len;
         int ret = 1;
         FILE* file;
@@ -1051,8 +985,7 @@ download_file(char const* url, char const* outfile, int verbose)
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
-        if (verbose)
-        {
+        if (verbose) {
             len = strlen(outfile);
             memcpy(filename, outfile, len);
             filename[len] = '\0';
@@ -1071,8 +1004,7 @@ download_file(char const* url, char const* outfile, int verbose)
 
         res = curl_easy_perform(curl);
         if (verbose) { printf("\n"); }
-        if (res == CURLE_OK)
-        {
+        if (res == CURLE_OK) {
             long http_code = 0;
 
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
@@ -1089,8 +1021,7 @@ download_file(char const* url, char const* outfile, int verbose)
     return 1;
 }
 
-struct curl_string
-{
+struct curl_string {
     char* str;
     size_t len;
 };
@@ -1128,8 +1059,7 @@ download_content(char const* url, char** out, int verbose)
     CURLcode res;
 
     curl = curl_easy_init();
-    if (curl)
-    {
+    if (curl) {
         struct curl_string str;
         int ret = 1;
 
@@ -1140,23 +1070,18 @@ download_content(char const* url, char** out, int verbose)
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &str);
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 
-        if (verbose)
-        {
+        if (verbose) {
         }
 
         res = curl_easy_perform(curl);
-        if (res == CURLE_OK)
-        {
+        if (res == CURLE_OK) {
             long http_code = 0;
 
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-            if (http_code == 200)
-            {
+            if (http_code == 200) {
                 *out = str.str;
                 ret = 0;
-            }
-            else
-            {
+            } else {
                 free(str.str);
                 *out = NULL;
                 ret = 1;
@@ -1170,3 +1095,4 @@ download_content(char const* url, char** out, int verbose)
     *out = NULL;
     return 1;
 }
+
