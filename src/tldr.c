@@ -639,7 +639,10 @@ update_localdb(int verbose)
     outlen = 0;
     if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN))
     { return 1; }
-    if (!mkdtemp(outfile)) { return 1; }
+    if (mkdtemp(outfile) == NULL) {
+        fprintf(stderr, "Error: Creating Directory: %s\n", outfile);
+        return 1;
+    }
 
     outlen = 0;
 
@@ -651,9 +654,12 @@ update_localdb(int verbose)
     if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN))
     { return 1; }
 
-    if (download_file(ZIP_URL, outfile, verbose))
-    { return 1; }
+    if (download_file(ZIP_URL, outfile, verbose)) {
+        fprintf(stderr, "Error: Downloading File: %s\n", ZIP_URL);
+        return 1;
+    }
 
+    fprintf(stderr, "Outfile: %s\n", outfile);
     if (_unzip(outfile, outpath)) {
         _rm(outpath);
         return 1;
@@ -666,7 +672,10 @@ update_localdb(int verbose)
     { return 1; }
 
     homedir = _gethome();
-    if (homedir == NULL) { return 1; }
+    if (homedir == NULL) {
+        fprintf(stderr, "Error: HOME not existant\n");
+        return 1;
+    }
 
     outlen = 0;
     if (sstrncat(outhome, &outlen, STRBUFSIZ, homedir, strlen(homedir)))
@@ -676,6 +685,7 @@ update_localdb(int verbose)
 
     if (mkdir(outhome, 0755) > 0) {
         if (errno != EEXIST) {
+            fprintf(stderr, "Error: Could Not Create Directory: %s\n", outhome);
             _rm(outpath);
             return 1;
         }
@@ -687,16 +697,22 @@ update_localdb(int verbose)
     { return 1; }
 
     if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode)) {
-        if (_rm(outhome)) { return 1; }
+        if (_rm(outhome)) {
+            fprintf(stderr, "Error: Could Not Remove: %s\n", outhome);
+            return 1;
+        }
     }
 
     if (rename(tmp, outhome)) {
+        fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
         _rm(outpath);
         return 1;
     }
 
-    if (_rm(outpath))
-    { return 1; }
+    if (_rm(outpath)) {
+        fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
+        return 1;
+    }
 
     update_localdate();
     return 0;
@@ -840,7 +856,13 @@ _unzip(char const* path, char const* outpath)
     char tmp[STRBUFSIZ];
 
     archive = zip_open(path, 0, &err);
-    if (!archive) { return 1; }
+    if (!archive) {
+        zip_error_t error;
+        zip_error_init_with_code(&error, err);
+        fprintf(stderr, "Error: Opening Zip: %s (%s)\n", path, zip_error_strerror(&error));
+        zip_error_fini(&error);
+        return 1;
+    }
 
     outlen = strlen(outpath);
     len = zip_get_num_entries(archive, 0);

@@ -1,6 +1,6 @@
 # General
-CC			= clang
-LD			= clang
+CC			= gcc
+LD			= gcc
 RM			= rm -rf
 RMDIR		= rmdir
 INSTALL		= install
@@ -39,6 +39,7 @@ VER				:= $(shell git describe --tags --always --dirty)
 # Preprocessor Flags
 ALL_CPPFLAGS	:= $(CPPFLAGS) -DVERSION='"$(VER)"'
 ALL_CPPFLAGS	+= $(shell pkg-config --cflags libzip)
+ALL_CPPFLAGS	+= -I/mingw32/include -I/mingw32/lib/libzip/include
 ALL_CPPFLAGS	+= -I/usr/include
 ALL_CPPFLAGS	+= -I/usr/local/include
 ALL_CPPFLAGS	+= -I/usr/local/opt/curl/include
@@ -46,6 +47,7 @@ ALL_CPPFLAGS	+= -I/usr/local/opt/libzip/include
 
 # Linker Flags
 ALL_LDFLAGS		:= $(LDFLAGS) -L/usr/lib
+ALL_LDFLAGS		+= -L/mingw64/lib
 ALL_LDFLAGS		+= -L/usr/local/lib
 ALL_LDFLAGS		+= -L/usr/local/opt/curl/lib
 ALL_LDFLAGS		+= -L/usr/local/opt/libzip/lib
