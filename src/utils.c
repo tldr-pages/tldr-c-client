@@ -128,11 +128,16 @@ unzip(char const *path, char const *outpath)
 
     archive = zip_open(path, 0, &err);
     if (!archive) {
-        zip_error_t error;
-        zip_error_init_with_code(&error, err);
-        fprintf(stderr, "Error: Opening Zip: %s (%s)\n", path,
-                zip_error_strerror(&error));
-        zip_error_fini(&error);
+        /* It looks like, linux ships an old version of libzip, where this
+         * isn't supported, yet. To not break the builds, it's commented out,
+         * and can be enabled for debugging.
+         */
+        /* zip_error_t error; */
+        /* zip_error_init_with_code(&error, err); */
+        /* fprintf(stderr, "Error: Opening Zip: %s (%s)\n", path, */
+        /*         zip_error_strerror(&error)); */
+        /* zip_error_fini(&error); */
+        fprintf(stderr, "Error: Opening Zip: %s\n", path);
         return 1;
     }
 
