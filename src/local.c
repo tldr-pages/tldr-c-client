@@ -267,7 +267,7 @@ get_file_content(char const *path, char **out, int verbose)
     if (fseek(fp, 0, SEEK_SET))
     { goto error; }
 
-    *out = malloc(len);
+    *out = (char*)malloc(len);
     if (*out == NULL)
     { goto error; }
 

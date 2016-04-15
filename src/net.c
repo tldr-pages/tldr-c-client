@@ -17,7 +17,7 @@ progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow,
     if (dltotal <= 0)
     { return 0; }
 
-    progress = dlnow / dltotal;
+    progress = (double)(dlnow / dltotal);
     total = (int)rround(progress * 40.0);
 
     printf("%s [", (char *)clientp);
@@ -108,7 +108,7 @@ void
 curl_string_init(struct curl_string *str)
 {
     str->len = 0;
-    str->str = malloc(1024);
+    str->str = (char*)malloc(1024);
     if (str->str == NULL)
     { exit(EXIT_FAILURE); }
 
@@ -121,7 +121,7 @@ write_function(void *ptr, size_t size, size_t nmemb, void *stream)
     struct curl_string *str = (struct curl_string *)stream;
     size_t newlen = str->len + size * nmemb;
 
-    str->str = realloc(str->str, newlen + 1);
+    str->str = (char*)realloc(str->str, newlen + 1);
     if (str->str == NULL)
     { exit(EXIT_FAILURE); }
 
