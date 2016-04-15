@@ -127,4 +127,5 @@ clean:
 
 format:
 	astyle --options=.astylerc $(SRCDIR)/*.c
+	astyle --options=.astylerc $(SRCDIR)/*.h
 

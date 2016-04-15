@@ -32,7 +32,7 @@
 #         return 0;
 #     }
 # }
---style=bsd
+--style=kr
 
 # Indent with 4 spaces, convert tabs to spaces
 --indent=spaces=4
@@ -45,8 +45,7 @@
 --attach-namespaces
 
 
-# Indent swiches, preprocessor blocks, and defines
---indent-switches
+# Indent preprocessor blocks, and defines
 --indent-preproc-block
 --indent-preproc-define
 
@@ -64,12 +63,18 @@
 --pad-oper
 --pad-header
 
+# Do I like this? No, I don't.
+# Pad parens, and remove all not requested padding
+#--pad-paren-in
+#--unpad-paren
+
+
 # doesn't seem to preserve any lines, will just remove any empty lines!
 # --delete-empty-lines
 
 # Pointer alignment
---align-pointer=type
---align-reference=type
+--align-pointer=name
+--align-reference=name
 
 # Break elseifs / closing brackets
 # might be useful with style=kr
@@ -85,11 +90,4 @@
 # Obvious 80 col length maximum
 --max-code-length=80
 --break-after-logical
-
-
-# objective-c options
---align-method-colon
---pad-method-prefix
---pad-method-colon=none
-
 
