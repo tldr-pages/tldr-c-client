@@ -38,6 +38,7 @@ VER				:= $(shell git describe --tags --always --dirty)
 
 # Preprocessor Flags
 ALL_CPPFLAGS	:= $(CPPFLAGS) -DVERSION='"$(VER)"'
+ALL_CPPFLAGS	+= -D_GNU_SOURCE
 ALL_CPPFLAGS	+= $(shell pkg-config --cflags libzip)
 ALL_CPPFLAGS	+= -I/mingw32/include -I/mingw32/lib/libzip/include
 ALL_CPPFLAGS	+= -I/usr/include

@@ -1,5 +1,3 @@
-#define _BSD_SOURCE
-
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
