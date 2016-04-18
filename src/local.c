@@ -15,14 +15,10 @@ long
 check_localdate(void)
 {
     FILE *fp;
-    size_t curlen;
     char const *homedir;
-    char outdir[STRBUFSIZ];
-    char buffer[STRBUFSIZ];
-    size_t read, len;
-    time_t oldtime;
-    time_t curtime;
-    time_t difftime;
+    char outdir[STRBUFSIZ], buffer[STRBUFSIZ];
+    size_t curlen, read, len;
+    time_t oldtime, curtime, difftime;
 
     homedir = gethome();
     if (homedir == NULL)
@@ -37,29 +33,27 @@ check_localdate(void)
     fp = fopen(outdir, "rb");
     if (!fp) { return -1; }
 
-    if (fseek(fp, 0, SEEK_END))
-    { goto error; }
-    if ((len = (size_t)ftell(fp)) == (size_t)EOF)
-    { goto error; }
-    if (fseek(fp, 0, SEEK_SET))
-    { goto error; }
+    if (fseek(fp, 0, SEEK_END)) { goto error; }
+    if ((len = (size_t)ftell(fp)) == (size_t)EOF) { goto error; }
+    if (fseek(fp, 0, SEEK_SET)) { goto error; }
 
     read = fread(buffer, 1, len, fp);
-    if (read != len)
-    { goto error; }
+    if (read != len) { goto error; }
 
     curtime = time(NULL);
     oldtime = strtol(buffer, NULL, 10);
     difftime = curtime - oldtime;
     if (difftime > (60 * 60 * 24 * 7 * 2)) {
+        /* *INDENT-OFF* */
         fprintf(stdout, "%s", ANSI_BOLD_ON);
         fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
-        fprintf(stdout,
-                "Local data is older than two weeks, use --update to update it.\n\n");
+        fprintf(stdout, "Local data is older than two weeks, use --update to update it.\n\n");
         fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
         fprintf(stdout, "%s", ANSI_BOLD_OFF);
+        /* *INDENT-ON* */
     }
 
+    fclose(fp);
     return difftime;
 
 error:
@@ -123,7 +117,7 @@ has_localdb(void)
     if (sstrncat(outhome, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
     { return 0; }
 
-    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode))
+    if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode)))
     { return 1; }
 
     return 0;
@@ -189,12 +183,10 @@ update_localdb(int verbose)
         return 1;
     }
 
-    if (mkdir(outhome, 0755) > 0) {
-        if (errno != EEXIST) {
-            fprintf(stderr, "Error: Could Not Create Directory: %s\n", outhome);
-            rm(outpath);
-            return 1;
-        }
+    if (mkdir(outhome, 0755) > 0 && errno != EEXIST) {
+        fprintf(stderr, "Error: Could Not Create Directory: %s\n", outhome);
+        rm(outpath);
+        return 1;
     }
 
     if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
@@ -202,7 +194,7 @@ update_localdb(int verbose)
     if (sstrncat(outhome, &outlen, STRBUFSIZ, "/", 1))
     { return 1; }
 
-    if (stat(outhome, &s) == 0 && S_ISDIR(s.st_mode)) {
+    if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode))) {
         if (rm(outhome)) {
             fprintf(stderr, "Error: Could Not Remove: %s\n", outhome);
             return 1;

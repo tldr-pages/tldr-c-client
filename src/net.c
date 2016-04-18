@@ -43,15 +43,12 @@ int
 download_file(char const *url, char const *outfile, int verbose)
 {
     CURL *curl;
-    CURLcode res;
 
     curl = curl_easy_init();
     if (curl) {
-        size_t len;
+        CURLcode res;
         int ret = 1;
         FILE *file;
-        char *base;
-        char filename[FILENAME_MAX];
 
         file = fopen(outfile, "wb");
         if (!file)
@@ -63,7 +60,9 @@ download_file(char const *url, char const *outfile, int verbose)
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, file);
         curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
         if (verbose) {
-            len = strlen(outfile);
+            char *base;
+            char filename[FILENAME_MAX];
+            size_t len = strlen(outfile);
             memcpy(filename, outfile, len);
             filename[len] = '\0';
             base = basename(filename);

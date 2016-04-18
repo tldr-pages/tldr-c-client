@@ -97,7 +97,7 @@ RMDIR 		= $(RMDIR_$(V))
 
 
 # Build Rules
-.PHONY: clean format
+.PHONY: clean format lint
 .DEFAULT_GOAL := all
 
 all: setup $(BIN)
@@ -129,4 +129,43 @@ clean:
 format:
 	astyle --options=.astylerc $(SRCDIR)/*.c
 	astyle --options=.astylerc $(SRCDIR)/*.h
+
+lint:
+	oclint -report-type html -o report.html \
+		-enable-clang-static-analyzer \
+		-enable-global-analysis \
+		-disable-rule=GotoStatement \
+		-max-priority-1 1000 \
+		-max-priority-2 1000 \
+		-max-priority-3 1000 \
+		src/*.c src/*.h -- $(ALL_CPPFLAGS) -c
+	cppcheck --enable=all \
+		-I/usr/local/include \
+		-I/usr/local/opt/curl/include \
+		-I/usr/local/opt/libzip/include \
+		--language=c \
+		--std=c89 \
+		--inconclusive \
+		src/*.c src/*.h
+	splint +posixlib +gnuextensions \
+		-Du_int64_t=unsigned\ long\ long \
+		-Du_int32_t=unsigned\ int \
+		-D__int64_t=long\ long \
+		-D__uint64_t=unsigned\ long\ long \
+		-D__int32_t=int \
+		-D__uint32_t=unsigned\ int \
+		-D__int16_t=short \
+		-D__uint16_t=unsigned\ short \
+		-D__darwin_natural_t=long \
+		-D__darwin_time_t=long \
+		-D__darwin_size_t=unsigned\ long \
+		-D__darwin_ssize_t=long \
+		-D__darwin_intptr_t=unsigned\ long \
+		-D__darwin_clock_t=unsigned\ long \
+		-I/usr/local/include \
+		-I/usr/local/opt/curl/include \
+		-I/usr/local/opt/libzip/include \
+		-I/usr/local/Cellar/libzip/1.1/lib/libzip/include \
+		src/*.c src/*.h
+
 
