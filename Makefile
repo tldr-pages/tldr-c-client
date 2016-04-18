@@ -97,7 +97,7 @@ RMDIR 		= $(RMDIR_$(V))
 
 
 # Build Rules
-.PHONY: clean format lint
+.PHONY: clean format lint infer
 .DEFAULT_GOAL := all
 
 all: setup $(BIN)
@@ -167,5 +167,8 @@ lint:
 		-I/usr/local/opt/libzip/include \
 		-I/usr/local/Cellar/libzip/1.1/lib/libzip/include \
 		src/*.c src/*.h
+
+infer: clean
+	infer -- make
 
 

@@ -1,6 +1,9 @@
 # Executable
 tldr
 
+# infer stuff
+infer-out
+
 # .dsym files
 *.dSYM
 
