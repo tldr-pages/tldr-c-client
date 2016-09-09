@@ -157,7 +157,6 @@ update_localdb(int verbose)
         return 1;
     }
 
-    fprintf(stderr, "Outfile: %s\n", outfile);
     if (unzip(outfile, outpath)) {
         rm(outpath);
         return 1;
