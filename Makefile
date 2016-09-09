@@ -4,7 +4,6 @@ LD			= gcc
 RM			= rm -rf
 RMDIR		= rmdir
 INSTALL		= install
-DEBUG		= -ggdb -O0 -march=native -ftrapv
 
 ## CHANGE THIS ##
 TARGET		= tldr
@@ -15,7 +14,7 @@ MANDIR		= man
 ## CHANGE THIS ##
 
 # CFLAGS, LDFLAGS, CPPFLAGS, PREFIX can be overriden on CLI
-CFLAGS		:= $(DEBUG)
+CFLAGS		:= -ggdb -O0 -march=native -ftrapv
 CPPFLAGS	:=
 LDFLAGS		:=
 PREFIX		:= /usr/local
@@ -34,13 +33,18 @@ ALL_CFLAGS		+= -Wformat -Wno-format-zero-length -Wstrict-prototypes
 ALL_CFLAGS		+= -Wno-unknown-warning-option -Wno-cast-qual
 
 # Version Generation
+HAS_GIT			:= $(shell type git > /dev/null 2>&1 && echo "1" || echo "0")
+IS_GITREPO		:= $(shell [ -d .git ] && echo "1" || echo "0")
+ifeq (0,$(filter 0,$(HAS_GIT) $(IS_GITREPO)))
+VER				:= v1.3.0
+else
 VER				:= $(shell git describe --tags --always --dirty)
+endif
 
 # Preprocessor Flags
 ALL_CPPFLAGS	:= $(CPPFLAGS) -DVERSION='"$(VER)"'
 ALL_CPPFLAGS	+= -D_GNU_SOURCE
 ALL_CPPFLAGS	+= $(shell pkg-config --cflags libzip)
-ALL_CPPFLAGS	+= -I/mingw32/include -I/mingw32/lib/libzip/include
 ALL_CPPFLAGS	+= -I/usr/include
 ALL_CPPFLAGS	+= -I/usr/local/include
 ALL_CPPFLAGS	+= -I/usr/local/opt/curl/include
@@ -48,7 +52,6 @@ ALL_CPPFLAGS	+= -I/usr/local/opt/libzip/include
 
 # Linker Flags
 ALL_LDFLAGS		:= $(LDFLAGS) -L/usr/lib
-ALL_LDFLAGS		+= -L/mingw64/lib
 ALL_LDFLAGS		+= -L/usr/local/lib
 ALL_LDFLAGS		+= -L/usr/local/opt/curl/lib
 ALL_LDFLAGS		+= -L/usr/local/opt/libzip/lib
