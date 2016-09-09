@@ -10,7 +10,7 @@
 #include "utils.h"
 #include "local.h"
 
-#define VERSION_TAG "v1.2.0"
+#define VERSION_TAG "v1.3.0"
 #ifndef VERSION
     #define VERSION_PRETTY ""
 #else
