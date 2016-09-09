@@ -119,7 +119,7 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(ALL_CFLAGS) $(ALL_CPPFLAGS) -c -MMD -MP -o $@ $<
 
 
-install: $(BIN) $(MANSRC)
+install: all $(MANSRC)
 	$(INSTALL) -d $(PREFIX)/bin
 	$(INSTALL) $(BIN) $(PREFIX)/bin
 	$(INSTALL) -d $(MANPATH)
