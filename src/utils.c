@@ -202,3 +202,163 @@ error:
     zip_close(archive);
     return 1;
 }
+
+int
+copyfile(const char *src, const char *dest, mode_t perms)
+{
+    ssize_t n;
+    int src_fd, dest_fd;
+    int dest_flags = O_CREAT | O_WRONLY | O_TRUNC;
+    int buffer[BUFSIZ];
+
+    /* Open source file */
+    if ((src_fd = open(src, O_RDONLY)) == -1) {
+        fprintf(stderr,
+            "Error: Couldn't open source file for copying: %s\n",
+            src
+        );
+        return 1;
+    }
+
+    /* Open destination file with the source's permissions.
+     */
+    if ((dest_fd = open(dest, dest_flags, perms)) == -1) {
+        fprintf(stderr,
+            "Error: Couldn't open destination file for copying: %s\n",
+            dest
+        );
+        return 1;
+    }
+    
+    /* Write to dest while we can read from src */
+    while ((n = read(src_fd, buffer, BUFSIZ)) > 0) {
+        if (write(dest_fd, buffer, (size_t) n) == -1) {
+            fprintf(stderr,
+                "Write error during copy to \"%s\".\n",
+                dest
+            );
+            return 1;
+        }
+    }
+
+    if (n == -1) {
+        fprintf(stderr,
+            "Read error during copy from \"%s\".\n",
+            src
+        );
+        return 1;
+    }
+
+    /* Close source file */
+    if (close(src_fd) == -1) {
+        fprintf(stderr,
+            "Error: Couldn't close source file after copying: %s\n",
+            src
+        );
+        return 1;
+    }
+
+    /* Close destination file */
+    if (close(dest_fd) == -1) {
+        fprintf(stderr,
+            "Error: Couldn't close destination file after copying: %s\n",
+            dest
+        );
+        return 1;
+    }
+
+    return 0;
+}
+
+int
+copytree(const char *src, const char *dest)
+{
+
+    /* Variables for getting path relative to destination
+     */
+    size_t src_len = strlen(src);
+    size_t dest_len = strlen(dest) - 1; /* Ignore '/' at end */
+    char destbuf[STRBUFSIZ];
+
+    int cur_is_dir = 0; /* Is the current object a directory? */
+
+    /* Tree Transversal */
+    FTS *tree;
+    FTSENT *cur = NULL;
+    char *paths[2];
+    paths[0] = (char *)src;
+    paths[1] = NULL;
+
+    /* Put destnation path in buffer, paths will be appended to it.
+     */
+    strncpy(destbuf, dest, dest_len);
+
+    tree = fts_open(paths, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
+    if (tree != NULL) {
+        while ((cur = fts_read(tree)) != NULL) {
+            switch (cur->fts_info) {
+            case FTS_NS:
+            case FTS_DNR:
+            case FTS_ERR:
+                fprintf(stderr, "Error: %s: error: %s\n", cur->fts_accpath,
+                        strerror(cur->fts_errno));
+                return 1;
+
+            case FTS_DC:
+            case FTS_DOT:
+            case FTS_NSOK:
+                /* Not reached unless FTS_LOGICAL, FTS_SEEDOT, or FTS_NOSTAT
+                 * were */
+                /* passed to fts_open() */
+                break;
+
+            case FTS_DP:
+                /* We're going to create directories before looking at their
+                 * files. So we're ignoring this.
+                 */
+                break;
+
+            case FTS_D:
+                cur_is_dir = 1; /* Its a directory */
+            case FTS_F:
+            case FTS_SL:
+            case FTS_SLNONE:
+            case FTS_DEFAULT:
+                /* Concatnate dest and path relative from src
+                 */
+                if ((cur->fts_pathlen - src_len + dest_len) > STRBUFSIZ) {
+                    fprintf(stderr, "Error: Path too long\n");
+                    return 1;
+                }
+                /* Append relative path to destbuf, overwriting anything else
+                 * that might be there after the destination path.
+                 */
+                strncpy(destbuf + dest_len, cur->fts_path + src_len,
+                        cur->fts_pathlen - src_len); 
+                destbuf[dest_len + cur->fts_pathlen - src_len] = '\0';
+
+                if (cur_is_dir) { /* Create Directory with perms of src one */
+                    if (mkdir(destbuf, cur->fts_statp->st_mode)) {
+                        if (errno != EEXIST) { /* Ignore if already exists */
+                            fprintf(stderr, "Couldn't create directory: %s\n",
+                                    destbuf);
+                            return 1;
+                        }
+                    }
+                    cur_is_dir = 0;
+                } else { /* Copy File */
+                    if (copyfile(cur->fts_path, destbuf,
+                                 cur->fts_statp->st_mode)) {
+                        return 1;
+                    }
+                }
+                break;
+            }
+        }
+
+        fts_close(tree);
+        return 0;
+    }
+
+    return 1;
+}
