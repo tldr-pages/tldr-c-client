@@ -210,12 +210,14 @@ copyfile(const char *src, const char *dest, mode_t perms)
     int src_fd, dest_fd;
     int dest_flags = O_CREAT | O_WRONLY | O_TRUNC;
     int buffer[BUFSIZ];
+    int error_occured = 0;
 
     /* Open source file */
     if ((src_fd = open(src, O_RDONLY)) == -1) {
         fprintf(stderr,
-            "Error: Couldn't open source file for copying: %s\n",
-            src
+            "Error: Couldn't open source file \"%s\" for copying: %s\n",
+            src,
+            strerror(errno)
         );
         return 1;
     }
@@ -223,51 +225,59 @@ copyfile(const char *src, const char *dest, mode_t perms)
     /* Open destination file with the source's permissions. */
     if ((dest_fd = open(dest, dest_flags, perms)) == -1) {
         fprintf(stderr,
-            "Error: Couldn't open destination file for copying: %s\n",
-            dest
+            "Error: Couldn't open destination file \"%s\" for copying: %s\n",
+            dest,
+            strerror(errno)
         );
-        return 1;
-    }
-    
-    /* Write to dest while we can read from src */
-    while ((n = read(src_fd, buffer, BUFSIZ)) > 0) {
-        if (write(dest_fd, buffer, (size_t) n) == -1) {
-            fprintf(stderr,
-                "Write error during copy to \"%s\".\n",
-                dest
-            );
-            return 1;
+        error_occured = 1;
+    } else { /* Open destination was successful */
+        /* Write to dest while we can read from src */
+        while ((n = read(src_fd, buffer, BUFSIZ)) > 0) {
+            /* Handle read error */
+            if (n == -1) {
+                fprintf(stderr,
+                    "Read error during copy from \"%s\": %s\n",
+                    src,
+                    strerror(errno)
+                );
+                error_occured = 1;
+                break;
+            }
+
+            /* Write or handle write error */
+            if (write(dest_fd, buffer, (size_t) n) == -1) {
+                fprintf(stderr,
+                    "Write error during copy to \"%s\": %s\n",
+                    dest,
+                    strerror(errno)
+                );
+                error_occured = 1;
+                break;
+            }
         }
-    }
 
-    /* Handle read error */
-    if (n == -1) {
-        fprintf(stderr,
-            "Read error during copy from \"%s\".\n",
-            src
-        );
-        return 1;
-    }
-
-    /* Close source file */
-    if (close(src_fd) == -1) {
-        fprintf(stderr,
-            "Error: Couldn't close source file after copying: %s\n",
-            src
-        );
-        return 1;
-    }
+        /* Close source file */
+        if (close(src_fd) == -1) {
+            fprintf(stderr,
+                "Error: Couldn't close source file \"%s\" after copying: %s\n",
+                src,
+                strerror(errno)
+            );
+            error_occured = 1;
+        }
+    } /* Else just try to clean up dest_fd, bc opening source file failed */
 
     /* Close destination file */
     if (close(dest_fd) == -1) {
         fprintf(stderr,
-            "Error: Couldn't close destination file after copying: %s\n",
-            dest
+            "Error: Couldn't close destination file \"%s\" after copying: %s\n",
+            dest,
+            strerror(errno)
         );
-        return 1;
+        error_occured = 1;
     }
 
-    return 0;
+    return error_occured;
 }
 
 int
@@ -301,6 +311,7 @@ copytree(const char *src, const char *dest)
             case FTS_ERR:
                 fprintf(stderr, "Error: %s: error: %s\n", cur->fts_accpath,
                         strerror(cur->fts_errno));
+                fts_close(tree);
                 return 1;
 
             case FTS_DC:
@@ -323,14 +334,14 @@ copytree(const char *src, const char *dest)
             case FTS_SL:
             case FTS_SLNONE:
             case FTS_DEFAULT:
-                /* Concatnate dest and path relative from src */
-                if ((cur->fts_pathlen - src_len + dest_len) > STRBUFSIZ) {
-                    fprintf(stderr, "Error: Path too long\n");
-                    return 1;
-                }
                 /* Append relative path to destbuf, overwriting anything else
                  * that might be there after the destination path.
                  */
+                if ((cur->fts_pathlen - src_len + dest_len) > STRBUFSIZ) {
+                    fprintf(stderr, "Error: Path too long\n");
+                    fts_close(tree);
+                    return 1;
+                }
                 strncpy(destbuf + dest_len, cur->fts_path + src_len,
                         cur->fts_pathlen - src_len); 
                 destbuf[dest_len + cur->fts_pathlen - src_len] = '\0';
@@ -338,8 +349,12 @@ copytree(const char *src, const char *dest)
                 if (cur_is_dir) { /* Create Directory with perms of src one */
                     if (mkdir(destbuf, cur->fts_statp->st_mode)) {
                         if (errno != EEXIST) { /* Ignore if already exists */
-                            fprintf(stderr, "Couldn't create directory: %s\n",
-                                    destbuf);
+                            fprintf(stderr,
+                                    "Couldn't create directory \"%s\": %s\n",
+                                    destbuf,
+                                    strerror(errno)
+                            );
+                            fts_close(tree);
                             return 1;
                         }
                     }
@@ -347,6 +362,7 @@ copytree(const char *src, const char *dest)
                 } else { /* Copy File */
                     if (copyfile(cur->fts_path, destbuf,
                                  cur->fts_statp->st_mode)) {
+                        fts_close(tree);
                         return 1;
                     }
                 }
