@@ -220,8 +220,7 @@ copyfile(const char *src, const char *dest, mode_t perms)
         return 1;
     }
 
-    /* Open destination file with the source's permissions.
-     */
+    /* Open destination file with the source's permissions. */
     if ((dest_fd = open(dest, dest_flags, perms)) == -1) {
         fprintf(stderr,
             "Error: Couldn't open destination file for copying: %s\n",
@@ -241,6 +240,7 @@ copyfile(const char *src, const char *dest, mode_t perms)
         }
     }
 
+    /* Handle read error */
     if (n == -1) {
         fprintf(stderr,
             "Read error during copy from \"%s\".\n",
@@ -289,8 +289,7 @@ copytree(const char *src, const char *dest)
     paths[0] = (char *)src;
     paths[1] = NULL;
 
-    /* Put destnation path in buffer, paths will be appended to it.
-     */
+    /* Put destnation path in buffer, paths will be appended to it. */
     strncpy(destbuf, dest, dest_len);
 
     tree = fts_open(paths, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
@@ -324,8 +323,7 @@ copytree(const char *src, const char *dest)
             case FTS_SL:
             case FTS_SLNONE:
             case FTS_DEFAULT:
-                /* Concatnate dest and path relative from src
-                 */
+                /* Concatnate dest and path relative from src */
                 if ((cur->fts_pathlen - src_len + dest_len) > STRBUFSIZ) {
                     fprintf(stderr, "Error: Path too long\n");
                     return 1;

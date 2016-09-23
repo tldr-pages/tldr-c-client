@@ -203,14 +203,13 @@ update_localdb(int verbose)
     if (rename(tmp, outhome)) {
         if (errno == EXDEV) {
             /* tmp and outhome are on different file systems, do full copy
-             * and rm instead.
+             * instead. tmp will be removed when outpath is removed.
              */
             if(copytree(tmp, outhome)) {
                 fprintf(stderr, "Error: Could Not Move: %s to %s\n",
                         tmp, outhome);
                 return 1;
             }
-            /*rm(tmp);*/
         } else {
             fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
             rm(outpath);
