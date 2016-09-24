@@ -233,17 +233,6 @@ copyfile(const char *src, const char *dest, mode_t perms)
     } else { /* Open destination was successful */
         /* Write to dest while we can read from src */
         while ((n = read(src_fd, buffer, BUFSIZ)) > 0) {
-            /* Handle read error */
-            if (n == -1) {
-                fprintf(stderr,
-                    "Read error during copy from \"%s\": %s\n",
-                    src,
-                    strerror(errno)
-                );
-                error_occured = 1;
-                break;
-            }
-
             /* Write or handle write error */
             if (write(dest_fd, buffer, (size_t) n) == -1) {
                 fprintf(stderr,
@@ -254,6 +243,16 @@ copyfile(const char *src, const char *dest, mode_t perms)
                 error_occured = 1;
                 break;
             }
+        }
+
+        /* Handle read error */
+        if (n == -1) {
+            fprintf(stderr,
+                "Read error during copy from \"%s\": %s\n",
+                src,
+                strerror(errno)
+            );
+            error_occured = 1;
         }
 
         /* Close source file */
