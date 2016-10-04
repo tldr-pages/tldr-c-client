@@ -54,10 +54,10 @@ make
 
 ## Autocompletion
 
-Autocompletion is supported for both `bash` and `zsh`, and can be added by sourcing
+Autocompletion is supported for `bash`, `zsh`, and `fish` can be added by sourcing
 the correct autocompletion file.
 
-Both files `autocomplete.zsh` and `autocomplete.bash` are in the `autocomplete`
+The files `autocomplete.zsh`, `autocomplete.bash`, and `autocomplete.fish` can be found in the `autocomplete`
 folder in the root of the repository.
 
 #### Installation
