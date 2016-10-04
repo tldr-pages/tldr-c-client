@@ -54,7 +54,7 @@ make
 
 ## Autocompletion
 
-Autocompletion is supported for `bash`, `zsh`, and `fish` can be added by sourcing
+Autocompletion is supported for `bash`, `zsh`, and `fish` and can be added by sourcing
 the correct autocompletion file.
 
 The files `autocomplete.zsh`, `autocomplete.bash`, and `autocomplete.fish` can be found in the `autocomplete`
