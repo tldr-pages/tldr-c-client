@@ -92,6 +92,13 @@ available commands:
     -r, --render=PATH    render a local page for testing purposes
 ```
 
+
+## Contributing
+
+Please read the [CONTRIBUTING.md](https://github.com/tldr-pages/tldr-cpp-client/blob/master/CONTRIBUTING.md) for details.
+
+
+
 ## License
 
 The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-cpp-client/blob/master/LICENSE) for details.
