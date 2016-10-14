@@ -158,7 +158,7 @@ update_localdb(int verbose)
     }
 
     if (unzip(outfile, outpath)) {
-        rm(outpath);
+        rm(outpath, 0);
         return 1;
     }
 
@@ -184,7 +184,7 @@ update_localdb(int verbose)
 
     if (mkdir(outhome, 0755) > 0 && errno != EEXIST) {
         fprintf(stderr, "Error: Could Not Create Directory: %s\n", outhome);
-        rm(outpath);
+        rm(outpath, 0);
         return 1;
     }
 
@@ -194,7 +194,7 @@ update_localdb(int verbose)
     { return 1; }
 
     if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode))) {
-        if (rm(outhome)) {
+        if (rm(outhome, 0)) {
             fprintf(stderr, "Error: Could Not Remove: %s\n", outhome);
             return 1;
         }
@@ -202,16 +202,21 @@ update_localdb(int verbose)
 
     if (rename(tmp, outhome)) {
         fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
-        rm(outpath);
+        rm(outpath, 0);
         return 1;
     }
 
-    if (rm(outpath)) {
+    if (rm(outpath, 0)) {
         fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
         return 1;
     }
 
-    update_localdate();
+    if (update_localdate()) {
+        fprintf(stderr, "Error: Could not update last updated date\n");
+        return 1;
+    }
+
+    fprintf(stdout, "Successfully updated local database\n");
     return 0;
 }
 
@@ -222,7 +227,6 @@ clear_localdb(int verbose)
     char tmp[STRBUFSIZ];
     char const *homedir;
 
-    ((void)verbose);
     homedir = gethome();
     if (homedir == NULL)
     { return 1; }
@@ -233,10 +237,15 @@ clear_localdb(int verbose)
     if (sstrncat(tmp, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
     { return 1; }
 
-    if (rm(tmp))
+    if (rm(tmp, RMOPT_IGNORE_NOFILE))
     { return 1; }
 
-    fprintf(stdout, "Successfully removed %s\n", tmp);
+    if (verbose) {
+        fprintf(stdout, "Successfully removed %s\n", tmp);
+    } else {
+        fprintf(stdout, "Successfully removed local database\n");
+    }
+
     return 0;
 }
 
@@ -275,3 +284,4 @@ error:
     *out = NULL;
     return 1;
 }
+

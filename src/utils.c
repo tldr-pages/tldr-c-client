@@ -56,7 +56,7 @@ rround(double arg)
 }
 
 int
-rm(char const *path)
+rm(char const *path, int options)
 {
     FTS *tree;
     FTSENT *cur = NULL;
@@ -71,6 +71,11 @@ rm(char const *path)
             case FTS_NS:
             case FTS_DNR:
             case FTS_ERR:
+                if ((options & RMOPT_IGNORE_NOFILE)
+                        && cur->fts_errno == ENOENT) {
+                    return 0;
+                }
+
                 fprintf(stderr, "Error: %s: error: %s\n", cur->fts_accpath,
                         strerror(cur->fts_errno));
                 return 1;
