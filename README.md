@@ -3,7 +3,8 @@ tldr c client
 
 [![Build Status](https://travis-ci.org/tldr-pages/tldr-cpp-client.svg)](https://travis-ci.org/tldr-pages/tldr-cpp-client)
 
-A `C` command line client for tldr
+A command line client for tldr, written in plain ISO C90.
+
 
 ## Installing
 
@@ -19,15 +20,16 @@ brew install tldr
 
 To build the latest version from source:
 ```
-if [[ "`uname`" == "Darwin"  ]]; then brew install curl libzip pkg-config; fi
-if [[ "`uname`" == "Linux" ]]; then apt-get install libcurl4-openssl-dev libzip-dev pkg-config; fi
 git clone https://github.com/tldr-pages/tldr-cpp-client.git tldr-c-client
 cd tldr-c-client
-make
-make install
+
+./deps.sh           # install dependencies
+make                # build tldr
+make install        # install tldr
 ```
 
 The default prefix for installation is `/usr/local/bin`.
+
 
 
 ## Building
@@ -51,6 +53,7 @@ Just call `make` and `tldr` will build itself.
 ```
 make
 ```
+
 
 ## Autocompletion
 
@@ -91,7 +94,5 @@ available commands:
 
 ## License
 
-The MIT License (MIT)
-
-Copyright (C) 2016 Arvid Gerstmann
+The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-cpp-client/blob/master/LICENSE) for details.
 
