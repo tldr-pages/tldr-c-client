@@ -142,7 +142,7 @@ unzip(char const *path, char const *outpath)
     }
 
     outlen = strlen(outpath);
-    len = zip_get_num_entries(archive, 0);
+    len = (long)zip_get_num_entries(archive, 0);
     for (i = 0; i < len; i++) {
         if (zip_stat_index(archive, (zip_uint64_t)i, 0, &stat))
         { goto error; }
