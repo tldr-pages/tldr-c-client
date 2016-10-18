@@ -1,7 +1,4 @@
 #include "tldr.h"
-#include "parser.h"
-#include "net.h"
-#include "utils.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

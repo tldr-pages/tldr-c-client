@@ -1,6 +1,8 @@
 #ifndef TLDR_H
 #define TLDR_H
 
+#include <stdlib.h>
+
 #define STRBUFSIZ 512
 #define URLBUFSIZ 1024
 
@@ -37,4 +39,36 @@
 #define ANSI_BOLD_ON                            "\x1b[1m"
 #define ANSI_BOLD_OFF                           "\x1b[22m"
 
+/* local.c */
+long        check_localdate         (void);
+int         update_localdate        (void);
+int         has_localdb             (void);
+int         update_localdb          (int verbose);
+int         clear_localdb           (int verbose);
+int         get_file_content        (char const *path, char **out, int verbose);
+
+/* net.c */
+int         download_file           (char const *url, char const *outfile,
+                                     int verbose);
+int         download_content        (char const *url, char **out, int verbose);
+
+/* parser.c */
+int         construct_url           (char *buf, size_t buflen,
+                                     char const *input,
+                                     char const *platform);
+int         construct_path          (char *buf, size_t buflen, char const *home,
+                                     char const *input, char const *platform);
+int         parse_tldrpage          (char const *input);
+int         print_tldrpage          (char const *input, char const *platform);
+int         print_localpage         (char const *path);
+
+/* utils.c */
+#define RMOPT_IGNORE_NOFILE     (0x1)
+
+double      rround              (double arg);
+int         rm                  (char const *path, int options);
+int         unzip               (char const *path, char const *outpath);
+char const *gethome             (void);
+int         sstrncat            (char *dest, size_t *pos, size_t max,
+                                 char const *src, size_t len);
 #endif /* TLDR_H */

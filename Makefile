@@ -31,8 +31,6 @@ ALL_CFLAGS		+= -Wno-multichar -Wpacked -Wstrict-overflow -Wvla
 ALL_CFLAGS		+= -Wformat -Wno-format-zero-length -Wstrict-prototypes
 ifeq ($(CC),clang)
 ALL_CFLAGS		+= -Wno-unknown-warning-option
-else
-ALL_CFLAGS		+= -Wjump-misses-init
 endif
 
 # Version Generation

@@ -1,5 +1,4 @@
 #include "tldr.h"
-#include "utils.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <fts.h>
@@ -72,7 +71,7 @@ rm(char const *path, int options)
             case FTS_DNR:
             case FTS_ERR:
                 if ((options & RMOPT_IGNORE_NOFILE)
-                        && cur->fts_errno == ENOENT) {
+                    && cur->fts_errno == ENOENT) {
                     return 0;
                 }
 

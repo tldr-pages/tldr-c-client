@@ -1,6 +1,4 @@
-#include "net.h"
-#include "utils.h"
-
+#include "tldr.h"
 #include <curl/curl.h>
 #include <libgen.h>
 #include <stdio.h>
@@ -107,7 +105,7 @@ void
 curl_string_init(struct curl_string *str)
 {
     str->len = 0;
-    str->str = (char*)malloc(1024);
+    str->str = (char *)malloc(1024);
     if (str->str == NULL)
     { exit(EXIT_FAILURE); }
 
@@ -120,7 +118,7 @@ write_function(void *ptr, size_t size, size_t nmemb, void *stream)
     struct curl_string *str = (struct curl_string *)stream;
     size_t newlen = str->len + size * nmemb;
 
-    str->str = (char*)realloc(str->str, newlen + 1);
+    str->str = (char *)realloc(str->str, newlen + 1);
     if (str->str == NULL)
     { exit(EXIT_FAILURE); }
 

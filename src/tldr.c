@@ -1,14 +1,9 @@
+#include "tldr.h"
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
-#include "tldr.h"
-#include "net.h"
-#include "parser.h"
-#include "utils.h"
-#include "local.h"
 
 #define VERSION_TAG "v1.3.0"
 #ifndef VERSION
