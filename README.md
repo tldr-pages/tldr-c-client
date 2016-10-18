@@ -1,7 +1,5 @@
-tldr c client
-=============
+# tldr c client <a href='https://travis-ci.org/tldr-pages/tldr-cpp-client'><img src='https://travis-ci.org/tldr-pages/tldr-cpp-client.svg' align="right"></a>
 
-[![Build Status](https://travis-ci.org/tldr-pages/tldr-cpp-client.svg)](https://travis-ci.org/tldr-pages/tldr-cpp-client)
 
 A command line client for tldr, written in plain ISO C90.
 

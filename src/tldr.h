@@ -1,3 +1,11 @@
+/*
+ * tldr.h
+ *
+ * Copyright (C) 2016 Arvid Gerstmann
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ */
 #ifndef TLDR_H
 #define TLDR_H
 
