@@ -13,16 +13,16 @@ progress_callback(void *clientp, curl_off_t dltotal, curl_off_t dlnow,
     double progress;
     ((void)ultotal), ((void)ulnow);
     if (dltotal <= 0)
-    { return 0; }
+        return 0;
 
     progress = (double)(dlnow / dltotal);
     total = (int)rround(progress * 40.0);
 
     printf("%s [", (char *)clientp);
     for (i = 0; i < total; i++)
-    { printf("="); }
+        printf("=");
     for (; i < 40; i++)
-    { printf(" "); }
+        printf(" ");
     printf("] %.0f%%\r", progress * 100.0f);
     fflush(stdout);
 
@@ -50,7 +50,7 @@ download_file(char const *url, char const *outfile, int verbose)
 
         file = fopen(outfile, "wb");
         if (!file)
-        { return 1; }
+            return 1;
 
         curl_easy_setopt(curl, CURLOPT_URL, url);
         curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
@@ -79,13 +79,13 @@ download_file(char const *url, char const *outfile, int verbose)
         }
 
         res = curl_easy_perform(curl);
-        if (verbose) { printf("\n"); }
+        if (verbose)    printf("\n");
         if (res == CURLE_OK) {
             long http_code = 0;
 
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &http_code);
-            if (http_code == 200) { ret = 0; }
-            else { ret = 1; }
+            if (http_code == 200)    ret = 0;
+            else    ret = 1;
         }
 
         curl_easy_cleanup(curl);
@@ -107,7 +107,7 @@ curl_string_init(struct curl_string *str)
     str->len = 0;
     str->str = (char *)malloc(1024);
     if (str->str == NULL)
-    { exit(EXIT_FAILURE); }
+        exit(EXIT_FAILURE);
 
     str->str[1024] = '\0';
 }
@@ -120,7 +120,7 @@ write_function(void *ptr, size_t size, size_t nmemb, void *stream)
 
     str->str = (char *)realloc(str->str, newlen + 1);
     if (str->str == NULL)
-    { exit(EXIT_FAILURE); }
+        exit(EXIT_FAILURE);
 
     memcpy(str->str + str->len, ptr, size * nmemb);
     str->str[newlen] = '\0';
@@ -172,3 +172,4 @@ download_content(char const *url, char **out, int verbose)
     *out = NULL;
     return 1;
 }
+

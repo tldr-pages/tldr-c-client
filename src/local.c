@@ -18,23 +18,28 @@ check_localdate(void)
 
     homedir = gethome();
     if (homedir == NULL)
-    { return -1; }
+        return -1;
 
     curlen = 0;
     if (sstrncat(outdir, &curlen, STRBUFSIZ, homedir, strlen(homedir)))
-    { return -1; }
+        return -1;
     if (sstrncat(outdir, &curlen, STRBUFSIZ, TLDR_DATE, TLDR_DATE_LEN))
-    { return -1; }
+        return -1;
 
     fp = fopen(outdir, "rb");
-    if (!fp) { return -1; }
+    if (!fp)
+        return -1;
 
-    if (fseek(fp, 0, SEEK_END)) { goto error; }
-    if ((len = (size_t)ftell(fp)) == (size_t)EOF) { goto error; }
-    if (fseek(fp, 0, SEEK_SET)) { goto error; }
+    if (fseek(fp, 0, SEEK_END))
+        goto error;
+    if ((len = (size_t)ftell(fp)) == (size_t)EOF)
+        goto error;
+    if (fseek(fp, 0, SEEK_SET))
+        goto error;
 
     read = fread(buffer, 1, len, fp);
-    if (read != len) { goto error; }
+    if (read != len)
+        goto error;
 
     curtime = time(NULL);
     oldtime = strtol(buffer, NULL, 10);
@@ -70,22 +75,23 @@ update_localdate(void)
 
     homedir = gethome();
     if (homedir == NULL)
-    { return 1; }
+        return 1;
 
     len = 0;
     if (sstrncat(outdir, &len, STRBUFSIZ, homedir, strlen(homedir)))
-    { return 1; }
+        return 1;
     if (sstrncat(outdir, &len, STRBUFSIZ, TLDR_DATE, TLDR_DATE_LEN))
-    { return 1; }
+        return 1;
 
     fp = fopen(outdir, "w");
-    if (!fp) { return 1; }
+    if (!fp)
+        return 1;
 
     curtime = time(NULL);
     sprintf(timestr, "%ld", curtime);
     written = fwrite(timestr, sizeof(char), strlen(timestr), fp);
     if (written < strlen(timestr))
-    { goto error; }
+        goto error;
 
     fclose(fp);
     return 0;
@@ -105,16 +111,16 @@ has_localdb(void)
 
     homedir = gethome();
     if (homedir == NULL)
-    { return 0; }
+        return 0;
 
     len = 0;
     if (sstrncat(outhome, &len, STRBUFSIZ, homedir, strlen(homedir)))
-    { return 0; }
+        return 0;
     if (sstrncat(outhome, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
-    { return 0; }
+        return 0;
 
     if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode)))
-    { return 1; }
+        return 1;
 
     return 0;
 }
@@ -132,7 +138,7 @@ update_localdb(int verbose)
 
     outlen = 0;
     if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN))
-    { return 1; }
+        return 1;
     if (mkdtemp(outfile) == NULL) {
         fprintf(stderr, "Error: Creating Directory: %s\n", outfile);
         return 1;
@@ -142,11 +148,11 @@ update_localdb(int verbose)
 
     /* it's guaranteed, that outfile is only TMP_DIR_LEN long */
     if (sstrncat(outpath, &outlen, STRBUFSIZ, outfile, TMP_DIR_LEN))
-    { return 1; }
+        return 1;
 
     outlen = TMP_DIR_LEN;
     if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN))
-    { return 1; }
+        return 1;
 
     if (download_file(ZIP_URL, outfile, verbose)) {
         fprintf(stderr, "Error: Downloading File: %s\n", ZIP_URL);
@@ -160,9 +166,9 @@ update_localdb(int verbose)
 
     outlen = 0;
     if (sstrncat(tmp, &outlen, STRBUFSIZ, outpath, strlen(outpath)))
-    { return 1; }
+        return 1;
     if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
-    { return 1; }
+        return 1;
 
     homedir = gethome();
     if (homedir == NULL) {
@@ -185,9 +191,9 @@ update_localdb(int verbose)
     }
 
     if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
-    { return 1; }
+        return 1;
     if (sstrncat(outhome, &outlen, STRBUFSIZ, "/", 1))
-    { return 1; }
+        return 1;
 
     if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode))) {
         if (rm(outhome, 0)) {
@@ -225,16 +231,16 @@ clear_localdb(int verbose)
 
     homedir = gethome();
     if (homedir == NULL)
-    { return 1; }
+        return 1;
 
     len = 0;
     if (sstrncat(tmp, &len, STRBUFSIZ, homedir, strlen(homedir)))
-    { return 1; }
+        return 1;
     if (sstrncat(tmp, &len, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
-    { return 1; }
+        return 1;
 
     if (rm(tmp, RMOPT_IGNORE_NOFILE))
-    { return 1; }
+        return 1;
 
     if (verbose) {
         fprintf(stdout, "Successfully removed %s\n", tmp);
@@ -254,22 +260,23 @@ get_file_content(char const *path, char **out, int verbose)
     ((void)verbose);
     *out = NULL;
     fp = fopen(path, "rb");
-    if (!fp) { return 1; }
+    if (!fp)
+        return 1;
 
     if (fseek(fp, 0, SEEK_END))
-    { goto error; }
+        goto error;
     if ((len = (size_t)ftell(fp)) == (size_t)EOF)
-    { goto error; }
+        goto error;
     if (fseek(fp, 0, SEEK_SET))
-    { goto error; }
+        goto error;
 
     *out = (char *)malloc(len);
     if (*out == NULL)
-    { goto error; }
+        goto error;
 
     read = fread(*out, 1, len, fp);
     if (read != len)
-    { goto error; }
+        goto error;
 
     fclose(fp);
     return 0;

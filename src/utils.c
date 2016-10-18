@@ -23,7 +23,7 @@ gethome(void)
     if ((homedir = getenv("HOME")) == NULL) {
         struct passwd *uid;
         if ((uid = getpwuid(getuid())) != NULL)
-        { homedir = uid->pw_dir; }
+            homedir = uid->pw_dir;
     }
 
     return homedir;
@@ -33,7 +33,7 @@ int
 sstrncat(char *dest, size_t *pos, size_t max, char const *src, size_t len)
 {
     if ((*pos + len) > max)
-    { return 1; }
+        return 1;
     memcpy(dest + *pos, src, len);
     *(dest + *pos + len) = '\0';
 
@@ -49,9 +49,9 @@ rround(double arg)
 
     fractional = modf(arg, &integer);
     if (fractional < 0.5)
-    { return floor(arg); }
+        return floor(arg);
     else
-    { return ceil(arg); }
+        return ceil(arg);
 }
 
 int
@@ -149,17 +149,17 @@ unzip(char const *path, char const *outpath)
     len = (long)zip_get_num_entries(archive, 0);
     for (i = 0; i < len; i++) {
         if (zip_stat_index(archive, (zip_uint64_t)i, 0, &stat))
-        { goto error; }
+            goto error;
 
         filelen = strlen(stat.name);
 
         slen = 0;
         if (sstrncat(tmp, &slen, STRBUFSIZ, outpath, outlen))
-        { goto error; }
+            goto error;
         if (sstrncat(tmp, &slen, STRBUFSIZ, "/", 1))
-        { goto error; }
+            goto error;
         if (sstrncat(tmp, &slen, STRBUFSIZ, stat.name, filelen))
-        { goto error; }
+            goto error;
 
         if (tmp[outlen + filelen + 1 - 1] == '/') {
             if (mkdir(tmp, 0755)) {
@@ -206,3 +206,4 @@ error:
     zip_close(archive);
     return 1;
 }
+

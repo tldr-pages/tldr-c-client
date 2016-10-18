@@ -5,10 +5,6 @@
 #include <sys/stat.h>
 #include <sys/utsname.h>
 
-/* This is in tldr.c */
-int
-get_file_content(char const *path, char **out, int verbose);
-
 int
 construct_url(char *buf, size_t buflen, char const *input, char const *platform)
 {
@@ -16,17 +12,17 @@ construct_url(char *buf, size_t buflen, char const *input, char const *platform)
 
     len = 0;
     if (sstrncat(buf, &len, buflen, BASE_URL, BASE_URL_LEN))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, "/", 1))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, platform, strlen(platform)))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, "/", 1))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, input, strlen(input)))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, ".md", 3))
-    { return 1; }
+        return 1;
 
     return 0;
 }
@@ -39,17 +35,17 @@ construct_path(char *buf, size_t buflen, char const *home, char const *input,
 
     len = 0;
     if (sstrncat(buf, &len, buflen, home, strlen(home)))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, TLDR_EXT, TLDR_EXT_LEN))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, platform, strlen(platform)))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, "/", 1))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, input, strlen(input)))
-    { return 1; }
+        return 1;
     if (sstrncat(buf, &len, buflen, ".md", 3))
-    { return 1; }
+        return 1;
 
     return 0;
 }
@@ -155,10 +151,14 @@ print_tldrpage(char const *input, char const *poverride)
     issun = strcmp(sys.sysname, "SunOS") == 0;
 
     if (poverride == NULL) {
-        if (islinux) { platform = "linux"; }
-        else if (isdarwin) { platform = "osx"; }
-        else if (issun) { platform = "sunos"; }
-        else { platform = "common"; }
+        if (islinux)
+            platform = "linux";
+        else if (isdarwin)
+            platform = "osx";
+        else if (issun)
+            platform = "sunos";
+        else
+            platform = "common";
     } else {
         platform = poverride;
         if (strcmp(platform, "linux") != 0 && strcmp(platform, "osx") != 0 &&
@@ -172,13 +172,13 @@ print_tldrpage(char const *input, char const *poverride)
 
     homedir = gethome();
     if (homedir == NULL)
-    { return 1; }
+        return 1;
 
     len = 0;
     if (sstrncat(directory, &len, STRBUFSIZ, homedir, strlen(homedir)))
-    { return 1; }
+        return 1;
     if (sstrncat(directory, &len, STRBUFSIZ, TLDR_EXT, TLDR_EXT_LEN))
-    { return 1; }
+        return 1;
 
     if (stat(directory, &sb) == 0 && S_ISDIR(sb.st_mode)) {
         construct_path(url, URLBUFSIZ, homedir, input, platform);
@@ -209,7 +209,7 @@ print_tldrpage(char const *input, char const *poverride)
         construct_url(url, URLBUFSIZ, input, "common");
         download_content(url, &output, 0);
         if (output == NULL)
-        { return 1; }
+            return 1;
     }
 
     parse_tldrpage(output);
