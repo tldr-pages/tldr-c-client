@@ -1,9 +1,8 @@
-tldr c client
-=============
+# tldr c client <a href='https://travis-ci.org/tldr-pages/tldr-cpp-client'><img src='https://travis-ci.org/tldr-pages/tldr-cpp-client.svg' align="right"></a>
 
-[![Build Status](https://travis-ci.org/tldr-pages/tldr-cpp-client.svg)](https://travis-ci.org/tldr-pages/tldr-cpp-client)
 
-A `C` command line client for tldr
+A command line client for tldr, written in plain ISO C90.
+
 
 ## Installing
 
@@ -19,15 +18,16 @@ brew install tldr
 
 To build the latest version from source:
 ```
-if [[ "`uname`" == "Darwin"  ]]; then brew install curl libzip pkg-config; fi
-if [[ "`uname`" == "Linux" ]]; then apt-get install libcurl4-openssl-dev libzip-dev pkg-config; fi
 git clone https://github.com/tldr-pages/tldr-cpp-client.git tldr-c-client
 cd tldr-c-client
-make
-make install
+
+./deps.sh           # install dependencies
+make                # build tldr
+make install        # install tldr
 ```
 
 The default prefix for installation is `/usr/local/bin`.
+
 
 
 ## Building
@@ -52,12 +52,13 @@ Just call `make` and `tldr` will build itself.
 make
 ```
 
+
 ## Autocompletion
 
-Autocompletion is supported for both `bash` and `zsh`, and can be added by sourcing
+Autocompletion is supported for `bash`, `zsh`, and `fish` and can be added by sourcing
 the correct autocompletion file.
 
-Both files `autocomplete.zsh` and `autocomplete.bash` are in the `autocomplete`
+The files `autocomplete.zsh`, `autocomplete.bash`, and `autocomplete.fish` can be found in the `autocomplete`
 folder in the root of the repository.
 
 #### Installation
@@ -89,9 +90,14 @@ available commands:
     -r, --render=PATH    render a local page for testing purposes
 ```
 
+
+## Contributing
+
+Please read the [CONTRIBUTING.md](https://github.com/tldr-pages/tldr-cpp-client/blob/master/CONTRIBUTING.md) for details.
+
+
+
 ## License
 
-The MIT License (MIT)
-
-Copyright (C) 2016 Arvid Gerstmann
+The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-cpp-client/blob/master/LICENSE) for details.
 

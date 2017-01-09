@@ -85,7 +85,6 @@
 # we do not want to repeat goto fail;
 --keep-one-line-blocks
 --keep-one-line-statements
---add-one-line-brackets
 
 # Obvious 80 col length maximum
 --max-code-length=80

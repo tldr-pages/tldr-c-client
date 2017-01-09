@@ -5,16 +5,15 @@ RM			= rm -rf
 RMDIR		= rmdir
 INSTALL		= install
 
-## CHANGE THIS ##
+# Config
 TARGET		= tldr
 SRCDIR		= src
 OBJDIR		= obj
 BINDIR		= .
 MANDIR		= man
-## CHANGE THIS ##
 
 # CFLAGS, LDFLAGS, CPPFLAGS, PREFIX can be overriden on CLI
-CFLAGS		:= -ggdb -O0 -march=native -ftrapv
+CFLAGS		:= -ggdb -O0 -ftrapv
 CPPFLAGS	:=
 LDFLAGS		:=
 PREFIX		:= /usr/local
@@ -27,10 +26,12 @@ ALL_CFLAGS		+= -Wall -Wextra -pedantic -ansi
 ALL_CFLAGS		+= -fno-strict-aliasing
 ALL_CFLAGS		+= -Wuninitialized -Winit-self -Wfloat-equal
 ALL_CFLAGS		+= -Wshadow -Wc++-compat -Wcast-qual -Wcast-align
-ALL_CFLAGS		+= -Wconversion -Wsign-conversion -Wjump-misses-init
+ALL_CFLAGS		+= -Wconversion -Wsign-conversion -Wno-cast-qual
 ALL_CFLAGS		+= -Wno-multichar -Wpacked -Wstrict-overflow -Wvla
 ALL_CFLAGS		+= -Wformat -Wno-format-zero-length -Wstrict-prototypes
-ALL_CFLAGS		+= -Wno-unknown-warning-option -Wno-cast-qual
+ifeq ($(CC),clang)
+ALL_CFLAGS		+= -Wno-unknown-warning-option
+endif
 
 # Version Generation
 HAS_GIT			:= $(shell type git > /dev/null 2>&1 && echo "1" || echo "0")

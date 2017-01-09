@@ -1,5 +1,12 @@
+/*
+ * utils.c - utilities
+ *
+ * Copyright (C) 2016 Arvid Gerstmann
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ */
 #include "tldr.h"
-#include "utils.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <fts.h>
@@ -24,7 +31,7 @@ gethome(void)
     if ((homedir = getenv("HOME")) == NULL) {
         struct passwd *uid;
         if ((uid = getpwuid(getuid())) != NULL)
-        { homedir = uid->pw_dir; }
+            homedir = uid->pw_dir;
     }
 
     return homedir;
@@ -34,7 +41,7 @@ int
 sstrncat(char *dest, size_t *pos, size_t max, char const *src, size_t len)
 {
     if ((*pos + len) > max)
-    { return 1; }
+        return 1;
     memcpy(dest + *pos, src, len);
     *(dest + *pos + len) = '\0';
 
@@ -50,13 +57,13 @@ rround(double arg)
 
     fractional = modf(arg, &integer);
     if (fractional < 0.5)
-    { return floor(arg); }
+        return floor(arg);
     else
-    { return ceil(arg); }
+        return ceil(arg);
 }
 
 int
-rm(char const *path)
+rm(char const *path, int options)
 {
     FTS *tree;
     FTSENT *cur = NULL;
@@ -71,6 +78,11 @@ rm(char const *path)
             case FTS_NS:
             case FTS_DNR:
             case FTS_ERR:
+                if ((options & RMOPT_IGNORE_NOFILE)
+                    && cur->fts_errno == ENOENT) {
+                    return 0;
+                }
+
                 fprintf(stderr, "Error: %s: error: %s\n", cur->fts_accpath,
                         strerror(cur->fts_errno));
                 return 1;
@@ -142,20 +154,20 @@ unzip(char const *path, char const *outpath)
     }
 
     outlen = strlen(outpath);
-    len = zip_get_num_entries(archive, 0);
+    len = (long)zip_get_num_entries(archive, 0);
     for (i = 0; i < len; i++) {
         if (zip_stat_index(archive, (zip_uint64_t)i, 0, &stat))
-        { goto error; }
+            goto error;
 
         filelen = strlen(stat.name);
 
         slen = 0;
         if (sstrncat(tmp, &slen, STRBUFSIZ, outpath, outlen))
-        { goto error; }
+            goto error;
         if (sstrncat(tmp, &slen, STRBUFSIZ, "/", 1))
-        { goto error; }
+            goto error;
         if (sstrncat(tmp, &slen, STRBUFSIZ, stat.name, filelen))
-        { goto error; }
+            goto error;
 
         if (tmp[outlen + filelen + 1 - 1] == '/') {
             if (mkdir(tmp, 0755)) {
@@ -203,175 +215,3 @@ error:
     return 1;
 }
 
-int
-copyfile(const char *src, const char *dest, mode_t perms)
-{
-    ssize_t n;
-    int src_fd, dest_fd;
-    int dest_flags = O_CREAT | O_WRONLY | O_TRUNC;
-    int buffer[BUFSIZ];
-    int error_occured = 0;
-
-    /* Open source file */
-    if ((src_fd = open(src, O_RDONLY)) == -1) {
-        fprintf(stderr,
-            "Error: Couldn't open source file \"%s\" for copying: %s\n",
-            src,
-            strerror(errno)
-        );
-        return 1;
-    }
-
-    /* Open destination file with the source's permissions. */
-    if ((dest_fd = open(dest, dest_flags, perms)) == -1) {
-        fprintf(stderr,
-            "Error: Couldn't open destination file \"%s\" for copying: %s\n",
-            dest,
-            strerror(errno)
-        );
-        error_occured = 1;
-    } else { /* Open destination was successful */
-        /* Write to dest while we can read from src */
-        while ((n = read(src_fd, buffer, BUFSIZ)) > 0) {
-            /* Write or handle write error */
-            if (write(dest_fd, buffer, (size_t) n) == -1) {
-                fprintf(stderr,
-                    "Write error during copy to \"%s\": %s\n",
-                    dest,
-                    strerror(errno)
-                );
-                error_occured = 1;
-                break;
-            }
-        }
-
-        /* Handle read error */
-        if (n == -1) {
-            fprintf(stderr,
-                "Read error during copy from \"%s\": %s\n",
-                src,
-                strerror(errno)
-            );
-            error_occured = 1;
-        }
-
-        /* Close source file */
-        if (close(src_fd) == -1) {
-            fprintf(stderr,
-                "Error: Couldn't close source file \"%s\" after copying: %s\n",
-                src,
-                strerror(errno)
-            );
-            error_occured = 1;
-        }
-    } /* Else just try to clean up dest_fd, bc opening source file failed */
-
-    /* Close destination file */
-    if (close(dest_fd) == -1) {
-        fprintf(stderr,
-            "Error: Couldn't close destination file \"%s\" after copying: %s\n",
-            dest,
-            strerror(errno)
-        );
-        error_occured = 1;
-    }
-
-    return error_occured;
-}
-
-int
-copytree(const char *src, const char *dest)
-{
-
-    /* Variables for getting path relative to destination
-     */
-    size_t src_len = strlen(src);
-    size_t dest_len = strlen(dest) - 1; /* Ignore '/' at end */
-    char destbuf[STRBUFSIZ];
-
-    int cur_is_dir = 0; /* Is the current object a directory? */
-
-    /* Tree Transversal */
-    FTS *tree;
-    FTSENT *cur = NULL;
-    char *paths[2];
-    paths[0] = (char *)src;
-    paths[1] = NULL;
-
-    /* Put destnation path in buffer, paths will be appended to it. */
-    strncpy(destbuf, dest, dest_len);
-
-    tree = fts_open(paths, FTS_COMFOLLOW | FTS_NOCHDIR, NULL);
-    if (tree != NULL) {
-        while ((cur = fts_read(tree)) != NULL) {
-            switch (cur->fts_info) {
-            case FTS_NS:
-            case FTS_DNR:
-            case FTS_ERR:
-                fprintf(stderr, "Error: %s: error: %s\n", cur->fts_accpath,
-                        strerror(cur->fts_errno));
-                fts_close(tree);
-                return 1;
-
-            case FTS_DC:
-            case FTS_DOT:
-            case FTS_NSOK:
-                /* Not reached unless FTS_LOGICAL, FTS_SEEDOT, or FTS_NOSTAT
-                 * were */
-                /* passed to fts_open() */
-                break;
-
-            case FTS_DP:
-                /* We're going to create directories before looking at their
-                 * files. So we're ignoring this.
-                 */
-                break;
-
-            case FTS_D:
-                cur_is_dir = 1; /* Its a directory */
-            case FTS_F:
-            case FTS_SL:
-            case FTS_SLNONE:
-            case FTS_DEFAULT:
-                /* Append relative path to destbuf, overwriting anything else
-                 * that might be there after the destination path.
-                 */
-                if ((cur->fts_pathlen - src_len + dest_len) > STRBUFSIZ) {
-                    fprintf(stderr, "Error: Path too long\n");
-                    fts_close(tree);
-                    return 1;
-                }
-                strncpy(destbuf + dest_len, cur->fts_path + src_len,
-                        cur->fts_pathlen - src_len); 
-                destbuf[dest_len + cur->fts_pathlen - src_len] = '\0';
-
-                if (cur_is_dir) { /* Create Directory with perms of src one */
-                    if (mkdir(destbuf, cur->fts_statp->st_mode)) {
-                        if (errno != EEXIST) { /* Ignore if already exists */
-                            fprintf(stderr,
-                                    "Couldn't create directory \"%s\": %s\n",
-                                    destbuf,
-                                    strerror(errno)
-                            );
-                            fts_close(tree);
-                            return 1;
-                        }
-                    }
-                    cur_is_dir = 0;
-                } else { /* Copy File */
-                    if (copyfile(cur->fts_path, destbuf,
-                                 cur->fts_statp->st_mode)) {
-                        fts_close(tree);
-                        return 1;
-                    }
-                }
-                break;
-            }
-        }
-
-        fts_close(tree);
-        return 0;
-    }
-
-    return 1;
-}

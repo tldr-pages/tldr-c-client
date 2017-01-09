@@ -1,14 +1,17 @@
+/*
+ * tldr.c - main routines
+ *
+ * Copyright (C) 2016 Arvid Gerstmann
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ */
+#include "tldr.h"
 #include <errno.h>
 #include <getopt.h>
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
-#include "tldr.h"
-#include "net.h"
-#include "parser.h"
-#include "utils.h"
-#include "local.h"
 
 #define VERSION_TAG "v1.3.0"
 #ifndef VERSION
@@ -79,7 +82,7 @@ main(int argc, char **argv)
         case 'p': {
             size_t len = strlen(optarg);
             if (len > STRBUFSIZ)
-            { exit(EXIT_FAILURE); }
+                exit(EXIT_FAILURE);
 
             memcpy(pbuf, optarg, len);
             pbuf[len] = '\0';
@@ -89,7 +92,7 @@ main(int argc, char **argv)
         case 'r': {
             size_t len = strlen(optarg);
             if (len > STRBUFSIZ)
-            { exit(EXIT_FAILURE); }
+                exit(EXIT_FAILURE);
 
             memcpy(pbuf, optarg, len);
             pbuf[len] = '\0';
@@ -113,12 +116,12 @@ main(int argc, char **argv)
     }
     if (update_flag) {
         if (update_localdb(verbose_flag))
-        { return EXIT_FAILURE; }
+            return EXIT_FAILURE;
         return EXIT_SUCCESS;
     }
     if (clear_flag) {
         if (clear_localdb(verbose_flag))
-        { return EXIT_FAILURE; }
+            return EXIT_FAILURE;
         return EXIT_SUCCESS;
     }
     if (verbose_flag && optind >= argc) {
@@ -127,7 +130,7 @@ main(int argc, char **argv)
     }
     if (render_flag) {
         if (print_localpage(pbuf))
-        { return EXIT_FAILURE; }
+            return EXIT_FAILURE;
         return EXIT_SUCCESS;
     }
 
@@ -138,7 +141,7 @@ main(int argc, char **argv)
         sum = 0;
         while (optind < argc) {
             if (sum >= 4096)
-            { exit(EXIT_FAILURE); }
+                exit(EXIT_FAILURE);
 
             len = strlen(argv[optind]);
             memcpy(buf + sum, argv[optind], len);
@@ -150,11 +153,10 @@ main(int argc, char **argv)
         buf[sum - 1] = '\0';
 
         if (!has_localdb())
-        { update_localdb(verbose_flag); }
+            update_localdb(verbose_flag);
         if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL)) {
             fprintf(stdout, "This page doesn't exist yet!\n");
-            fprintf(stdout,
-                    "Submit new pages here: https://github.com/tldr-pages/tldr\n");
+            fprintf(stdout, "Submit new pages here: https://github.com/tldr-pages/tldr\n");
             return EXIT_FAILURE;
         }
     }
@@ -167,9 +169,9 @@ print_version(char const *arg)
 {
     /* *INDENT-OFF* */
     if (strcmp("", VERSION_PRETTY) == 0)
-    { fprintf(stdout, "%s %s\n", arg, VERSION_TAG); }
+       fprintf(stdout, "%s %s\n", arg, VERSION_TAG);
     else
-    { fprintf(stdout, "%s %s (%s)\n", arg, VERSION_TAG, VERSION_PRETTY); };
+       fprintf(stdout, "%s %s (%s)\n", arg, VERSION_TAG, VERSION_PRETTY);;
     fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
     fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
     /* *INDENT-ON* */
