@@ -143,41 +143,10 @@ update_localdb(int verbose)
     char outhome[STRBUFSIZ];
     char const *homedir;
     size_t outlen;
+    size_t homelen;
+    size_t tmplen;
 
-    outlen = 0;
-    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN))
-        return 1;
-    if (mkdtemp(outfile) == NULL) {
-        fprintf(stderr, "Error: Creating Directory: %s\n", outfile);
-        return 1;
-    }
-
-    outlen = 0;
-
-    /* it's guaranteed, that outfile is only TMP_DIR_LEN long */
-    if (sstrncat(outpath, &outlen, STRBUFSIZ, outfile, TMP_DIR_LEN))
-        return 1;
-
-    outlen = TMP_DIR_LEN;
-    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN))
-        return 1;
-
-    if (download_file(ZIP_URL, outfile, verbose)) {
-        fprintf(stderr, "Error: Downloading File: %s\n", ZIP_URL);
-        return 1;
-    }
-
-    if (unzip(outfile, outpath)) {
-        rm(outpath, 0);
-        return 1;
-    }
-
-    outlen = 0;
-    if (sstrncat(tmp, &outlen, STRBUFSIZ, outpath, strlen(outpath)))
-        return 1;
-    if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
-        return 1;
-
+    /* get path to ".tldrc" (outhome) */
     homedir = gethome();
     if (homedir == NULL) {
         fprintf(stderr, "Error: HOME not existant\n");
@@ -185,22 +154,56 @@ update_localdb(int verbose)
     }
 
     outlen = 0;
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, homedir, strlen(homedir))) {
+    if (sstrncat(outhome, &outlen, STRBUFSIZ, homedir, strlen(homedir)))
         return 1;
-    }
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN)) {
+    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN))
         return 1;
-    }
+    homelen = outlen;
 
+    /* create it if it doesn't exist */
     if (mkdir(outhome, 0755) > 0 && errno != EEXIST) {
         fprintf(stderr, "Error: Could Not Create Directory: %s\n", outhome);
-        rm(outpath, 0);
         return 1;
     }
 
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+    /* create tmp directory (outpath) in outhome */
+    outlen = 0;
+    if (sstrncat(outpath, &outlen, STRBUFSIZ, outhome, homelen))
         return 1;
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, "/", 1))
+    if (sstrncat(outpath, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN))
+        return 1;
+    tmplen = homelen + TMP_DIR_LEN;
+    if (mkdtemp(outpath) == NULL) {
+        fprintf(stderr, "Error: Creating Directory: %s\n", outpath);
+        return 1;
+    }
+
+    /* downlaod content to outfile in tmp directory (outpath) */
+    outlen = 0;
+    if (sstrncat(outfile, &outlen, STRBUFSIZ, outpath, tmplen))
+        return 1;
+    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN))
+        return 1;
+
+    if (download_file(ZIP_URL, outfile, verbose)) {
+        fprintf(stderr, "Error: Downloading File: %s\n", ZIP_URL);
+        if (rm(outpath, 0))
+            fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
+
+        return 1;
+    }
+
+    /* unzip content (tmp) and move it to outhome */
+    if (unzip(outfile, outpath)) {
+        if (rm(outpath, 0))
+            fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
+
+        return 1;
+    }
+
+    if (sstrncat(outhome, &homelen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+        return 1;
+    if (sstrncat(outhome, &homelen, STRBUFSIZ, "/", 1))
         return 1;
 
     if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode))) {
@@ -210,12 +213,21 @@ update_localdb(int verbose)
         }
     }
 
+    outlen = 0;
+    if (sstrncat(tmp, &outlen, STRBUFSIZ, outpath, tmplen))
+        return 1;
+    if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+        return 1;
+
     if (rename(tmp, outhome)) {
         fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
-        rm(outpath, 0);
+        if (rm(outpath, 0))
+            fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
+
         return 1;
     }
 
+    /* clean up */
     if (rm(outpath, 0)) {
         fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
         return 1;
