@@ -20,7 +20,7 @@
 #define ZIP_URL "https://github.com/tldr-pages/tldr/archive/master.zip"
 #define ZIP_URL_LEN (sizeof(ZIP_URL_LEN) - 1)
 
-#define TMP_DIR "/tmp/tldrXXXXXX"
+#define TMP_DIR "/tldrXXXXXX"
 #define TMP_DIR_LEN (sizeof(TMP_DIR) - 1)
 
 #define TMP_FILE "/master.zip"
