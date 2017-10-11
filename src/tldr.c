@@ -51,7 +51,6 @@ main(int argc, char **argv)
     int missing_arg;
     int option_index;
 
-    check_localdate();
     if (argc < 2) {
         print_usage(argv[0]);
         return EXIT_FAILURE;
@@ -102,6 +101,10 @@ main(int argc, char **argv)
         default:
             abort();
         }
+    }
+
+    if (!update_flag) {
+        check_localdate();
     }
 
     /* show help, if platform was supplied, but no further argument */
