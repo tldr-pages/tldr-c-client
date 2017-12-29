@@ -135,6 +135,7 @@ parse_tldrpage(char const *input)
         }
     }
 
+    fprintf(stdout, "\n");
     return 0;
 }
 
