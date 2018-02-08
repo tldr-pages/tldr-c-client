@@ -143,10 +143,9 @@ main(int argc, char **argv)
 
         sum = 0;
         while (optind < argc) {
-            if (sum >= 4096)
-                exit(EXIT_FAILURE);
-
             len = strlen(argv[optind]);
+            if (sum+len >= 4096)
+                exit(EXIT_FAILURE);
             memcpy(buf + sum, argv[optind], len);
             memcpy(buf + sum + len, "-", 1);
             sum += len + 1;
