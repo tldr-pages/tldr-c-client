@@ -20,7 +20,7 @@ elif [ "$UNAME" = "Linux" ]; then
 
     if [ "$HAS_APT" -eq 1 ]; then
         apt-get update
-        apt-get install libcurl4-openssl-dev libzip-dev pkg-config || exit 1
+        apt-get install -y libcurl4-openssl-dev libzip-dev pkg-config || exit 1
     elif [ "$HAS_PACMAN" -eq 1 ]; then
         pacman -Syy
         pacman -S libzip libcurl-gnutls pkg-config || exit 1
