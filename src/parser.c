@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
-#include <sys/utsname.h>
 
 int
 construct_url(char *buf, size_t buflen, char const *input, char const *platform)
@@ -141,32 +140,16 @@ parse_tldrpage(char const *input)
 int
 print_tldrpage(char const *input, char const *poverride)
 {
-    int islinux;
-    int isdarwin;
-    int issun;
     char *output;
     char url[URLBUFSIZ];
-    struct utsname sys;
     char const *platform;
     char const *homedir;
     size_t len;
     char directory[STRBUFSIZ];
     struct stat sb;
 
-    uname(&sys);
-    islinux = strcmp(sys.sysname, "Linux") == 0;
-    isdarwin = strcmp(sys.sysname, "Darwin") == 0;
-    issun = strcmp(sys.sysname, "SunOS") == 0;
-
     if (poverride == NULL) {
-        if (islinux)
-            platform = "linux";
-        else if (isdarwin)
-            platform = "osx";
-        else if (issun)
-            platform = "sunos";
-        else
-            platform = "common";
+        platform = getplatform();
     } else {
         platform = poverride;
         if (strcmp(platform, "linux") != 0 && strcmp(platform, "osx") != 0 &&

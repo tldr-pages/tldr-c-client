@@ -77,6 +77,7 @@ double      rround              (double arg);
 int         rm                  (char const *path, int options);
 int         unzip               (char const *path, char const *outpath);
 char const *gethome             (void);
+char const *getplatform         (void);
 int         sstrncat            (char *dest, size_t *pos, size_t max,
                                  char const *src, size_t len);
 #endif /* TLDR_H */
