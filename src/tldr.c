@@ -41,6 +41,9 @@ static struct option long_options[] = {
     { "update", no_argument, &update_flag, 1 },
     { "clear-cache", no_argument, &clear_flag, 1 },
     { "platform", required_argument, 0, 'p' },
+    { "linux",  no_argument, 0, 'p' },
+    { "osx",  no_argument, 0, 'p' },
+    { "sunos",  no_argument, 0, 'p' },
     { "render", required_argument, 0, 'r'}, {0, 0, 0, 0 }
 };
 
@@ -79,12 +82,17 @@ main(int argc, char **argv)
             break;
 
         case 'p': {
-            size_t len = strlen(optarg);
-            if (len > STRBUFSIZ)
-                exit(EXIT_FAILURE);
+            const char* platform_name = long_options[option_index].name;
+            if (strcmp(platform_name, "platform") == 0) {
+                size_t len = strlen(optarg);
+                if (len > STRBUFSIZ)
+                    exit(EXIT_FAILURE);
 
-            memcpy(pbuf, optarg, len);
-            pbuf[len] = '\0';
+                memcpy(pbuf, optarg, len);
+                pbuf[len] = '\0';
+            } else {
+                memcpy(pbuf, platform_name, strlen(platform_name));
+            }
             platform_flag = 1;
         } break;
 
@@ -195,6 +203,9 @@ print_usage(char const *arg)
     fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
     fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / common");
+    fprintf(stdout, "    %-20s %-30s\n", "--linux", "show command page for Linux");
+    fprintf(stdout, "    %-20s %-30s\n", "--osx", "show command page for OSX");
+    fprintf(stdout, "    %-20s %-30s\n", "--sunos", "show command page for SunOS");
     fprintf(stdout, "    %-20s %-30s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
     /* *INDENT-ON* */
