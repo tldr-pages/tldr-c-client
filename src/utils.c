@@ -29,11 +29,16 @@ char const *
 gethome(void)
 {
     char const *homedir = NULL;
-    if ((homedir = getenv("HOME")) == NULL) {
-        struct passwd *uid;
-        if ((uid = getpwuid(getuid())) != NULL)
-            homedir = uid->pw_dir;
-    }
+    struct passwd *uid;
+
+    if ((homedir = getenv("TLDR_CACHE_DIR")) != NULL)
+        return homedir;
+
+    if ((homedir = getenv("HOME")) != NULL)
+        return homedir;
+
+    if ((uid = getpwuid(getuid())) != NULL)
+        homedir = uid->pw_dir;
 
     return homedir;
 }
