@@ -155,10 +155,11 @@ print_tldrpage(char const *input, char const *poverride)
     } else {
         platform = poverride;
         if (strcmp(platform, "linux") != 0 && strcmp(platform, "osx") != 0 &&
-            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0) {
+            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0 &&
+            strcmp(platform, "windows") != 0) {
             fprintf(stderr, "Error: platform %s is unsupported\n", platform);
             fprintf(
-                stderr, "Supported platforms: linux / osx / sunos / common\n");
+                stderr, "Supported platforms: linux / osx / sunos / windows / common\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -224,10 +225,11 @@ print_tldrlist(char const *poverride)
     } else {
         platform = poverride;
         if (strcmp(platform, "linux") != 0 && strcmp(platform, "osx") != 0 &&
-            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0) {
+            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0 &&
+            strcmp(platform, "windows") != 0) {
             fprintf(stderr, "Error: platform %s is unsupported\n", platform);
             fprintf(
-                stderr, "Supported platforms: linux / osx / sunos / common\n");
+                stderr, "Supported platforms: linux / osx / sunos / windows / common\n");
             exit(EXIT_FAILURE);
         }
     }

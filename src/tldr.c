@@ -205,7 +205,7 @@ print_usage(char const *arg)
     fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
     fprintf(stdout, "    %-20s %-30s\n", "-l, --list", "list all entries in the local databse");
     fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
-            "select platform, supported are linux / osx / sunos / common");
+            "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-20s %-30s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
     /* *INDENT-ON* */

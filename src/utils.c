@@ -50,6 +50,8 @@ getplatform(void)
         return "osx";
     else if (strcmp(sys.sysname, "SunOS") == 0)
         return "sunos";
+    else if (strcmp(sys.sysname, "Windows") == 0)
+        return "windows";
     else
         return "common";
 }
