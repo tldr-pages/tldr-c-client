@@ -22,7 +22,7 @@ TARGET_ARCH :=
 
 # Compiler Flags
 ALL_CFLAGS		:= $(CFLAGS)
-ALL_CFLAGS		+= -Wall -Wextra -pedantic -ansi
+ALL_CFLAGS		+= -Wall -Wextra -pedantic
 ALL_CFLAGS		+= -fno-strict-aliasing
 ALL_CFLAGS		+= -Wuninitialized -Winit-self -Wfloat-equal
 ALL_CFLAGS		+= -Wshadow -Wc++-compat -Wcast-qual -Wcast-align
