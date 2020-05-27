@@ -15,6 +15,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 #include <zip.h>
 
@@ -28,13 +29,36 @@ char const *
 gethome(void)
 {
     char const *homedir = NULL;
-    if ((homedir = getenv("HOME")) == NULL) {
-        struct passwd *uid;
-        if ((uid = getpwuid(getuid())) != NULL)
-            homedir = uid->pw_dir;
-    }
+    struct passwd *uid;
+
+    if ((homedir = getenv("TLDR_CACHE_DIR")) != NULL)
+        return homedir;
+
+    if ((homedir = getenv("HOME")) != NULL)
+        return homedir;
+
+    if ((uid = getpwuid(getuid())) != NULL)
+        homedir = uid->pw_dir;
 
     return homedir;
+}
+
+char const *
+getplatform(void)
+{
+    struct utsname sys;
+    uname(&sys);
+
+    if (strcmp(sys.sysname, "Linux") == 0)
+        return "linux";
+    else if (strcmp(sys.sysname, "Darwin") == 0)
+        return "osx";
+    else if (strcmp(sys.sysname, "SunOS") == 0)
+        return "sunos";
+    else if (strcmp(sys.sysname, "Windows") == 0)
+        return "windows";
+    else
+        return "common";
 }
 
 int

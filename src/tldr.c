@@ -31,6 +31,7 @@ static int verbose_flag;
 static int update_flag;
 static int clear_flag;
 static int platform_flag;
+static int list_flag;
 static int render_flag;
 static char pbuf[STRBUFSIZ];
 static struct option long_options[] = {
@@ -44,6 +45,7 @@ static struct option long_options[] = {
     { "linux",  no_argument, 0, 'p' },
     { "osx",  no_argument, 0, 'p' },
     { "sunos",  no_argument, 0, 'p' },
+    { "list", no_argument, &list_flag, 'l'},
     { "render", required_argument, 0, 'r'}, {0, 0, 0, 0 }
 };
 
@@ -116,7 +118,7 @@ main(int argc, char **argv)
     }
 
     /* show help, if platform was supplied, but no further argument */
-    missing_arg = (platform_flag && (optind == argc));
+    missing_arg = (platform_flag && !list_flag && (optind == argc));
     if (help_flag || missing_arg) {
         print_usage(argv[0]);
         return EXIT_SUCCESS;
@@ -139,6 +141,14 @@ main(int argc, char **argv)
         print_version(argv[0]);
         return EXIT_SUCCESS;
     }
+    if (list_flag) {
+        if (!has_localdb())
+            update_localdb(verbose_flag);
+
+        if (print_tldrlist(pbuf[0] != 0 ? pbuf : NULL))
+            return EXIT_FAILURE;
+        return EXIT_SUCCESS;
+    }
     if (render_flag) {
         if (print_localpage(pbuf))
             return EXIT_FAILURE;
@@ -151,10 +161,9 @@ main(int argc, char **argv)
 
         sum = 0;
         while (optind < argc) {
-            if (sum >= 4096)
-                exit(EXIT_FAILURE);
-
             len = strlen(argv[optind]);
+            if (sum+len >= 4096)
+                exit(EXIT_FAILURE);
             memcpy(buf + sum, argv[optind], len);
             memcpy(buf + sum + len, "-", 1);
             sum += len + 1;
@@ -201,8 +210,9 @@ print_usage(char const *arg)
     fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
+    fprintf(stdout, "    %-20s %-30s\n", "-l, --list", "list all entries in the local databse");
     fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
-            "select platform, supported are linux / osx / sunos / common");
+            "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-20s %-30s\n", "--linux", "show command page for Linux");
     fprintf(stdout, "    %-20s %-30s\n", "--osx", "show command page for OSX");
     fprintf(stdout, "    %-20s %-30s\n", "--sunos", "show command page for SunOS");

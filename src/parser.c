@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dirent.h>
 #include <sys/stat.h>
-#include <sys/utsname.h>
 
 int
 construct_url(char *buf, size_t buflen, char const *input, char const *platform)
@@ -135,45 +135,31 @@ parse_tldrpage(char const *input)
         }
     }
 
+    fprintf(stdout, "\n");
     return 0;
 }
 
 int
 print_tldrpage(char const *input, char const *poverride)
 {
-    int islinux;
-    int isdarwin;
-    int issun;
     char *output;
     char url[URLBUFSIZ];
-    struct utsname sys;
     char const *platform;
     char const *homedir;
     size_t len;
     char directory[STRBUFSIZ];
     struct stat sb;
 
-    uname(&sys);
-    islinux = strcmp(sys.sysname, "Linux") == 0;
-    isdarwin = strcmp(sys.sysname, "Darwin") == 0;
-    issun = strcmp(sys.sysname, "SunOS") == 0;
-
     if (poverride == NULL) {
-        if (islinux)
-            platform = "linux";
-        else if (isdarwin)
-            platform = "osx";
-        else if (issun)
-            platform = "sunos";
-        else
-            platform = "common";
+        platform = getplatform();
     } else {
         platform = poverride;
         if (strcmp(platform, "linux") != 0 && strcmp(platform, "osx") != 0 &&
-            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0) {
+            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0 &&
+            strcmp(platform, "windows") != 0) {
             fprintf(stderr, "Error: platform %s is unsupported\n", platform);
             fprintf(
-                stderr, "Supported platforms: linux / osx / sunos / common\n");
+                stderr, "Supported platforms: linux / osx / sunos / windows / common\n");
             exit(EXIT_FAILURE);
         }
     }
@@ -223,6 +209,79 @@ print_tldrpage(char const *input, char const *poverride)
     parse_tldrpage(output);
 
     free(output);
+    return 0;
+}
+
+int
+print_tldrlist(char const *poverride)
+{
+    char const *platform;
+    char const *homedir;
+    size_t len;
+    char directory[STRBUFSIZ];
+
+    if (poverride == NULL) {
+        platform = getplatform();
+    } else {
+        platform = poverride;
+        if (strcmp(platform, "linux") != 0 && strcmp(platform, "osx") != 0 &&
+            strcmp(platform, "common") != 0 && strcmp(platform, "sunos") != 0 &&
+            strcmp(platform, "windows") != 0) {
+            fprintf(stderr, "Error: platform %s is unsupported\n", platform);
+            fprintf(
+                stderr, "Supported platforms: linux / osx / sunos / windows / common\n");
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    homedir = gethome();
+    if (homedir == NULL)
+        return 1;
+
+    len = 0;
+    if (sstrncat(directory, &len, STRBUFSIZ, homedir, strlen(homedir)))
+        return 1;
+    if (sstrncat(directory, &len, STRBUFSIZ, TLDR_EXT, TLDR_EXT_LEN))
+        return 1;
+
+    if (strcmp(platform, "common") != 0) {
+        parse_tldrlist(directory, platform);
+        fprintf(stdout, "\n");
+    }
+
+    parse_tldrlist(directory, "common");
+
+    return 0;
+}
+
+int
+parse_tldrlist(char const *path, char const *platform)
+{
+    struct dirent *entry;
+    DIR *directory;
+    char fullpath[STRBUFSIZ];
+    size_t len;
+
+    len = 0;
+    if (sstrncat(fullpath, &len, STRBUFSIZ, path, strlen(path)))
+        return 1;
+    if (sstrncat(fullpath, &len, STRBUFSIZ, platform, strlen(platform)))
+        return 1;
+
+    fprintf(stdout, "%s", ANSI_BOLD_ON);
+    fprintf(stdout, "Pages for %s\n", platform);
+    fprintf(stdout, "%s", ANSI_BOLD_OFF);
+
+    directory = opendir(fullpath);
+
+    while((entry = readdir(directory))) {
+        len = strlen(entry->d_name);
+        if (strcmp(entry->d_name + (len - 3), ".md") != 0)
+            continue;
+
+        fprintf(stdout, "%.*s\n", (int) len - 3, entry->d_name);
+    }
+
     return 0;
 }
 
