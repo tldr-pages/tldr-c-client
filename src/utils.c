@@ -15,6 +15,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/utsname.h>
 #include <unistd.h>
 #include <zip.h>
 
@@ -35,6 +36,22 @@ gethome(void)
     }
 
     return homedir;
+}
+
+char const *
+getplatform(void)
+{
+    struct utsname sys;
+    uname(&sys);
+
+    if (strcmp(sys.sysname, "Linux") == 0)
+        return "linux";
+    else if (strcmp(sys.sysname, "Darwin") == 0)
+        return "osx";
+    else if (strcmp(sys.sysname, "SunOS") == 0)
+        return "sunos";
+    else
+        return "common";
 }
 
 int
