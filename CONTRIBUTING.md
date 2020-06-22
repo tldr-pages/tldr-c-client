@@ -72,5 +72,5 @@ My submitting a patch you agree to license your patch under the MIT License.
 
 
 [pull requests]:    https://help.github.com/articles/using-pull-requests/
-[coding standard]:  https://github.com/tldr-pages/tldr-cpp-client/blob/master/STYLE.md#
+[coding standard]:  https://github.com/tldr-pages/tldr-c-client/blob/master/STYLE.md
 
