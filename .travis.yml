@@ -17,13 +17,14 @@ addons:
             - pkg-config
 
 before_install:
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get update -qq; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq libcurl4-openssl-dev; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq libzip-dev; fi
-    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo apt-get install -qq pkg-config; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install curl; fi
-    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install libzip; fi
+    - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+          sudo apt-get update -qq;
+          sudo apt-get install -qq libcurl4-openssl-dev libzip-dev pkg-config;
+      fi
+    - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
+          brew update;
+          brew install curl libzip;
+      fi
 
 script:
     - make V=1 DEBUG=
