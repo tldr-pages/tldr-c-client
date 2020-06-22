@@ -1,5 +1,5 @@
-# tldr c client <a href='https://travis-ci.org/tldr-pages/tldr-cpp-client'><img src='https://travis-ci.org/tldr-pages/tldr-cpp-client.svg' align="right"></a>
-
+# tldr c client
+[![Build Status](https://travis-ci.org/tldr-pages/tldr-c-client.svg?branch=master)](https://travis-ci.org/tldr-pages/tldr-c-client)
 
 A command line client for tldr, written in plain ISO C90.
 
@@ -18,7 +18,7 @@ brew install tldr
 
 To build the latest version from source:
 ```
-git clone https://github.com/tldr-pages/tldr-cpp-client.git tldr-c-client
+git clone https://github.com/tldr-pages/tldr-c-client.git
 cd tldr-c-client
 
 ./deps.sh           # install dependencies
@@ -27,7 +27,6 @@ make install        # install tldr
 ```
 
 The default prefix for installation is `/usr/local/bin`.
-
 
 
 ## Building
@@ -43,7 +42,7 @@ Building the `tldr` client is pretty straightforward.
 
 #### Compiling
 
-The [`Makefile`](https://github.com/tldr-pages/tldr-cpp-client/blob/master/Makefile)
+The [`Makefile`](https://github.com/tldr-pages/tldr-c-client/blob/master/Makefile)
 in the root directory has all you need for builing the project.
 
 Just call `make` and `tldr` will build itself.
@@ -74,7 +73,6 @@ echo "source ~/.tldr.complete" >> ~/.zshrc
 ```
 
 
-
 ## Usage
 
 ```
@@ -93,11 +91,9 @@ available commands:
 
 ## Contributing
 
-Please read the [CONTRIBUTING.md](https://github.com/tldr-pages/tldr-cpp-client/blob/master/CONTRIBUTING.md) for details.
-
+Please read the [CONTRIBUTING.md](https://github.com/tldr-pages/tldr-c-client/blob/master/CONTRIBUTING.md) for details.
 
 
 ## License
 
-The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-cpp-client/blob/master/LICENSE) for details.
-
+The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-c-client/blob/master/LICENSE) for details.
