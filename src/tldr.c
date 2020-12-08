@@ -193,7 +193,7 @@ print_version(char const *arg)
     else
        fprintf(stdout, "%s %s (%s)\n", arg, VERSION_TAG, VERSION_PRETTY);;
     fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
-    fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-cpp-client\n");
+    fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-c-client\n");
     /* *INDENT-ON* */
 }
 
