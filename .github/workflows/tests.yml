@@ -1,0 +1,38 @@
+name: Tests
+
+on: ['push', 'pull_request']
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [clang, gcc]
+
+    name: ${{ matrix.os }} (${{ matrix.compiler }})
+
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Install Dependencies (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      run: |
+        sudo apt update -qq
+        sudo apt install -qq libcurl4-openssl-dev libzip-dev pkg-config
+
+    - name: Install Dependencies (MacOS)
+      if: ${{ matrix.os == 'macos-latest' }}
+      run: |
+        brew update
+        brew install curl libzip
+
+    - name: Compile
+      run: make V=1 DEBUG= CC=${{ matrix.compiler }} LD=${{ matrix.compiler }}
+
+    - name: Test
+      run: ./tldr --version
