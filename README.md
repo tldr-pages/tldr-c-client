@@ -1,5 +1,6 @@
 # tldr c client
-[![Build Status](https://travis-ci.org/tldr-pages/tldr-c-client.svg?branch=master)](https://travis-ci.org/tldr-pages/tldr-c-client)
+
+[![Build Status](https://img.shields.io/github/workflow/status/tldr-pages/tldr-c-client/Tests.svg?style=flat-square)](https://github.com/tldr-pages/tldr-c-client/actions)
 
 A command line client for tldr, written in plain ISO C90.
 
