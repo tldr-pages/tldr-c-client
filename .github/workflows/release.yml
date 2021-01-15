@@ -18,8 +18,5 @@ jobs:
       - name: Update Homebrew Formula
         uses: dawidd6/action-homebrew-bump-formula@v3
         with:
-          # Token (GitHub PAT with 'public_repo' scope)
           token: ${{ secrets.BREW_ACCESS_TOKEN }}
-
-          # Formula name
           formula: tldr
