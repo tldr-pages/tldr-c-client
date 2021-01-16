@@ -43,7 +43,7 @@ Building the `tldr` client is pretty straightforward.
 
 #### Compiling
 
-The [`Makefile`](https://github.com/tldr-pages/tldr-c-client/blob/master/Makefile)
+The [`Makefile`](https://github.com/tldr-pages/tldr-c-client/blob/main/Makefile)
 in the root directory has all you need for builing the project.
 
 Just call `make` and `tldr` will build itself.
@@ -92,9 +92,9 @@ available commands:
 
 ## Contributing
 
-Please read the [CONTRIBUTING.md](https://github.com/tldr-pages/tldr-c-client/blob/master/CONTRIBUTING.md) for details.
+Please read the [CONTRIBUTING.md](https://github.com/tldr-pages/tldr-c-client/blob/main/CONTRIBUTING.md) for details.
 
 
 ## License
 
-The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-c-client/blob/master/LICENSE) for details.
+The MIT License (MIT) - see [LICENSE](https://github.com/tldr-pages/tldr-c-client/blob/main/LICENSE) for details.

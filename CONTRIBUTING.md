@@ -21,7 +21,7 @@ Please follow these few guidelines, to make sure your pull request will be accep
 
 # Choosing the right branch
 
-All pull requests have to be filed against the `master` branch, since this is
+All pull requests have to be filed against the `main` branch, since this is
 where all of the development is happening.
 Pull requests to other branches will not be accepted.
 
@@ -72,5 +72,4 @@ My submitting a patch you agree to license your patch under the MIT License.
 
 
 [pull requests]:    https://help.github.com/articles/using-pull-requests/
-[coding standard]:  https://github.com/tldr-pages/tldr-c-client/blob/master/STYLE.md
-
+[coding standard]:  https://github.com/tldr-pages/tldr-c-client/blob/main/STYLE.md
