@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  brew:
+    runs-on: macos-latest
+
+    name: Brew Formula
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Update Homebrew Formula
+        uses: dawidd6/action-homebrew-bump-formula@v3
+        with:
+          token: ${{ secrets.BREW_ACCESS_TOKEN }}
+          formula: tldr
