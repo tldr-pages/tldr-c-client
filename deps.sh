@@ -12,6 +12,7 @@ if [ "$UNAME" = "Darwin" ]; then
 elif [ "$UNAME" = "Linux" ]; then
     HAS_APT=$(command -v apt-get > /dev/null >&1 && echo 1 || echo 0)
     HAS_PACMAN=$(command -v pacman > /dev/null >&1 && echo 1 || echo 0)
+    HAS_YUM=$(command -v yum > /dev/null >&1 && echo 1 || echo 0)
 
     if [ "$(id -u)" != "0" ]; then
         echo "Please run this script as root"
@@ -24,9 +25,14 @@ elif [ "$UNAME" = "Linux" ]; then
     elif [ "$HAS_PACMAN" -eq 1 ]; then
         pacman -Syy
         pacman -S libzip libcurl-gnutls pkg-config || exit 1
+    elif [ "$HAS_YUM" -eq 1 ]; then
+        yum makecache
+        yum install -y libcurl-devel libzip-devel pkgconfig || exit 1
+    else
+        echo "Unknown Linux distribution"
+        exit 1
     fi
 else
     echo "Unknown platform"
     exit 1
 fi
-
