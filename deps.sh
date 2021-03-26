@@ -30,9 +30,9 @@ elif [ "$UNAME" = "Linux" ]; then
         yum install -y libcurl-devel libzip-devel pkgconfig || exit 1
     else
         echo "Unknown Linux distribution"
+        exit 1
     fi
 else
     echo "Unknown platform"
     exit 1
 fi
-
