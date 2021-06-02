@@ -26,7 +26,7 @@
 #define TMP_FILE "/main.zip"
 #define TMP_FILE_LEN (sizeof(TMP_FILE) - 1)
 
-#define TLDR_DIR "/tldr-main"
+#define TLDR_DIR "/tldr"
 #define TLDR_DIR_LEN (sizeof(TLDR_DIR) - 1)
 
 #define TLDR_HOME "/.tldrc"
@@ -35,7 +35,7 @@
 #define TLDR_DATE "/.tldrc/date"
 #define TLDR_DATE_LEN (sizeof(TLDR_DATE) - 1)
 
-#define TLDR_EXT "/.tldrc/tldr-main/pages/"
+#define TLDR_EXT "/.tldrc/tldr/pages/"
 #define TLDR_EXT_LEN (sizeof(TLDR_EXT) - 1)
 
 #define ANSI_COLOR_RESET_FG                     "\x1b[39m"
