@@ -7,13 +7,13 @@ complete -c tldr -rf -f -s p -l platform -a "linux osx sunos common" -d "select 
 complete -c tldr -r -s r -l render -a PATH -d "render a local page for testing purpose"
 
 function __tldr_get_files
-    set -l files (basename -s .md (find $HOME/.tldrc/tldr-main/pages/$argv[1] -name '*.md'))
+    set -l files (basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md'))
     for f in $files
         echo $f
     end
 end
 
-if test -d "$HOME/.tldrc/tldr-main/pages"
+if test -d "$HOME/.tldrc/tldr/pages"
     set -l cmpl (__tldr_get_files common)
 
     switch (uname)
