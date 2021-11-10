@@ -141,6 +141,7 @@ update_localdb(int verbose)
     char outpath[STRBUFSIZ];
     char outfile[STRBUFSIZ];
     char outhome[STRBUFSIZ];
+    char sysmv[STRBUFSIZ];
     char const *homedir;
     size_t outlen;
 
@@ -210,7 +211,17 @@ update_localdb(int verbose)
         }
     }
 
-    if (rename(tmp, outhome)) {
+    outlen = 0;
+    if (sstrncat(sysmv, &outlen, STRBUFSIZ, "mv ", 3))
+        return 1;
+    if (sstrncat(sysmv, &outlen, STRBUFSIZ, tmp, strlen(tmp)))
+        return 1;
+    if (sstrncat(sysmv, &outlen, STRBUFSIZ, " ", 1))
+        return 1;
+    if (sstrncat(sysmv, &outlen, STRBUFSIZ, outhome, strlen(outhome)))
+        return 1;
+
+    if (system(sysmv)) {
         fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
         rm(outpath, 0);
         return 1;
