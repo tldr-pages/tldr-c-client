@@ -211,20 +211,27 @@ update_localdb(int verbose)
         }
     }
 
-    outlen = 0;
-    if (sstrncat(sysmv, &outlen, STRBUFSIZ, "mv ", 3))
-        return 1;
-    if (sstrncat(sysmv, &outlen, STRBUFSIZ, tmp, strlen(tmp)))
-        return 1;
-    if (sstrncat(sysmv, &outlen, STRBUFSIZ, " ", 1))
-        return 1;
-    if (sstrncat(sysmv, &outlen, STRBUFSIZ, outhome, strlen(outhome)))
-        return 1;
-
-    if (system(sysmv)) {
-        fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
-        rm(outpath, 0);
-        return 1;
+    if (rename(tmp, outhome)) {
+        if (errno == 18) { // If tmp is not on the same filesystem as outhome, like on Linux
+            outlen = 0;
+            if (sstrncat(sysmv, &outlen, STRBUFSIZ, "mv ", 3))
+                return 1;
+            if (sstrncat(sysmv, &outlen, STRBUFSIZ, tmp, strlen(tmp)))
+                return 1;
+            if (sstrncat(sysmv, &outlen, STRBUFSIZ, " ", 1))
+                return 1;
+            if (sstrncat(sysmv, &outlen, STRBUFSIZ, outhome, strlen(outhome)))
+                return 1;
+            if (system(sysmv)) { // execute "mv $tmp $outhome"
+                fprintf(stderr, "Error: Could Not Move: %s to %s\n", tmp, outhome);
+                rm(outpath, 0);
+                return 1;
+            }
+        } else {
+            fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
+            rm(outpath, 0);
+            return 1;
+        }
     }
 
     if (rm(outpath, 0)) {
