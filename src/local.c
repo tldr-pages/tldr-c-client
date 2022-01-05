@@ -175,7 +175,7 @@ update_localdb(int verbose)
     outlen = 0;
     if (sstrncat(tmp, &outlen, STRBUFSIZ, outpath, strlen(outpath)))
         return 1;
-    if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+    if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_ZIP_DIR, TLDR_ZIP_DIR_LEN))
         return 1;
 
     homedir = gethome();
