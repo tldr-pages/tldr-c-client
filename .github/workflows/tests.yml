@@ -34,5 +34,11 @@ jobs:
     - name: Compile
       run: make V=1 DEBUG= CC=${{ matrix.compiler }} LD=${{ matrix.compiler }}
 
-    - name: Test
+    - name: Test printing tldr version
       run: ./tldr --version
+      
+    - name: Test printing tldr list
+      run: ./tldr --list
+      
+    - name: Test printing tldr page
+      run: ./tldr tar
