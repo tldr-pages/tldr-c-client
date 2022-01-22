@@ -26,7 +26,10 @@
 #define TMP_FILE "/main.zip"
 #define TMP_FILE_LEN (sizeof(TMP_FILE) - 1)
 
-#define TLDR_DIR "/tldr-main" // this is the name of the directory inside `main.zip`
+#define TLDR_ZIP_DIR "/tldr-main"
+#define TLDR_ZIP_DIR_LEN (sizeof(TLDR_ZIP_DIR) - 1)
+
+#define TLDR_DIR "/tldr"
 #define TLDR_DIR_LEN (sizeof(TLDR_DIR) - 1)
 
 #define TLDR_HOME "/.tldrc"
