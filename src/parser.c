@@ -245,13 +245,12 @@ print_tldrlist(char const *poverride)
         return 1;
 
     if (strcmp(platform, "common") != 0) {
-        parse_tldrlist(directory, platform);
+        if (parse_tldrlist(directory, platform))
+            return 1;
         fprintf(stdout, "\n");
     }
 
-    parse_tldrlist(directory, "common");
-
-    return 0;
+    return parse_tldrlist(directory, "common");
 }
 
 int
