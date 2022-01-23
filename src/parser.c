@@ -270,7 +270,7 @@ parse_tldrlist(char const *path, char const *platform)
 
     directory = opendir(fullpath);
     if (directory == NULL) {
-        fprintf(stderr, "Can't open can't open cache directory.");
+        fprintf(stderr, "Can't open cache directory.");
         return 1;
     }
 
