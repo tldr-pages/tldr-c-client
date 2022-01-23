@@ -268,11 +268,15 @@ parse_tldrlist(char const *path, char const *platform)
     if (sstrncat(fullpath, &len, STRBUFSIZ, platform, strlen(platform)))
         return 1;
 
+    directory = opendir(fullpath);
+    if (directory == NULL) {
+        fprintf(stderr, "Can't open cache directory.");
+        return 1;
+    }
+
     fprintf(stdout, "%s", ANSI_BOLD_ON);
     fprintf(stdout, "Pages for %s\n", platform);
     fprintf(stdout, "%s", ANSI_BOLD_OFF);
-
-    directory = opendir(fullpath);
 
     while((entry = readdir(directory))) {
         len = strlen(entry->d_name);
