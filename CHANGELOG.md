@@ -9,7 +9,7 @@ will be removed after two major releases.
 ## v1.4.3 - 2022-03-02
 ### Fixed
 - Fix segfault on trying to update cache
-- Fix segault when failing to open cache directory
+- Fix segfault when failing to open cache directory
 - Bubble error code appropriately when using `--list`
 
 ## v1.4.2 - 2021-11-13
