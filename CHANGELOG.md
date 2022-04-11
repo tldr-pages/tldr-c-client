@@ -8,7 +8,7 @@ will be removed after two major releases.
 
 ## [Unreleased]
 
-## v1.4.3 - 2022-03-02
+## v1.4.3 - 2022-04-11
 ### Fixed
 - Fix segfault on trying to update cache
 - Fix segfault when failing to open cache directory
