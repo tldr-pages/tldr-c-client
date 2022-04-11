@@ -13,7 +13,7 @@
 #include <string.h>
 #include <time.h>
 
-#define VERSION_TAG "v1.4.2"
+#define VERSION_TAG "v1.4.3"
 #ifndef VERSION
     #define VERSION_PRETTY ""
 #else
