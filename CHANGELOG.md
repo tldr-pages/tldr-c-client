@@ -6,7 +6,7 @@ This project is following [semantic versioning](http://semver.org).
 Deprecated features will be kept for any following maintenance release, and
 will be removed after two major releases.
 
-## Unreleased
+## [Unreleased]
 
 ## v1.4.3 - 2022-03-02
 ### Fixed
