@@ -210,7 +210,7 @@ print_usage(char const *arg)
     fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-l, --list", "list all entries in the local databse");
+    fprintf(stdout, "    %-20s %-30s\n", "-l, --list", "list all entries in the local database");
     fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-20s %-30s\n", "--linux", "show command page for Linux");
