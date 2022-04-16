@@ -9,7 +9,7 @@ A command line client for tldr, written in plain ISO C90.
 
 On OS X, the client can be installed through [homebrew](http://brew.sh/).
 
-```
+```shell
 # To install latest development version
 brew install tldr --HEAD
 
@@ -17,8 +17,15 @@ brew install tldr --HEAD
 brew install tldr
 ```
 
-To build the latest version from source:
+On Arch Linux, the client can be installed through [the AUR](https://aur.archlinux.org/packages/tldr-git) using an AUR helper such as yay.
+
+```shell
+yay -S tldr-git
 ```
+
+To build the latest version from source:
+
+```shell
 git clone https://github.com/tldr-pages/tldr-c-client.git
 cd tldr-c-client
 
@@ -68,7 +75,7 @@ to access directory (like your home directory), and source it in your `.bashrc` 
 
 Example for zsh:
 
-```
+```shell
 mv autocomplete/complete.zsh ~/.tldr.complete
 echo "source ~/.tldr.complete" >> ~/.zshrc
 ```
