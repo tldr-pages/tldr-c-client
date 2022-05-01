@@ -25,7 +25,7 @@ if test -d "$HOME/.tldrc/tldr/pages"
         set cmpl $cmpl (__tldr_get_files sunos)
     end
 
-    complete -c tldr -a (echo $cmpl | sort | uniq)
+    complete -c tldr -f -a (echo $cmpl | sort | uniq)
 end
 
 functions -e __tldr_get_files
