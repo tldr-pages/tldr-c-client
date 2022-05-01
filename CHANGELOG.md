@@ -7,6 +7,8 @@ Deprecated features will be kept for any following maintenance release, and
 will be removed after two major releases.
 
 ## [Unreleased]
+### Fixed
+- Fix fish completion not escaping characters
 
 ## v1.4.3 - 2022-04-11
 ### Fixed

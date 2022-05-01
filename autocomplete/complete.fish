@@ -9,7 +9,7 @@ complete -c tldr -r -s r -l render -a PATH -d "render a local page for testing p
 function __tldr_get_files
     set -l files (basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md'))
     for f in $files
-        echo $f
+        echo $f | string escape
     end
 end
 
