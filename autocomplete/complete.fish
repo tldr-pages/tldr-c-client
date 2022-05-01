@@ -4,7 +4,7 @@ complete -c tldr -xf -s h -l help -d "print this help and exit"
 complete -c tldr -xf -s u -l update -d "update local database"
 complete -c tldr -xf -s c -l clear-cache -d "clear local database"
 complete -c tldr -rf -f -s p -l platform -a "linux osx sunos common" -d "select platform, supported are linux / osx / sunos / common"
-complete -c tldr -r -s r -l render -a PATH -d "render a local page for testing purpose"
+complete -c tldr -r -s r -l render -F -d "render a local page for testing purpose"
 
 function __tldr_get_files
     set -l files (basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md'))
