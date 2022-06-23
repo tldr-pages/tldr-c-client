@@ -6,7 +6,7 @@ complete -c tldr -x  -n __fish_use_subcommand             -s l -l list        -d
 complete -c tldr -x  -n __fish_use_subcommand             -s h -l help        -d "print this help and exit"
 complete -c tldr -x  -n __fish_use_subcommand             -s u -l update      -d "update local database"
 complete -c tldr -x  -n __fish_use_subcommand             -s c -l clear-cache -d "clear local database"
-complete -c tldr -x  -n $os_arg_condition                 -s p -l platform    -d "select platform, supported are linux / osx / sunos / common" -a "linux osx sunos common"
+complete -c tldr -x  -n $os_arg_condition                 -s p -l platform    -d "select platform" -a "linux osx sunos common"
 complete -c tldr -f  -n "$os_arg_condition -s p platform"      -l linux       -d "show command page for Linux"
 complete -c tldr -f  -n "$os_arg_condition -s p platform"      -l osx         -d "show command page for macOS"
 complete -c tldr -f  -n "$os_arg_condition -s p platform"      -l sunos       -d "show command page for SunOS"
