@@ -1,5 +1,6 @@
 complete -c tldr -f                              -s v                -d "print verbose output"
 complete -c tldr -x  -n __fish_use_subcommand         -l version     -d "print version and exit"
+complete -c tldr -x  -n __fish_use_subcommand    -s l -l list        -d "list all entries in the local database"
 complete -c tldr -x  -n __fish_use_subcommand    -s h -l help        -d "print this help and exit"
 complete -c tldr -x  -n __fish_use_subcommand    -s u -l update      -d "update local database"
 complete -c tldr -x  -n __fish_use_subcommand    -s c -l clear-cache -d "clear local database"
