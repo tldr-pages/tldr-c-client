@@ -7,10 +7,7 @@ complete -c tldr -x -s p -l platform -a "linux osx sunos common" -d "select plat
 complete -c tldr -r -s r -l render -F -d "render a local page for testing purpose" -n __fish_use_subcommand
 
 function __tldr_get_files
-    set -l files (basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md'))
-    for f in $files
-        echo $f | string escape
-    end
+    basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md') | string escape
 end
 
 if test -d "$HOME/.tldrc/tldr/pages"
