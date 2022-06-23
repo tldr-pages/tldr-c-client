@@ -22,7 +22,7 @@ if test -d "$HOME/.tldrc/tldr/pages"
         set cmpl $cmpl (__tldr_get_files sunos)
     end
 
-    complete -c tldr -f -a (echo $cmpl | sort | uniq) -n __fish_use_subcommand
+    complete -c tldr -f -a "$cmpl" -n __fish_use_subcommand
     complete -c tldr -f
 end
 
