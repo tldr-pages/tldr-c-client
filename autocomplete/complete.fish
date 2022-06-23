@@ -23,7 +23,8 @@ if test -d "$HOME/.tldrc/tldr/pages"
     end
 
     complete -c tldr -f -a "$cmpl" -n __fish_use_subcommand
-    complete -c tldr -f
 end
+
+complete -c tldr -f
 
 functions -e __tldr_get_files
