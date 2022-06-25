@@ -10,7 +10,7 @@ complete -c tldr -x  -n  $os_arg_condition                 -s p -l platform    -
 complete -c tldr -f  -n "$os_arg_condition -s p platform"       -l linux       -d "show command page for Linux"
 complete -c tldr -f  -n "$os_arg_condition -s p platform"       -l osx         -d "show command page for macOS"
 complete -c tldr -f  -n "$os_arg_condition -s p platform"       -l sunos       -d "show command page for SunOS"
-complete -c tldr -rF -n  __fish_use_subcommand             -s r -l render      -d "render a local page for testing purpose"
+complete -c tldr -rF -n  __fish_use_subcommand             -s r -l render      -d "render a local page for testing purposes"
 
 function __tldr_get_files
     basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md') | string escape
