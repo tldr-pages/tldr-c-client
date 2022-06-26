@@ -1,16 +1,39 @@
-set -l os_arg_condition "__fish_not_contain_opt linux osx sunos"
+function __tldr_not_contain_standalone_opt
+        __fish_not_contain_opt -s v
+    and __fish_not_contain_opt      version
+    and __fish_not_contain_opt -s l list
+    and __fish_not_contain_opt -s h help
+    and __fish_not_contain_opt -s u update
+    and __fish_not_contain_opt -s c clear-cache
+end
 
-complete -c tldr -f  -n "__fish_not_contain_opt -s v"      -s v                -d "print verbose output"
-complete -c tldr -x  -n  __fish_is_first_arg                    -l version     -d "print version and exit"
-complete -c tldr -x  -n  __fish_is_first_arg               -s l -l list        -d "list all entries in the local database"
-complete -c tldr -x  -n  __fish_is_first_arg               -s h -l help        -d "print help and exit"
-complete -c tldr -x  -n  __fish_is_first_arg               -s u -l update      -d "update local database"
-complete -c tldr -x  -n  __fish_is_first_arg               -s c -l clear-cache -d "clear local database"
-complete -c tldr -x  -n  $os_arg_condition                 -s p -l platform    -d "select platform" -a "linux osx sunos common"
-complete -c tldr -f  -n "$os_arg_condition -s p platform"       -l linux       -d "show command page for Linux"
-complete -c tldr -f  -n "$os_arg_condition -s p platform"       -l osx         -d "show command page for macOS"
-complete -c tldr -f  -n "$os_arg_condition -s p platform"       -l sunos       -d "show command page for SunOS"
-complete -c tldr -rF -n  __fish_use_subcommand             -s r -l render      -d "render a local page for testing purposes"
+function __tldr_no_os_choice_opt
+        __fish_not_contain_opt      linux osx sunos
+    and __fish_not_contain_opt -s r render
+    and __tldr_not_contain_standalone_opt
+end
+
+function __tldr_no_os_choice_opt_and_p
+        __tldr_no_os_choice_opt
+    and __fish_not_contain_opt -s p platform
+end
+
+function __tldr_positional
+        __fish_use_subcommand
+    and __tldr_not_contain_standalone_opt
+end
+
+complete -c tldr -f  -n "__fish_not_contain_opt -s v"  -s v                -d "print verbose output"
+complete -c tldr -x  -n  __fish_is_first_arg                -l version     -d "print version and exit"
+complete -c tldr -x  -n  __fish_is_first_arg           -s l -l list        -d "list all entries in the local database"
+complete -c tldr -x  -n  __fish_is_first_arg           -s h -l help        -d "print help and exit"
+complete -c tldr -x  -n  __fish_is_first_arg           -s u -l update      -d "update local database"
+complete -c tldr -x  -n  __fish_is_first_arg           -s c -l clear-cache -d "clear local database"
+complete -c tldr -x  -n  __tldr_no_os_choice_opt       -s p -l platform    -d "select platform" -a "linux osx sunos common"
+complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l linux       -d "show command page for Linux"
+complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l osx         -d "show command page for macOS"
+complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l sunos       -d "show command page for SunOS"
+complete -c tldr -rF -n  __tldr_positional             -s r -l render      -d "render a local page for testing purposes"
 
 function __tldr_get_files
     basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md') | string escape
@@ -28,7 +51,7 @@ if test -d "$HOME/.tldrc/tldr/pages"
         set cmpl $cmpl (__tldr_get_files sunos)
     end
 
-    complete -c tldr -f -a "$cmpl" -n __fish_use_subcommand
+    complete -c tldr -f -a "$cmpl" -n __tldr_positional
 end
 
 complete -c tldr -f
