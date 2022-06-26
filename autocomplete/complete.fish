@@ -24,7 +24,7 @@ function __tldr_positional
 end
 
 function __tldr_positional_no_os
-    __tldr_positional
+        __tldr_positional
     and __fish_not_contain_opt      linux osx sunos
     and __fish_not_contain_opt -s p platform
 end
