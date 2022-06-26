@@ -23,6 +23,12 @@ function __tldr_positional
     and __tldr_not_contain_standalone_opt
 end
 
+function __tldr_positional_no_os
+    __tldr_positional
+    and __fish_not_contain_opt      linux osx sunos
+    and __fish_not_contain_opt -s p platform
+end
+
 complete -c tldr -f  -n "__fish_not_contain_opt -s v"  -s v                -d "print verbose output"
 complete -c tldr -x  -n  __fish_is_first_arg                -l version     -d "print version and exit"
 complete -c tldr -x  -n  __fish_is_first_arg           -s l -l list        -d "list all entries in the local database"
@@ -33,7 +39,7 @@ complete -c tldr -x  -n  __tldr_no_os_choice_opt       -s p -l platform    -d "s
 complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l linux       -d "show command page for Linux"
 complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l osx         -d "show command page for macOS"
 complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l sunos       -d "show command page for SunOS"
-complete -c tldr -rF -n  __tldr_positional             -s r -l render      -d "render a local page for testing purposes"
+complete -c tldr -rF -n  __tldr_positional_no_os       -s r -l render      -d "render a local page for testing purposes"
 
 function __tldr_get_files
     basename -s .md (find $HOME/.tldrc/tldr/pages/$argv[1] -name '*.md') | string escape
