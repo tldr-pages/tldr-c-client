@@ -30,11 +30,11 @@ function __tldr_positional_no_os
 end
 
 complete -c tldr -f  -n "__fish_not_contain_opt -s v"  -s v                -d "print verbose output"
-complete -c tldr -x  -n  __fish_is_first_arg                -l version     -d "print version and exit"
-complete -c tldr -x  -n  __fish_is_first_arg           -s l -l list        -d "list all entries in the local database"
-complete -c tldr -x  -n  __fish_is_first_arg           -s h -l help        -d "print help and exit"
-complete -c tldr -x  -n  __fish_is_first_arg           -s u -l update      -d "update local database"
-complete -c tldr -x  -n  __fish_is_first_arg           -s c -l clear-cache -d "clear local database"
+complete -c tldr -f  -n  __fish_is_first_arg                -l version     -d "print version and exit"
+complete -c tldr -f  -n  __fish_is_first_arg           -s l -l list        -d "list all entries in the local database"
+complete -c tldr -f  -n  __fish_is_first_arg           -s h -l help        -d "print help and exit"
+complete -c tldr -f  -n  __fish_is_first_arg           -s u -l update      -d "update local database"
+complete -c tldr -f  -n  __fish_is_first_arg           -s c -l clear-cache -d "clear local database"
 complete -c tldr -x  -n  __tldr_no_os_choice_opt       -s p -l platform    -d "select platform" -a "linux osx sunos common"
 complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l linux       -d "show command page for Linux"
 complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l osx         -d "show command page for macOS"
