@@ -13,7 +13,7 @@ function __tldr_no_os_choice_opt
     and __tldr_not_contain_standalone_opt
 end
 
-function __tldr_no_os_choice_opt_and_p
+function __tldr_no_os_choice_opt_nor_p
         __tldr_no_os_choice_opt
     and __fish_not_contain_opt -s p platform
 end
@@ -36,9 +36,9 @@ complete -c tldr -f  -n  __fish_is_first_arg           -s h -l help        -d "p
 complete -c tldr -f  -n  __fish_is_first_arg           -s u -l update      -d "update local database"
 complete -c tldr -f  -n  __fish_is_first_arg           -s c -l clear-cache -d "clear local database"
 complete -c tldr -x  -n  __tldr_no_os_choice_opt       -s p -l platform    -d "select platform" -a "linux osx sunos common"
-complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l linux       -d "show command page for Linux"
-complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l osx         -d "show command page for macOS"
-complete -c tldr -f  -n  __tldr_no_os_choice_opt_and_p      -l sunos       -d "show command page for SunOS"
+complete -c tldr -f  -n  __tldr_no_os_choice_opt_nor_p      -l linux       -d "show command page for Linux"
+complete -c tldr -f  -n  __tldr_no_os_choice_opt_nor_p      -l osx         -d "show command page for macOS"
+complete -c tldr -f  -n  __tldr_no_os_choice_opt_nor_p      -l sunos       -d "show command page for SunOS"
 complete -c tldr -rF -n  __tldr_positional_no_os       -s r -l render      -d "render a local page for testing purposes"
 
 function __tldr_get_files
