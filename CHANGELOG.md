@@ -7,9 +7,13 @@ Deprecated features will be kept for any following maintenance release, and
 will be removed after two major releases.
 
 ## [Unreleased]
+
+## v1.5.0 - 2022-07-03
 ### Added
 - Add fish completion for `--list`, `--linux`, `--osx`, and `--sunos` flags
+
 ### Fixed
+- Fix typo of "database" in the usage output
 - Fix fish completion not escaping characters
 - Make fish completion reflect actual usage of `tldr` better
 

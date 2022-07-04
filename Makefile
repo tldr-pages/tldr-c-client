@@ -37,7 +37,7 @@ endif
 HAS_GIT			:= $(shell type git > /dev/null 2>&1 && echo "1" || echo "0")
 IS_GITREPO		:= $(shell [ -d .git ] && echo "1" || echo "0")
 ifeq (0,$(filter 0,$(HAS_GIT) $(IS_GITREPO)))
-VER				:= v1.4.3
+VER				:= v1.5.0
 else
 VER				:= $(shell git describe --tags --always --dirty)
 endif
