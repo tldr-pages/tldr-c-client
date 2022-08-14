@@ -42,22 +42,38 @@ else
 VER				:= $(shell git describe --tags --always --dirty)
 endif
 
-# Preprocessor Flags
+# Set Flags
 ALL_CPPFLAGS	:= $(CPPFLAGS) -DVERSION='"$(VER)"'
+ALL_LDFLAGS		:= $(LDFLAGS) -L/usr/lib
+ALL_LDLIBS		:= -lc -lm -lcurl -lzip
 ALL_CPPFLAGS	+= -D_GNU_SOURCE
 ALL_CPPFLAGS	+= $(shell pkg-config --cflags libzip)
+
 ALL_CPPFLAGS	+= -I/usr/include
 ALL_CPPFLAGS	+= -I/usr/local/include
-ALL_CPPFLAGS	+= -I/usr/local/opt/curl/include
-ALL_CPPFLAGS	+= -I/usr/local/opt/libzip/include
-
-# Linker Flags
-ALL_LDFLAGS		:= $(LDFLAGS) -L/usr/lib
 ALL_LDFLAGS		+= -L/usr/local/lib
-ALL_LDFLAGS		+= -L/usr/local/opt/curl/lib
-ALL_LDFLAGS		+= -L/usr/local/opt/libzip/lib
-ALL_LDLIBS		:= -lc -lm -lcurl -lzip
+ifneq (,$(wildcard /opt/homebrew/.*))
+	ALL_CCPFLAGS	+= -I/opt/homebrew/include
+	ALL_CPPFLAGS	+= -I/opt/homebrew/lib
+endif
 
+ifneq (,$(wildcard /usr/local/opt/curl/.*))
+	ALL_CPPFLAGS	+= -I/usr/local/opt/curl/include
+	ALL_LDFLAGS		+= -L/usr/local/opt/curl/lib
+endif
+ifneq (,$(wildcard /opt/homebrew/opt/curl/.))
+	ALL_CPPFLAGS	+= -I/opt/homebrew/opt/curl/include
+	ALL_LDFLAGS		+= -L/opt/homebrew/opt/curl/lib
+endif
+
+ifneq (,$(wildcard /usr/local/opt/libzip/.))
+	ALL_CPPFLAGS	+= -I/usr/local/opt/libzip/include
+	ALL_LDFLAGS		+= -L/usr/local/opt/libzip/lib
+endif
+ifneq (,$(wildcard /opt/homebrew/opt/libzip/.))
+	ALL_CPPFLAGS	+= -I/opt/homebrew/opt/libzip/include
+	ALL_LDFLAGS		+= -L/opt/homebrew/opt/libzip/lib
+endif
 
 # Source, Binaries, Dependencies
 SRC			:= $(shell find $(SRCDIR) -type f -name '*.c')
