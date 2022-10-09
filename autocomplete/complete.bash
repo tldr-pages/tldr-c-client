@@ -39,3 +39,9 @@ _tldr_complete() {
 }
 
 complete -F _tldr_complete tldr
+
+#You can use finds null separated output option with read to iterate over directory structures safely.
+#!/bin/bash
+#find . -type f -print0 | while IFS= read -r -d $'\0' file; 
+#  do echo "$file" ;
+#done
