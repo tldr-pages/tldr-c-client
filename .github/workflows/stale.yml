@@ -19,6 +19,7 @@ jobs:
         days-before-close: 30
 
         # Issues or PRs with these labels will never be considered stale
+        exempt-issue-labels: bug,enhancement,up for grabs,help wanted
         exempt-pr-labels: up for grabs
 
         # Label to use when marking an issue or PR as stale
