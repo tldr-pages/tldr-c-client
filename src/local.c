@@ -56,7 +56,10 @@ check_localdate(void)
         /* *INDENT-OFF* */
         fprintf(stdout, "%s", ANSI_BOLD_ON);
         fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
-        fprintf(stdout, "Local data is older than two weeks, use --update to update it.\n\n");
+        fprintf(stdout, "Local data is older than two weeks, attempting to automatically update it...\n");
+        if (update_localdb(0))
+            fprintf(stdout, "Failed to automatically update local data.\n");
+        fprintf(stdout, "\n");
         fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
         fprintf(stdout, "%s", ANSI_BOLD_OFF);
         /* *INDENT-ON* */
