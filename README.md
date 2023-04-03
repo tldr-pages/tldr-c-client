@@ -70,8 +70,8 @@ folder in the root of the repository.
 
 #### Installation
 
-To install the autocompletion, just move the script for your shell to an easy-to-access
-directory (like your home directory), and source it in your `.bashrc` or `.zshrc`.
+To install the autocompletion, just move the script for your shell to an easy
+to access directory (like your home directory), and source it in your `.bashrc` or `.zshrc`.
 
 Example for zsh:
 
