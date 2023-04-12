@@ -160,7 +160,7 @@ update_localdb(int verbose)
         return 1;
     }
     if (mkdir(tldr_home, 0755) > 0 && errno != EEXIST) {
-        fprintf(stderr, "Error: Could Not Create Directory: %s\n", tldr_home);
+        fprintf(stderr, "Error: Could not create directory: %s\n", tldr_home);
         return 1;
     }
 
@@ -173,7 +173,7 @@ update_localdb(int verbose)
         return 1;
     }
     if (mkdir(temp_dir, 0755) > 0 && errno != EEXIST) {
-        fprintf(stderr, "Error: Could Not Create Directory: %s\n", temp_dir);
+        fprintf(stderr, "Error: Could not create directory: %s\n", temp_dir);
         return 1;
     }
 
@@ -188,7 +188,7 @@ update_localdb(int verbose)
 
     /* Download and unzip the file */
     if (download_file(ZIP_URL, update_zip_file, verbose)) {
-        fprintf(stderr, "Error: Downloading File: %s\n", ZIP_URL);
+        fprintf(stderr, "Error: Downloading file: %s\n", ZIP_URL);
         return 1;
     }
 
@@ -226,13 +226,13 @@ update_localdb(int verbose)
     }
 
     if (rename(update_contents, tldr_home_db)) {
-        fprintf(stderr, "Error: Could Not Rename: %s to %s\n", update_contents, tldr_home_db);
+        fprintf(stderr, "Error: Could not rename: %s to %s\n", update_contents, tldr_home_db);
         rm(temp_dir, 0);
         return 1;
     }
 
     if (rm(temp_dir, 0)) {
-        fprintf(stderr, "Error: Could Not Remove: %s\n", temp_dir);
+        fprintf(stderr, "Error: Could not remove: %s\n", temp_dir);
         return 1;
     }
 
