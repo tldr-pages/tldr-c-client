@@ -98,7 +98,7 @@ available commands:
 
 ## Configuration
 
-To prevent `tldr` from automatically updating its database, set the environment variable `TLDR_PREVENT_UPDATE`.
+To prevent `tldr` from automatically updating its database, set the environment variable `TLDR_AUTO_UPDATE_DISABLED`.
 
 ## Contributing
 
