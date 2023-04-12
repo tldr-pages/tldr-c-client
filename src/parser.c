@@ -194,21 +194,24 @@ print_tldrpage(char const *input, char const *poverride)
         }
     }
 
-    construct_url(url, URLBUFSIZ, input, platform);
+    if (!getenv(PREVENT_UPDATE_ENV_VARIABLE)) {
+        construct_url(url, URLBUFSIZ, input, platform);
 
-    /* make clang's static analyzer happy */
-    output = NULL;
-    download_content(url, &output, 0);
-    if (output == NULL) {
-        construct_url(url, URLBUFSIZ, input, "common");
+        /* make clang's static analyzer happy */
+        output = NULL;
         download_content(url, &output, 0);
-        if (output == NULL)
-            return 1;
+        if (output == NULL) {
+            construct_url(url, URLBUFSIZ, input, "common");
+            download_content(url, &output, 0);
+            if (output == NULL)
+                return 1;
+        }
+
+        parse_tldrpage(output);
+
+        free(output);
     }
-
-    parse_tldrpage(output);
-
-    free(output);
+    
     return 0;
 }
 
