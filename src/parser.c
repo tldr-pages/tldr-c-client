@@ -195,7 +195,7 @@ print_tldrpage(char const *input, char const *poverride)
     }
 
     if (getenv(PREVENT_UPDATE_ENV_VARIABLE))
-    return 1;
+        return 1;
 
     construct_url(url, URLBUFSIZ, input, platform);
 
