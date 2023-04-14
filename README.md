@@ -1,13 +1,13 @@
 # tldr c client
 
-[![Build Status](https://img.shields.io/github/workflow/status/tldr-pages/tldr-c-client/Tests.svg?style=flat-square)](https://github.com/tldr-pages/tldr-c-client/actions)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/tldr-pages/tldr-c-client/.github/workflows/tests.yml?branch=main)](https://github.com/tldr-pages/tldr-c-client/actions)
 
 A command line client for tldr, written in plain ISO C90.
 
 
 ## Installing
 
-On OS X, the client can be installed through [homebrew](http://brew.sh/).
+On OS X, the client can be installed through [Homebrew](http://brew.sh/).
 
 ```shell
 # To install latest development version
@@ -70,7 +70,7 @@ folder in the root of the repository.
 
 #### Installation
 
-To install the autocompletion, just move the script for your shell to a an easy
+To install the autocompletion, just move the script for your shell to an easy
 to access directory (like your home directory), and source it in your `.bashrc` or `.zshrc`.
 
 Example for zsh:
