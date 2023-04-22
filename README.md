@@ -96,6 +96,9 @@ available commands:
     -r, --render=PATH    render a local page for testing purposes
 ```
 
+## Configuration
+
+To prevent `tldr` from automatically updating its database, set the environment variable `TLDR_AUTO_UPDATE_DISABLED`.
 
 ## Contributing
 

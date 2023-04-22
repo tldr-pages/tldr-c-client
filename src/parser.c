@@ -194,6 +194,9 @@ print_tldrpage(char const *input, char const *poverride)
         }
     }
 
+    if (getenv(PREVENT_UPDATE_ENV_VARIABLE))
+        return 1;
+
     construct_url(url, URLBUFSIZ, input, platform);
 
     /* make clang's static analyzer happy */
@@ -209,6 +212,7 @@ print_tldrpage(char const *input, char const *poverride)
     parse_tldrpage(output);
 
     free(output);
+
     return 0;
 }
 

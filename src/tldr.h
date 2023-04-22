@@ -41,6 +41,8 @@
 #define TLDR_EXT "/.tldrc/tldr/pages/"
 #define TLDR_EXT_LEN (sizeof(TLDR_EXT) - 1)
 
+#define PREVENT_UPDATE_ENV_VARIABLE "TLDR_AUTO_UPDATE_DISABLED"
+
 #define ANSI_COLOR_RESET_FG                     "\x1b[39m"
 #define ANSI_COLOR_TITLE_FG                     "\x1b[39m"
 #define ANSI_COLOR_EXPLANATION_FG               "\x1b[39m"
