@@ -11,7 +11,7 @@ will be removed after two major releases.
 ## v1.6.0 - 2023-05-03
 
 - Fix make finding lib directories with M1 Homebrew
-- Add support for Auto updating local data if too old
+- Add support for auto updating local data if too old
 
 ## v1.5.0 - 2022-07-03
 
