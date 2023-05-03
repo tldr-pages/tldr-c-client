@@ -52,13 +52,16 @@ check_localdate(void)
     curtime = time(NULL);
     oldtime = strtol(buffer, NULL, 10);
     difftime = curtime - oldtime;
-    if (difftime > (60 * 60 * 24 * 7 * 2)) {
+    if (difftime > (60 * 60 * 24 * 7 * 2) && !getenv(PREVENT_UPDATE_ENV_VARIABLE)) {
         /* *INDENT-OFF* */
-        fprintf(stdout, "%s", ANSI_BOLD_ON);
-        fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
-        fprintf(stdout, "Local data is older than two weeks, use --update to update it.\n\n");
-        fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
-        fprintf(stdout, "%s", ANSI_BOLD_OFF);
+        fprintf(stdout, "Local database is older than two weeks, attempting to update it...\n");
+        fprintf(stdout, "To prevent automatic updates, set the environment variable %s.\n", PREVENT_UPDATE_ENV_VARIABLE);
+        if (update_localdb(0)) {
+            fprintf(stdout, "%s%s", ANSI_BOLD_ON, ANSI_COLOR_CODE_FG);
+            fprintf(stdout, "Failed to update local database.\n");
+            fprintf(stdout, "%s%s", ANSI_COLOR_RESET_FG, ANSI_BOLD_OFF);
+        }
+        fprintf(stdout, "\n");
         /* *INDENT-ON* */
     }
 

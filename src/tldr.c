@@ -177,6 +177,10 @@ main(int argc, char **argv)
         if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL)) {
             fprintf(stdout, "This page doesn't exist yet!\n");
             fprintf(stdout, "Submit new pages here: https://github.com/tldr-pages/tldr\n");
+            if (getenv(PREVENT_UPDATE_ENV_VARIABLE)) {
+                fprintf(stdout, "Checking the online database was skipped because automatic updates are disabled.\n");
+                fprintf(stdout, "You could try updating the local database manually with: tldr --update\n");
+            }
             return EXIT_FAILURE;
         }
     }
