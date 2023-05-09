@@ -8,10 +8,15 @@ will be removed after two major releases.
 
 ## [Unreleased]
 
-## v1.6.0 - 2023-05-03
+## v1.6.0 - 2023-05-09
+
+### Added
+
+- Add support for auto updating local data if too old
+
+### Fixed
 
 - Fix make finding lib directories with M1 Homebrew
-- Add support for auto updating local data if too old
 
 ## v1.5.0 - 2022-07-03
 
