@@ -204,13 +204,12 @@ print_version(char const *arg)
 void
 print_usage(char const *arg)
 {
-    char const *out = "usage: %s [-v] [OPTION]... SEARCH\n\n";
+    char const *out = "usage: %s [OPTION]... [PAGE]\n\n";
 
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-20s %-30s\n", "-v", "print verbose output");
-    fprintf(stdout, "    %-20s %-30s\n", "--version", "print version and exit");
+    fprintf(stdout, "    %-20s %-30s\n", "-v, --version", "print version and exit");
     fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
