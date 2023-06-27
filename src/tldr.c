@@ -204,12 +204,12 @@ print_version(char const *arg)
 void
 print_usage(char const *arg)
 {
-    char const *out = "usage: %s [-v] [-u] [-c] [OPTION]... [PAGE]\n\n";
+    char const *out = "usage: %s [-v] [-c] [-u] [OPTION]... [PAGE]\n\n";
 
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-23s %-30s\n", "-v", "verbose output (when used with -u or -c)");
+    fprintf(stdout, "    %-23s %-30s\n", "-v", "verbose output (when used with -c or -u)");
     fprintf(stdout, "    %-23s %-30s\n", "-v, --version", "print version and exit");
     fprintf(stdout, "    %-23s %-30s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-23s %-30s\n", "-u, --update", "update local database");
