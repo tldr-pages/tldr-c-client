@@ -5,11 +5,14 @@
 tldr \- A collection of simplified and community-driven man pages.
 .SH SYNOPSIS
 .B tldr
-[\fIOPTION\fR]... [\fIPAGE\fR]
+[\fB\-v\fR] [\fB\-u\fR] [\fB\-c\fR] [\fIOPTION\fR]... [\fIPAGE\fR]
 .SH DESCRIPTION
 tldr is a collection of simplified and community-driven man pages, for commonly
 used commandline tools.
 .SH OPTIONS
+.TP
+.BR \-v
+verbose output (when used with \fB\-u\fR or \fB\-c\fR)
 .TP
 .BR \-v ", " \-\-version
 output version information and exit
@@ -23,10 +26,19 @@ update local database and exit
 .BR \-c ", " \-\-clear-cache
 remove local database and exit
 .TP
-.BR \-p ", " \-\-platform=\fIPLATFORM\fR
+\fB\-p\fR, \fB\-\-platform\fR=\fIPLATFORM\fR
 select platform, supported are \fIlinux\fR / \fIosx\fR / \fIsunos\fR / \fIwindows\fR / \fIcommon\fR
 .TP
-.BR \-r ", " \-\-render=\fIPATH\fR
+.BR \-\-linux
+show command page for Linux
+.TP
+.BR \-\-osx
+show command page for OSX
+.TP
+.BR \-\-sunos
+show command page for SunOS
+.TP
+\fB\-r\fR, \fB\-\-render\fR=\fIPATH\fR
 render a local page for testing purposes
 .SH EXIT STATUS
 0 on success, any other positive value otherwise

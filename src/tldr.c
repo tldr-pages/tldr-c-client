@@ -204,22 +204,23 @@ print_version(char const *arg)
 void
 print_usage(char const *arg)
 {
-    char const *out = "usage: %s [OPTION]... [PAGE]\n\n";
+    char const *out = "usage: %s [-v] [-u] [-c] [OPTION]... [PAGE]\n\n";
 
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-20s %-30s\n", "-v, --version", "print version and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-l, --list", "list all entries in the local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
+    fprintf(stdout, "    %-23s %-30s\n", "-v", "verbose output (when used with -u or -c)");
+    fprintf(stdout, "    %-23s %-30s\n", "-v, --version", "print version and exit");
+    fprintf(stdout, "    %-23s %-30s\n", "-h, --help", "print this help and exit");
+    fprintf(stdout, "    %-23s %-30s\n", "-u, --update", "update local database");
+    fprintf(stdout, "    %-23s %-30s\n", "-c, --clear-cache", "clear local database");
+    fprintf(stdout, "    %-23s %-30s\n", "-l, --list", "list all entries in the local database");
+    fprintf(stdout, "    %-23s %-30s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / windows / common");
-    fprintf(stdout, "    %-20s %-30s\n", "--linux", "show command page for Linux");
-    fprintf(stdout, "    %-20s %-30s\n", "--osx", "show command page for OSX");
-    fprintf(stdout, "    %-20s %-30s\n", "--sunos", "show command page for SunOS");
-    fprintf(stdout, "    %-20s %-30s\n", "-r, --render=PATH",
+    fprintf(stdout, "    %-23s %-30s\n", "--linux", "show command page for Linux");
+    fprintf(stdout, "    %-23s %-30s\n", "--osx", "show command page for OSX");
+    fprintf(stdout, "    %-23s %-30s\n", "--sunos", "show command page for SunOS");
+    fprintf(stdout, "    %-23s %-30s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
     /* *INDENT-ON* */
 }
