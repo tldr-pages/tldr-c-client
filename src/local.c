@@ -182,29 +182,29 @@ update_localdb(int verbose)
 
     /* The update zip file will be downloaded to $HOME/TLDR_HOME/TMP_DIR/TMP_FILE */
     outlen = 0;
-    if (sstrncat(update_zip_file, &outlen, STRBUFSIZ, temp_dir, strlen(temp_dir))) {
+    if (sstrncat(zip_archive_path, &outlen, STRBUFSIZ, temp_dir, strlen(temp_dir))) {
         return 1;
     }
-    if (sstrncat(update_zip_file, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN)) {
+    if (sstrncat(zip_archive_path, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN)) {
         return 1;
     }
 
     /* Download and unzip the file */
-    if (download_file(ZIP_URL, update_zip_file, verbose)) {
+    if (download_file(ZIP_URL, zip_archive_path, verbose)) {
         fprintf(stderr, "Error: Downloading file: %s\n", ZIP_URL);
         return 1;
     }
 
-    if (unzip(update_zip_file, temp_dir)) {
+    if (unzip(zip_archive_path, temp_dir)) {
         rm(temp_dir, 0);
         return 1;
     }
 
     outlen = 0;
-    if (sstrncat(update_contents, &outlen, STRBUFSIZ, temp_dir, strlen(temp_dir))) {
+    if (sstrncat(extracted_contents, &outlen, STRBUFSIZ, temp_dir, strlen(temp_dir))) {
         return 1;
     }
-    if (sstrncat(update_contents, &outlen, STRBUFSIZ, TLDR_ZIP_DIR, TLDR_ZIP_DIR_LEN)) {
+    if (sstrncat(extracted_contents, &outlen, STRBUFSIZ, TLDR_ZIP_DIR, TLDR_ZIP_DIR_LEN)) {
         return 1;
     }
 
@@ -228,8 +228,8 @@ update_localdb(int verbose)
         }
     }
 
-    if (rename(update_contents, tldr_home_db)) {
-        fprintf(stderr, "Error: Could not rename: %s to %s\n", update_contents, tldr_home_db);
+    if (rename(extracted_contents, tldr_home_db)) {
+        fprintf(stderr, "Error: Could not rename: %s to %s\n", extracted_contents, tldr_home_db);
         rm(temp_dir, 0);
         return 1;
     }
