@@ -143,8 +143,8 @@ update_localdb(int verbose)
     char tldr_home[STRBUFSIZ];         /* $HOME/TLDR_HOME                      */
     char tldr_home_db[STRBUFSIZ];      /* $HOME/TLDR_HOME/TLDR_DIR             */
     char temp_dir[STRBUFSIZ];          /* $HOME/TLDR_HOME/TMP_DIR              */
-    char update_zip_file[STRBUFSIZ];   /* $HOME/TLDR_HOME/TMP_DIR/TMP_FILE     */
-    char update_contents[STRBUFSIZ];   /* $HOME/TLDR_HOME/TMP_DIR/TLDR_ZIP_DIR */
+    char zip_archive_path[STRBUFSIZ];   /* $HOME/TLDR_HOME/TMP_DIR/TMP_FILE     */
+    char extracted_contents[STRBUFSIZ];   /* $HOME/TLDR_HOME/TMP_DIR/TLDR_ZIP_DIR */
     char const *homedir;
     size_t outlen;
 
