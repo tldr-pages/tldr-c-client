@@ -142,6 +142,10 @@ install: all $(MANSRC)
 	$(INSTALL) -d $(MANPATH)
 	$(INSTALL) $(MANSRC) $(MANPATH)
 
+uninstall:
+	rm $(MANPATH)/tldr.1
+	rm $(PREFIX)/bin/tldr
+
 clean:
 	$(RM) $(OBJ) $(DEP) $(BIN)
 	$(RMDIR) $(OBJDIR) $(BINDIR) 2> /dev/null; true
