@@ -11,7 +11,7 @@ tldr is a collection of simplified and community-driven man pages, for commonly
 used commandline tools.
 .SH OPTIONS
 .TP
-.BR \-v
+.BR \-v ", " \-\-verbose
 verbose output (when used with \fB\-c\fR or \fB\-u\fR)
 .TP
 .BR \-v ", " \-\-version
@@ -29,17 +29,21 @@ remove local database and exit
 \fB\-p\fR, \fB\-\-platform\fR=\fIPLATFORM\fR
 select platform, supported are \fIlinux\fR / \fIosx\fR / \fIsunos\fR / \fIwindows\fR / \fIcommon\fR
 .TP
-.BR \-\-linux
-show command page for Linux
-.TP
-.BR \-\-osx
-show command page for OSX
-.TP
-.BR \-\-sunos
-show command page for SunOS
-.TP
 \fB\-r\fR, \fB\-\-render\fR=\fIPATH\fR
 render a local page for testing purposes
+.TP
+.B \-\-list
+list all entries in the local database
+.TP
+.B \-\-linux
+show command page for Linux
+.TP
+.B \-\-osx
+show command page for OSX
+.TP
+.B \-\-sunos
+show command page for SunOS
+.TP
 .SH EXIT STATUS
 0 on success, any other positive value otherwise
 .SH SEE ALSO
