@@ -222,7 +222,7 @@ print_usage(char const *arg)
             "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-23s %s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
-    fprintf(stdout, "    %-23s %s\n", "--verbose", "verbose output (when used with -c or -u)");
+    fprintf(stdout, "    %-23s %s\n", "--verbose", "verbose output (when clearing or updating database)");
     fprintf(stdout, "    %-23s %s\n", "--list", "list all entries in the local database");
     fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
     fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
