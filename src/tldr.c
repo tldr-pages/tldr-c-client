@@ -81,6 +81,7 @@ main(int argc, char **argv)
         case '?':
             /* do not set help flag, only show getopt error */
             /* help_flag = 1; */
+            return EXIT_FAILURE;
             break;
 
         case 'p': {
@@ -119,9 +120,13 @@ main(int argc, char **argv)
 
     /* show help, if platform was supplied, but no further argument */
     missing_arg = (platform_flag && !list_flag && (optind == argc));
-    if (help_flag || missing_arg) {
+    if (help_flag) {
         print_usage(argv[0]);
         return EXIT_SUCCESS;
+    }
+    if (missing_arg) {
+        print_usage(argv[0]);
+        return EXIT_FAILURE;
     }
     if (version_flag) {
         print_version(argv[0]);
@@ -217,7 +222,7 @@ print_usage(char const *arg)
             "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-23s %s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
-    fprintf(stdout, "    %-23s %s\n", "--verbose", "verbose output");
+    fprintf(stdout, "    %-23s %s\n", "--verbose", "verbose output (when used with -c or -u)");
     fprintf(stdout, "    %-23s %s\n", "--list", "list all entries in the local database");
     fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
     fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
