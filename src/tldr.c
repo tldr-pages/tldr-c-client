@@ -138,7 +138,7 @@ main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
     if (verbose_flag && optind >= argc) {
-        print_version(argv[0]);
+        print_usage(argv[0]);
         return EXIT_SUCCESS;
     }
     if (list_flag) {
@@ -210,7 +210,6 @@ print_usage(char const *arg)
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
     fprintf(stdout, "    %-23s %s\n", "-v, --verbose", "verbose output (when used with -c or -u)");
-    fprintf(stdout, "    %-23s %s\n", "-v, --version", "print version and exit");
     fprintf(stdout, "    %-23s %s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-23s %s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-23s %s\n", "-c, --clear-cache", "clear local database");
@@ -222,6 +221,7 @@ print_usage(char const *arg)
     fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
     fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
     fprintf(stdout, "    %-23s %s\n", "--sunos", "show command page for SunOS");
+    fprintf(stdout, "    %-23s %s\n", "--version", "print version and exit");
     /* *INDENT-ON* */
 }
 
