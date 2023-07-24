@@ -204,7 +204,7 @@ print_version(char const *arg)
 void
 print_usage(char const *arg)
 {
-    char const *out = "usage: %s [-v] [-c] [-u] [OPTION]... [PAGE]\n\n";
+    char const *out = "usage: %s [-v] [-c] [-u] [OPTION]... PAGE\n\n";
 
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
