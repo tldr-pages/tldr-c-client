@@ -11,8 +11,9 @@ tldr is a collection of simplified and community-driven man pages, for commonly
 used commandline tools.
 .SH OPTIONS
 .TP
-.BR \-v ", " \-\-verbose
-verbose output (when used with \fB\-c\fR or \fB\-u\fR)
+.TP
+.BR \-v ", " \-\-version
+output version information and exit
 .TP
 .BR \-h ", " \-\-help
 display help and exit
@@ -30,6 +31,9 @@ select platform, supported are \fIlinux\fR / \fIosx\fR / \fIsunos\fR /
 \fB\-r\fR, \fB\-\-render\fR=\fIPATH\fR
 render a local page for testing purposes
 .TP
+.B \-\-verbose
+print verbose output
+.TP
 .B \-\-list
 list all entries in the local database
 .TP
@@ -41,9 +45,6 @@ show command page for OSX
 .TP
 .B \-\-sunos
 show command page for SunOS
-.TP
-.B \-\-version
-output version information and exit
 .SH EXIT STATUS
 0 on success, any other positive value otherwise
 .SH SEE ALSO

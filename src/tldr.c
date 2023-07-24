@@ -75,7 +75,7 @@ main(int argc, char **argv)
             break;
 
         case 'v':
-            verbose_flag = 1;
+            version_flag = 1;
             break;
 
         case '?':
@@ -139,7 +139,7 @@ main(int argc, char **argv)
     }
     if (verbose_flag && optind >= argc) {
         print_usage(argv[0]);
-        return EXIT_SUCCESS;
+        return EXIT_FAILURE;
     }
     if (list_flag) {
         if (!has_localdb())
@@ -209,7 +209,7 @@ print_usage(char const *arg)
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-23s %s\n", "-v, --verbose", "verbose output (when used with -c or -u)");
+    fprintf(stdout, "    %-23s %s\n", "-v, --version", "print version and exit");
     fprintf(stdout, "    %-23s %s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-23s %s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-23s %s\n", "-c, --clear-cache", "clear local database");
@@ -217,11 +217,11 @@ print_usage(char const *arg)
             "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-23s %s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
+    fprintf(stdout, "    %-23s %s\n", "--verbose", "verbose output");
     fprintf(stdout, "    %-23s %s\n", "--list", "list all entries in the local database");
     fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
     fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
     fprintf(stdout, "    %-23s %s\n", "--sunos", "show command page for SunOS");
-    fprintf(stdout, "    %-23s %s\n", "--version", "print version and exit");
     /* *INDENT-ON* */
 }
 
