@@ -143,8 +143,8 @@ install: all $(MANSRC)
 	$(INSTALL) $(MANSRC) $(MANPATH)
 
 uninstall:
-	rm $(MANPATH)/tldr.1
-	rm $(PREFIX)/bin/tldr
+	rm -f $(MANPATH)/tldr.1
+	rm -f $(PREFIX)/bin/tldr
 
 clean:
 	$(RM) $(OBJ) $(DEP) $(BIN)
