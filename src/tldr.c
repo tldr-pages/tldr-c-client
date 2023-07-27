@@ -14,6 +14,11 @@
 #include <time.h>
 
 #define VERSION_TAG "v1.6.0"
+#ifndef VERSION
+    #define VERSION_PRETTY ""
+#else
+    #define VERSION_PRETTY VERSION
+#endif
 
 /* Help and usage */
 void        print_version           (char const *arg);
@@ -191,7 +196,14 @@ main(int argc, char **argv)
 void
 print_version(char const *arg)
 {
-    fprintf(stdout, "%s %s\n", arg, VERSION_TAG);
+    /* *INDENT-OFF* */
+    if (strcmp("", VERSION_PRETTY) == 0)
+       fprintf(stdout, "%s %s\n", arg, VERSION_TAG);
+    else
+       fprintf(stdout, "%s %s (%s)\n", arg, VERSION_TAG, VERSION_PRETTY);;
+    fprintf(stdout, "Copyright (C) 2016 Arvid Gerstmann\n");
+    fprintf(stdout, "Source available at https://github.com/tldr-pages/tldr-c-client\n");
+    /* *INDENT-ON* */
 }
 
 void
