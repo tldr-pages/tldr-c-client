@@ -59,7 +59,7 @@ construct_path(char *buf, size_t buflen, char const *home, char const *input,
 }
 
 int
-parse_tldrpage(char const *input)
+parse_tldrpage(char const *input, int color_enabled)
 {
     char c;
     int i, len;
@@ -74,40 +74,49 @@ parse_tldrpage(char const *input)
             switch (c) {
             case '>':
                 start = i;
-                fprintf(stdout, "%s", ANSI_COLOR_EXPLANATION_FG);
+                if (color_enabled)
+                    fprintf(stdout, "%s", ANSI_COLOR_EXPLANATION_FG);
                 continue;
 
             case '-':
                 start = i;
-                fprintf(stdout, "%s", ANSI_COLOR_COMMENT_FG);
+                if (color_enabled) 
+                    fprintf(stdout, "%s", ANSI_COLOR_COMMENT_FG);
                 continue;
 
             case '`':
                 start = i;
-                fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
+                if (color_enabled) 
+                    fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
                 fprintf(stdout, "    ");
                 continue;
 
             case '#':
                 start = i;
-                fprintf(stdout, "%s", ANSI_BOLD_ON);
-                fprintf(stdout, "%s", ANSI_COLOR_TITLE_FG);
+                if (color_enabled) {
+                    fprintf(stdout, "%s", ANSI_BOLD_ON);
+                    fprintf(stdout, "%s", ANSI_COLOR_TITLE_FG);
+                }
                 continue;
             }
         } else if (start > -1) {
             if (input[i] == '{' && input[i + 1] == '{') {
                 fprintf(stdout, "%.*s", i - (start + 1), input + (start + 1));
-                fprintf(stdout, "%s", ANSI_BOLD_OFF);
-                fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
-                fprintf(stdout, "%s", ANSI_COLOR_CODE_PLACEHOLDER_FG);
+                if (color_enabled) {
+                    fprintf(stdout, "%s", ANSI_BOLD_OFF);
+                    fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
+                    fprintf(stdout, "%s", ANSI_COLOR_CODE_PLACEHOLDER_FG);
+                }
 
                 start = i;
                 for (i = i + 1; i < len; i++) {
                     if (input[i] == '}' && input[i + 1] == '}') {
                         fprintf(stdout, "%.*s", i - (start + 2),
                                 input + (start + 2));
-                        fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
-                        fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
+                        if (color_enabled) {
+                            fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
+                            fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
+                        }
                         start = i + 1;
                         break;
                     }
@@ -127,9 +136,10 @@ parse_tldrpage(char const *input)
             } else {
                 fprintf(stdout, "%.*s\n", i - (start + 2), input + (start + 2));
             }
-
-            fprintf(stdout, "%s", ANSI_BOLD_OFF);
-            fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
+            if (color_enabled) {
+                fprintf(stdout, "%s", ANSI_BOLD_OFF);
+                fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
+            }
             fprintf(stdout, "\n");
             start = -1;
         }
@@ -140,7 +150,7 @@ parse_tldrpage(char const *input)
 }
 
 int
-print_tldrpage(char const *input, char const *poverride)
+print_tldrpage(char const *input, char const *poverride, int color_enabled)
 {
     char *output;
     char url[URLBUFSIZ];
@@ -178,7 +188,7 @@ print_tldrpage(char const *input, char const *poverride)
         construct_path(url, URLBUFSIZ, homedir, input, platform);
         if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode)) {
             if (!get_file_content(url, &output, 0)) {
-                parse_tldrpage(output);
+                parse_tldrpage(output, color_enabled);
                 free(output);
                 return 0;
             }
@@ -186,7 +196,7 @@ print_tldrpage(char const *input, char const *poverride)
             construct_path(url, URLBUFSIZ, homedir, input, "common");
             if (stat(url, &sb) == 0 && S_ISREG(sb.st_mode)) {
                 if (!get_file_content(url, &output, 0)) {
-                    parse_tldrpage(output);
+                    parse_tldrpage(output, color_enabled);
                     free(output);
                     return 0;
                 }
@@ -209,7 +219,7 @@ print_tldrpage(char const *input, char const *poverride)
             return 1;
     }
 
-    parse_tldrpage(output);
+    parse_tldrpage(output, color_enabled);
 
     free(output);
 
@@ -293,11 +303,11 @@ parse_tldrlist(char const *path, char const *platform)
 }
 
 int
-print_localpage(char const *path)
+print_localpage(char const *path, int color_enabled)
 {
     char *output = NULL;
     if (!get_file_content(path, &output, 0)) {
-        parse_tldrpage(output);
+        parse_tldrpage(output, color_enabled);
         free(output);
         return 0;
     }

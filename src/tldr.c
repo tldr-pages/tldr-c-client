@@ -33,21 +33,21 @@ static int clear_flag;
 static int platform_flag;
 static int list_flag;
 static int render_flag;
+static int color_flag;
 static char pbuf[STRBUFSIZ];
 static struct option long_options[] = {
-    { "help", no_argument, &help_flag, 1 },
-    { "version", no_argument, &version_flag, 1 },
-    { "verbose", no_argument, &verbose_flag, 1 },
-
-    { "update", no_argument, &update_flag, 1 },
-    { "clear-cache", no_argument, &clear_flag, 1 },
-    { "platform", required_argument, 0, 'p' },
-    { "linux",  no_argument, 0, 'p' },
-    { "osx",  no_argument, 0, 'p' },
-    { "sunos",  no_argument, 0, 'p' },
-    { "list", no_argument, &list_flag, 'l'},
-    { "render", required_argument, 0, 'r'}, {0, 0, 0, 0 }
-};
+    {"help", no_argument, &help_flag, 1},
+    {"version", no_argument, &version_flag, 1},
+    {"verbose", no_argument, &verbose_flag, 1},
+    {"update", no_argument, &update_flag, 1},
+    {"clear-cache", no_argument, &clear_flag, 1},
+    {"platform", required_argument, 0, 'p'},
+    {"linux", no_argument, 0, 'p'},
+    {"osx", no_argument, 0, 'p'},
+    {"sunos", no_argument, 0, 'p'},
+    {"list", no_argument, &list_flag, 'l'},
+    {"render", required_argument, 0, 'r'},
+    {"color", no_argument, &color_flag, 'C'}, {0, 0, 0, 0}};
 
 int
 main(int argc, char **argv)
@@ -60,7 +60,7 @@ main(int argc, char **argv)
         print_usage(argv[0]);
         return EXIT_FAILURE;
     }
-
+    color_flag = isatty(fileno(stdout));
     while (1) {
         option_index = 0;
         c = getopt_long_only(argc, argv, "v", long_options, &option_index);
@@ -108,6 +108,10 @@ main(int argc, char **argv)
             render_flag = 1;
         } break;
 
+        case 'C':
+            color_flag = 1;
+            break;
+
         default:
             abort();
         }
@@ -150,7 +154,7 @@ main(int argc, char **argv)
         return EXIT_SUCCESS;
     }
     if (render_flag) {
-        if (print_localpage(pbuf))
+        if (print_localpage(pbuf, 1))
             return EXIT_FAILURE;
         return EXIT_SUCCESS;
     }
@@ -174,7 +178,7 @@ main(int argc, char **argv)
 
         if (!has_localdb())
             update_localdb(verbose_flag);
-        if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL)) {
+        if (print_tldrpage(buf, pbuf[0] != 0 ? pbuf : NULL, color_flag)) {
             fprintf(stdout, "This page doesn't exist yet!\n");
             fprintf(stdout, "Submit new pages here: https://github.com/tldr-pages/tldr\n");
             if (getenv(PREVENT_UPDATE_ENV_VARIABLE)) {
@@ -222,6 +226,7 @@ print_usage(char const *arg)
     fprintf(stdout, "    %-20s %-30s\n", "--sunos", "show command page for SunOS");
     fprintf(stdout, "    %-20s %-30s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
+    fprintf(stdout, "    %-20s %-30s\n", "-C, --color", "force color display");
     /* *INDENT-ON* */
 }
 
