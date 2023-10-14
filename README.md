@@ -46,24 +46,23 @@ The default prefix for installation is `/usr/local/bin`.
 
 Building the `tldr` client is pretty straightforward.
 
-#### Requirements
+### Requirements
 
 - `clang`/`gcc`
 - `libcurl` (`brew install curl` / `apt-get install libcurl-dev` / `apt-get install libcurl4-openssl-dev`)
 - `libzip` (`brew install libzip` / `apt-get install libzip-dev`)
 - `pkg-config` (`brew install pkg-config` / `apt-get install pkg-config`)
 
-#### Compiling
+### Compiling
 
 The [`Makefile`](https://github.com/tldr-pages/tldr-c-client/blob/master/Makefile)
 in the root directory has all you need for building the project.
 
 Just call `make` and `tldr` will build itself.
 
-```
+```shell
 make
 ```
-
 
 ## Autocompletion
 
@@ -73,7 +72,7 @@ the correct autocompletion file.
 The files `autocomplete.zsh`, `autocomplete.bash`, and `autocomplete.fish` can be found in the `autocomplete`
 folder in the root of the repository.
 
-#### Installation
+### Installation
 
 To install the autocompletion, just move the script for your shell to an easy
 to access the directory (like your home directory), and source it in your `.bashrc` or `.zshrc`.
@@ -85,20 +84,24 @@ mv autocomplete/complete.zsh ~/.tldr.complete
 echo "source ~/.tldr.complete" >> ~/.zshrc
 ```
 
-
 ## Usage
 
-```
-usage: ./tldr [-v] [OPTION]... SEARCH
+```shell
+usage: tldr [-v] [OPTION]... SEARCH
 
 available commands:
-    -v                   print verbose output
-    --version            print version and exit
-    -h, --help           print this help and exit
-    -u, --update         update local database
-    -c, --clear-cache    clear local database
-    -p, --platform=PLATFORM select platform, supported are linux / osx / sunos / common
+    -v                   print verbose output          
+    --version            print version and exit        
+    -h, --help           print this help and exit      
+    -u, --update         update local database         
+    -c, --clear-cache    clear local database          
+    -l, --list           list all entries in the local database
+    -p, --platform=PLATFORM select platform, supported are linux / osx / sunos / windows / common
+    --linux              show command page for Linux   
+    --osx                show command page for OSX     
+    --sunos              show command page for SunOS   
     -r, --render=PATH    render a local page for testing purposes
+    -C, --color          force color display
 ```
 
 ## Configuration
