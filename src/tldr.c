@@ -60,7 +60,14 @@ int main(int argc, char **argv) {
         print_usage(argv[0]);
         return EXIT_FAILURE;
     }
-    color_flag = isatty(fileno(stdout));
+
+    char *no_color = getenv("NO_COLOR");
+    if (no_color == NULL || no_color[0] == '\0') {
+        color_flag = isatty(fileno(stdout));
+    } else {
+        color_flag = 0;
+    }
+
     while (1) {
         option_index = 0;
         c = getopt_long_only(argc, argv, "v", long_options, &option_index);
