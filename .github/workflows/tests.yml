@@ -14,7 +14,7 @@ jobs:
 
     steps:
 
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
@@ -35,9 +35,9 @@ jobs:
 
     - name: Test printing tldr version
       run: ./tldr --version
-      
+
     - name: Test printing tldr list
       run: ./tldr --list
-      
+
     - name: Test printing tldr page
       run: ./tldr tar

@@ -8,7 +8,7 @@
 
 _tldr_get_files() {
 	local ret
-	local files="$(find $HOME/.tldrc/tldr/pages/$1 -name '*.md' -exec basename {} .md \;)"
+	local files="$(find $HOME/.tldrc/tldr/pages/$1 -name '*.md' -exec basename -s .md {} +)"
 
 	IFS=$'\n\t'
 	for f in $files; do
