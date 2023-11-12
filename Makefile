@@ -37,27 +37,43 @@ endif
 HAS_GIT			:= $(shell type git > /dev/null 2>&1 && echo "1" || echo "0")
 IS_GITREPO		:= $(shell [ -d .git ] && echo "1" || echo "0")
 ifeq (0,$(filter 0,$(HAS_GIT) $(IS_GITREPO)))
-VER				:= v1.3.0
+VER				:= v1.6.0
 else
 VER				:= $(shell git describe --tags --always --dirty)
 endif
 
-# Preprocessor Flags
+# Set Flags
 ALL_CPPFLAGS	:= $(CPPFLAGS) -DVERSION='"$(VER)"'
+ALL_LDFLAGS		:= $(LDFLAGS) -L/usr/lib
+ALL_LDLIBS		:= -lc -lm -lcurl -lzip
 ALL_CPPFLAGS	+= -D_GNU_SOURCE
 ALL_CPPFLAGS	+= $(shell pkg-config --cflags libzip)
+
 ALL_CPPFLAGS	+= -I/usr/include
 ALL_CPPFLAGS	+= -I/usr/local/include
-ALL_CPPFLAGS	+= -I/usr/local/opt/curl/include
-ALL_CPPFLAGS	+= -I/usr/local/opt/libzip/include
-
-# Linker Flags
-ALL_LDFLAGS		:= $(LDFLAGS) -L/usr/lib
 ALL_LDFLAGS		+= -L/usr/local/lib
-ALL_LDFLAGS		+= -L/usr/local/opt/curl/lib
-ALL_LDFLAGS		+= -L/usr/local/opt/libzip/lib
-ALL_LDLIBS		:= -lc -lm -lcurl -lzip
+ifneq (,$(wildcard /opt/homebrew/.*))
+	ALL_CCPFLAGS	+= -I/opt/homebrew/include
+	ALL_CPPFLAGS	+= -I/opt/homebrew/lib
+endif
 
+ifneq (,$(wildcard /usr/local/opt/curl/.*))
+	ALL_CPPFLAGS	+= -I/usr/local/opt/curl/include
+	ALL_LDFLAGS		+= -L/usr/local/opt/curl/lib
+endif
+ifneq (,$(wildcard /opt/homebrew/opt/curl/.))
+	ALL_CPPFLAGS	+= -I/opt/homebrew/opt/curl/include
+	ALL_LDFLAGS		+= -L/opt/homebrew/opt/curl/lib
+endif
+
+ifneq (,$(wildcard /usr/local/opt/libzip/.))
+	ALL_CPPFLAGS	+= -I/usr/local/opt/libzip/include
+	ALL_LDFLAGS		+= -L/usr/local/opt/libzip/lib
+endif
+ifneq (,$(wildcard /opt/homebrew/opt/libzip/.))
+	ALL_CPPFLAGS	+= -I/opt/homebrew/opt/libzip/include
+	ALL_LDFLAGS		+= -L/opt/homebrew/opt/libzip/lib
+endif
 
 # Source, Binaries, Dependencies
 SRC			:= $(shell find $(SRCDIR) -type f -name '*.c')
@@ -125,6 +141,10 @@ install: all $(MANSRC)
 	$(INSTALL) $(BIN) $(PREFIX)/bin
 	$(INSTALL) -d $(MANPATH)
 	$(INSTALL) $(MANSRC) $(MANPATH)
+
+uninstall:
+	$(RM) $(PREFIX)/bin/$(TARGET)
+	$(RM) $(MANPATH)/$(TARGET).1
 
 clean:
 	$(RM) $(OBJ) $(DEP) $(BIN)

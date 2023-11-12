@@ -52,13 +52,16 @@ check_localdate(void)
     curtime = time(NULL);
     oldtime = strtol(buffer, NULL, 10);
     difftime = curtime - oldtime;
-    if (difftime > (60 * 60 * 24 * 7 * 2)) {
+    if (difftime > (60 * 60 * 24 * 7 * 2) && !getenv(PREVENT_UPDATE_ENV_VARIABLE)) {
         /* *INDENT-OFF* */
-        fprintf(stdout, "%s", ANSI_BOLD_ON);
-        fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
-        fprintf(stdout, "Local data is older than two weeks, use --update to update it.\n\n");
-        fprintf(stdout, "%s", ANSI_COLOR_RESET_FG);
-        fprintf(stdout, "%s", ANSI_BOLD_OFF);
+        fprintf(stdout, "Local database is older than two weeks, attempting to update it...\n");
+        fprintf(stdout, "To prevent automatic updates, set the environment variable %s.\n", PREVENT_UPDATE_ENV_VARIABLE);
+        if (update_localdb(0)) {
+            fprintf(stdout, "%s%s", ANSI_BOLD_ON, ANSI_COLOR_CODE_FG);
+            fprintf(stdout, "Failed to update local database.\n");
+            fprintf(stdout, "%s%s", ANSI_COLOR_RESET_FG, ANSI_BOLD_OFF);
+        }
+        fprintf(stdout, "\n");
         /* *INDENT-ON* */
     }
 
@@ -137,87 +140,102 @@ int
 update_localdb(int verbose)
 {
     struct stat s;
-    char tmp[STRBUFSIZ];
-    char outpath[STRBUFSIZ];
-    char outfile[STRBUFSIZ];
-    char outhome[STRBUFSIZ];
+    char tldr_home[STRBUFSIZ];         /* $HOME/TLDR_HOME                      */
+    char tldr_home_db[STRBUFSIZ];      /* $HOME/TLDR_HOME/TLDR_DIR             */
+    char temp_dir[STRBUFSIZ];          /* $HOME/TLDR_HOME/TMP_DIR              */
+    char zip_archive_path[STRBUFSIZ];   /* $HOME/TLDR_HOME/TMP_DIR/TMP_FILE     */
+    char extracted_contents[STRBUFSIZ];   /* $HOME/TLDR_HOME/TMP_DIR/TLDR_ZIP_DIR */
     char const *homedir;
     size_t outlen;
 
-    outlen = 0;
-    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN))
-        return 1;
-    if (mkdtemp(outfile) == NULL) {
-        fprintf(stderr, "Error: Creating Directory: %s\n", outfile);
-        return 1;
-    }
-
-    outlen = 0;
-
-    /* it's guaranteed, that outfile is only TMP_DIR_LEN long */
-    if (sstrncat(outpath, &outlen, STRBUFSIZ, outfile, TMP_DIR_LEN))
-        return 1;
-
-    outlen = TMP_DIR_LEN;
-    if (sstrncat(outfile, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN))
-        return 1;
-
-    if (download_file(ZIP_URL, outfile, verbose)) {
-        fprintf(stderr, "Error: Downloading File: %s\n", ZIP_URL);
-        return 1;
-    }
-
-    if (unzip(outfile, outpath)) {
-        rm(outpath, 0);
-        return 1;
-    }
-
-    outlen = 0;
-    if (sstrncat(tmp, &outlen, STRBUFSIZ, outpath, strlen(outpath)))
-        return 1;
-    if (sstrncat(tmp, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
-        return 1;
-
     homedir = gethome();
     if (homedir == NULL) {
-        fprintf(stderr, "Error: HOME not existant\n");
+        fprintf(stderr, "Error: HOME not existent\n");
+        return 1;
+    }
+
+    /* Create TLDR_HOME if non-existent */
+    outlen = 0;
+    if (sstrncat(tldr_home, &outlen, STRBUFSIZ, homedir, strlen(homedir))) {
+        return 1;
+    }
+    if (sstrncat(tldr_home, &outlen, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN)) {
+        return 1;
+    }
+    if (mkdir(tldr_home, 0755) > 0 && errno != EEXIST) {
+        fprintf(stderr, "Error: Could not create directory: %s\n", tldr_home);
+        return 1;
+    }
+
+    /* Set up the temp directory */
+    outlen = 0;
+    if (sstrncat(temp_dir, &outlen, STRBUFSIZ, tldr_home, strlen(tldr_home))) {
+        return 1;
+    }
+    if (sstrncat(temp_dir, &outlen, STRBUFSIZ, TMP_DIR, TMP_DIR_LEN)) {
+        return 1;
+    }
+    if (mkdir(temp_dir, 0755) > 0 && errno != EEXIST) {
+        fprintf(stderr, "Error: Could not create directory: %s\n", temp_dir);
+        return 1;
+    }
+
+    /* The update zip file will be downloaded to $HOME/TLDR_HOME/TMP_DIR/TMP_FILE */
+    outlen = 0;
+    if (sstrncat(zip_archive_path, &outlen, STRBUFSIZ, temp_dir, strlen(temp_dir))) {
+        return 1;
+    }
+    if (sstrncat(zip_archive_path, &outlen, STRBUFSIZ, TMP_FILE, TMP_FILE_LEN)) {
+        return 1;
+    }
+
+    /* Download and unzip the file */
+    if (download_file(ZIP_URL, zip_archive_path, verbose)) {
+        fprintf(stderr, "Error: Downloading file: %s\n", ZIP_URL);
+        return 1;
+    }
+
+    if (unzip(zip_archive_path, temp_dir)) {
+        rm(temp_dir, 0);
         return 1;
     }
 
     outlen = 0;
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, homedir, strlen(homedir))) {
+    if (sstrncat(extracted_contents, &outlen, STRBUFSIZ, temp_dir, strlen(temp_dir))) {
         return 1;
     }
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_HOME, TLDR_HOME_LEN)) {
-        return 1;
-    }
-
-    if (mkdir(outhome, 0755) > 0 && errno != EEXIST) {
-        fprintf(stderr, "Error: Could Not Create Directory: %s\n", outhome);
-        rm(outpath, 0);
+    if (sstrncat(extracted_contents, &outlen, STRBUFSIZ, TLDR_ZIP_DIR, TLDR_ZIP_DIR_LEN)) {
         return 1;
     }
 
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_DIR_LEN))
+    /* tldr_home_db is where we want to move the update contents */
+    outlen = 0;
+    if (sstrncat(tldr_home_db, &outlen, STRBUFSIZ, tldr_home, strlen(tldr_home))) {
         return 1;
-    if (sstrncat(outhome, &outlen, STRBUFSIZ, "/", 1))
+    }
+    if (sstrncat(tldr_home_db, &outlen, STRBUFSIZ, TLDR_DIR, TLDR_HOME_LEN)) {
         return 1;
+    }
+    if (sstrncat(tldr_home_db, &outlen, STRBUFSIZ, "/", 1)) {
+        return 1;
+    }
 
-    if ((stat(outhome, &s) == 0) && (S_ISDIR(s.st_mode))) {
-        if (rm(outhome, 0)) {
-            fprintf(stderr, "Error: Could Not Remove: %s\n", outhome);
+    /* Remove the old database */
+    if ((stat(tldr_home_db, &s) == 0) && (S_ISDIR(s.st_mode))) {
+        if (rm(tldr_home_db, 0)) {
+            fprintf(stderr, "Error: Could not remove the old database: %s\n", tldr_home_db);
             return 1;
         }
     }
 
-    if (rename(tmp, outhome)) {
-        fprintf(stderr, "Error: Could Not Rename: %s to %s\n", tmp, outhome);
-        rm(outpath, 0);
+    if (rename(extracted_contents, tldr_home_db)) {
+        fprintf(stderr, "Error: Could not rename: %s to %s\n", extracted_contents, tldr_home_db);
+        rm(temp_dir, 0);
         return 1;
     }
 
-    if (rm(outpath, 0)) {
-        fprintf(stderr, "Error: Could Not Remove: %s\n", outpath);
+    if (rm(temp_dir, 0)) {
+        fprintf(stderr, "Error: Could not remove: %s\n", temp_dir);
         return 1;
     }
 

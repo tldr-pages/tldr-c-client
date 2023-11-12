@@ -14,19 +14,23 @@
 #define STRBUFSIZ 512
 #define URLBUFSIZ 1024
 
-#define BASE_URL "https://raw.github.com/tldr-pages/tldr/master/pages"
+#define BASE_URL "https://raw.github.com/tldr-pages/tldr/main/pages"
 #define BASE_URL_LEN (sizeof(BASE_URL) - 1)
 
-#define ZIP_URL "https://github.com/tldr-pages/tldr/archive/master.zip"
+#define ZIP_URL "https://github.com/tldr-pages/tldr/archive/main.zip"
 #define ZIP_URL_LEN (sizeof(ZIP_URL_LEN) - 1)
 
-#define TMP_DIR "/tmp/tldrXXXXXX"
+/* Relative to TLDR_HOME */
+#define TMP_DIR "/tmp"
 #define TMP_DIR_LEN (sizeof(TMP_DIR) - 1)
 
-#define TMP_FILE "/master.zip"
+#define TMP_FILE "/main.zip"
 #define TMP_FILE_LEN (sizeof(TMP_FILE) - 1)
 
-#define TLDR_DIR "/tldr-master"
+#define TLDR_ZIP_DIR "/tldr-main"
+#define TLDR_ZIP_DIR_LEN (sizeof(TLDR_ZIP_DIR) - 1)
+
+#define TLDR_DIR "/tldr"
 #define TLDR_DIR_LEN (sizeof(TLDR_DIR) - 1)
 
 #define TLDR_HOME "/.tldrc"
@@ -35,8 +39,10 @@
 #define TLDR_DATE "/.tldrc/date"
 #define TLDR_DATE_LEN (sizeof(TLDR_DATE) - 1)
 
-#define TLDR_EXT "/.tldrc/tldr-master/pages/"
+#define TLDR_EXT "/.tldrc/tldr/pages/"
 #define TLDR_EXT_LEN (sizeof(TLDR_EXT) - 1)
+
+#define PREVENT_UPDATE_ENV_VARIABLE "TLDR_AUTO_UPDATE_DISABLED"
 
 #define ANSI_COLOR_RESET_FG                     "\x1b[39m"
 #define ANSI_COLOR_TITLE_FG                     "\x1b[39m"
@@ -66,11 +72,12 @@ int         construct_url           (char *buf, size_t buflen,
                                      char const *platform);
 int         construct_path          (char *buf, size_t buflen, char const *home,
                                      char const *input, char const *platform);
-int         parse_tldrpage          (char const *input);
-int         print_tldrpage          (char const *input, char const *platform);
+int         parse_tldrpage          (char const *input, int color_enabled);
+int         print_tldrpage          (char const *input, char const *platform,
+                                     int color_enabled);
 int         print_tldrlist          (char const *platform);
 int         parse_tldrlist          (char const *path, char const *platform);
-int         print_localpage         (char const *path);
+int         print_localpage         (char const *path, int color_enabled);
 
 /* utils.c */
 #define RMOPT_IGNORE_NOFILE     (0x1)

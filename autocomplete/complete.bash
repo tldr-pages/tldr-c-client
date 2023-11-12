@@ -6,7 +6,7 @@
 
 _tldr_get_files() {
 	local ret
-	local files="$(find $HOME/.tldrc/tldr-master/pages/$1 -name '*.md' -exec basename {} .md \;)"
+	local files="$(find $HOME/.tldrc/tldr/pages/$1 -name '*.md' -exec basename {} .md \;)"
 
 	IFS=$'\n\t'
 	for f in $files; do
@@ -23,7 +23,7 @@ _tldr_complete() {
     elif [ "$word" = "--" ]; then
         cmpl=$(echo $'--version\n--help\n--update\n--clear-cache\n--platform\n--render' | sort)
     else
-        if [ -d "$HOME/.tldrc/tldr-master/pages" ]; then
+        if [ -d "$HOME/.tldrc/tldr/pages" ]; then
             local platform="$(uname)"
             cmpl="$(_tldr_get_files common | sort | uniq)"
             if [ "$platform" = "Darwin" ]; then
