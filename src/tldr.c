@@ -221,7 +221,7 @@ void print_usage(char const *arg){
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-20s %-30s\n", "-C, --color", "force color display");
+    fprintf(stdout, "    %-23s %s\n", "-C, --color", "force color display");
     fprintf(stdout, "    %-23s %s\n", "-h, --help", "print this help and exit");
     fprintf(stdout, "    %-23s %s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / windows / common");
