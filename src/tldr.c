@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     while (1) {
         option_index = 0;
-        c = getopt_long_only(argc, argv, "v", long_options, &option_index);
+        c = getopt_long_only(argc, argv, "vp:r:C", long_options, &option_index);
 
         /* reached the end, bail out */
         if (c == -1) {
