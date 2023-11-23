@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     while (1) {
         option_index = 0;
-        c = getopt_long_only(argc, argv, "v", long_options, &option_index);
+        c = getopt_long_only(argc, argv, "vp:r:C", long_options, &option_index);
 
         /* reached the end, bail out */
         if (c == -1) {
@@ -82,12 +82,13 @@ int main(int argc, char **argv) {
             break;
 
         case 'v':
-            verbose_flag = 1;
+            version_flag = 1;
             break;
 
         case '?':
             /* do not set the help flag, only show getopt error */
             /* help_flag = 1; */
+            return EXIT_FAILURE;
             break;
 
         case 'p': {
@@ -130,9 +131,13 @@ int main(int argc, char **argv) {
 
     /* show help, if the platform was supplied, but no further argument */
     missing_arg = (platform_flag && !list_flag && (optind == argc));
-    if (help_flag || missing_arg) {
+    if (help_flag) {
         print_usage(argv[0]);
         return EXIT_SUCCESS;
+    }
+    if (missing_arg) {
+        print_usage(argv[0]);
+        return EXIT_FAILURE;
     }
     if (version_flag) {
         print_version(argv[0]);
@@ -149,8 +154,8 @@ int main(int argc, char **argv) {
         return EXIT_SUCCESS;
     }
     if (verbose_flag && optind >= argc) {
-        print_version(argv[0]);
-        return EXIT_SUCCESS;
+        print_usage(argv[0]);
+        return EXIT_FAILURE;
     }
     if (list_flag) {
         if (!has_localdb())
@@ -210,25 +215,25 @@ void print_version(char const *arg) {
     /* *INDENT-ON* */
 }
 
-void print_usage(char const *arg) {
-    char const *out = "usage: %s [-v] [OPTION]... SEARCH\n\n";
+void print_usage(char const *arg){
+    char const *out = "usage: %s [--verbose] [OPTION]... [PAGE]\n\n";
 
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-20s %-30s\n", "-v", "print verbose output");
-    fprintf(stdout, "    %-20s %-30s\n", "--version", "print version and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "-h, --help", "print this help and exit");
-    fprintf(stdout, "    %-20s %-30s\n", "-u, --update", "update local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-c, --clear-cache", "clear local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-l, --list", "list all entries in the local database");
-    fprintf(stdout, "    %-20s %-30s\n", "-p, --platform=PLATFORM",
+    fprintf(stdout, "    %-23s %s\n", "-C, --color", "force color display");
+    fprintf(stdout, "    %-23s %s\n", "-h, --help", "print this help and exit");
+    fprintf(stdout, "    %-23s %s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / windows / common");
-    fprintf(stdout, "    %-20s %-30s\n", "--linux", "show command page for Linux");
-    fprintf(stdout, "    %-20s %-30s\n", "--osx", "show command page for OSX");
-    fprintf(stdout, "    %-20s %-30s\n", "--sunos", "show command page for SunOS");
-    fprintf(stdout, "    %-20s %-30s\n", "-r, --render=PATH",
+    fprintf(stdout, "    %-23s %s\n", "-r, --render=PATH",
             "render a local page for testing purposes");
-    fprintf(stdout, "    %-20s %-30s\n", "-C, --color", "force color display");
+    fprintf(stdout, "    %-23s %s\n", "-u, --update", "update local database");
+    fprintf(stdout, "    %-23s %s\n", "-v, --version", "print version and exit");
+    fprintf(stdout, "    %-23s %s\n", "--clear-cache", "clear local database");
+    fprintf(stdout, "    %-23s %s\n", "--verbose", "display verbose output (when used with --clear-cache or --update)");
+    fprintf(stdout, "    %-23s %s\n", "--list", "list all entries in the local database");
+    fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
+    fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
+    fprintf(stdout, "    %-23s %s\n", "--sunos", "show command page for SunOS");
     /* *INDENT-ON* */
 }

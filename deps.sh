@@ -1,7 +1,6 @@
 #!/bin/sh
 
 UNAME=$(uname -s)
-ARCH=$(uname -m)
 
 if [ "$UNAME" = "Darwin" ]; then
     HAS_BREW=$(command -v brew > /dev/null 2>&1 && echo 1 || echo 0)

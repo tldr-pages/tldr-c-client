@@ -6,43 +6,52 @@
 tldr \- A collection of simplified and community-driven man pages.
 .SH SYNOPSIS
 .B tldr
-[\fB\-v\fR]
-[\fIOPTION\fR]... \fISEARCH\fR
+[\fB\-C\fR] [\fB\-v\fR] [\fB\-\-clear-cache\fR] [\fB\-\-update\fR] [\fB\-\-list\fR] [\fB\-p\fR \fIPLATFORM\fR]... [\fB\-r\fR \fIPATH\fR] \fIPAGE\fR
 .SH DESCRIPTION
-tldr is a collection of simplified and community-driven man pages, for commonly
-used commandline tools.
+tldr is a collection of simplified and community-driven man pages for commonly used command-line tools.
 .SH OPTIONS
 .TP
-.BR \-v
-verbose output
+.BR \-C ", " \-\-color
+Force color display.
 .TP
-.BR \-\-version
-output version information and exit
-.TP
-.BR \-h ", " \-\-help
-display help and exit
+.BR \-v ", " \-\-version
+Output version information and exit.
 .TP
 .BR \-u ", " \-\-update
-update local database and exit
-.TP
-.BR \-c ", " \-\-clear-cache
-remove local database and exit
+Update the local database and exit.
 .TP
 .BR \-p ", " \-\-platform=\fIPLATFORM\fR
-select platform, supported are \fIlinux\fR / \fIosx\fR / \fIsunos\fR / \fIwindows\fR / \fIcommon\fR
+Select platform, supported platforms are \fIlinux\fR / \fIosx\fR / \fIsunos\fR / \fIwindows\fR / \fIcommon\fR.
 .TP
 .BR \-r ", " \-\-render=\fIPATH\fR
-render a local page for testing purposes
+Render a local page for testing purposes.
+.TP
+.BR \-\-clear-cache
+Remove the local database and exit.
+.TP
+.BR \-\-linux
+Show command page for Linux.
+.TP
+.BR \-\-list
+List all entries in the local database.
+.TP
+.BR \-\-osx
+Show command page for OSX.
+.TP
+.BR \-\-sunos
+Show command page for SunOS.
+.TP
+.BR \-\-verbose
+Print verbose output (when used with \fB\-\-clear-cache\fR or \fB\-\-update\fR).
 .SH EXIT STATUS
-0 on success, any other positive value otherwise
+0 on success, any other positive value otherwise.
 .SH SEE ALSO
 The source is available at:
-.URL "https://github.com/tldr-pages/tldr-cpp-client" "" ""
+<https://github.com/tldr-pages/tldr-c-client>.
 .SH REPORTING BUGS
-Report bugs through the Github repository:
-.URL "https://github.com/tldr-pages/tldr-cpp-client" "" "."
+Report bugs through the GitHub repository:
+<https://github.com/tldr-pages/tldr-c-client>.
 .SH COPYRIGHT
 The MIT License (MIT)
 
 Copyright (c) 2016 Arvid Gerstmann.
-

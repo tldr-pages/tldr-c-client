@@ -80,13 +80,13 @@ parse_tldrpage(char const *input, int color_enabled)
 
             case '-':
                 start = i;
-                if (color_enabled) 
+                if (color_enabled)
                     fprintf(stdout, "%s", ANSI_COLOR_COMMENT_FG);
                 continue;
 
             case '`':
                 start = i;
-                if (color_enabled) 
+                if (color_enabled)
                     fprintf(stdout, "%s", ANSI_COLOR_CODE_FG);
                 fprintf(stdout, "    ");
                 continue;
