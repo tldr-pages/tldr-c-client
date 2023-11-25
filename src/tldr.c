@@ -37,11 +37,11 @@ static int render_flag;
 static int color_flag;
 static char pbuf[STRBUFSIZ];
 static struct option long_options[] = {
-    {"help", no_argument, &help_flag, 1},
-    {"version", no_argument, &version_flag, 1},
-    {"verbose", no_argument, &verbose_flag, 1},
-    {"update", no_argument, &update_flag, 1},
-    {"clear-cache", no_argument, &clear_flag, 1},
+    {"help", no_argument, &help_flag, 'h'},
+    {"version", no_argument, &version_flag, 'v'},
+    {"verbose", no_argument, &verbose_flag, 'V'},
+    {"update", no_argument, &update_flag, 'u'},
+    {"clear-cache", no_argument, &clear_flag, 'c'},
     {"platform", required_argument, 0, 'p'},
     {"linux", no_argument, 0, 'p'},
     {"osx", no_argument, 0, 'p'},
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
 
     while (1) {
         option_index = 0;
-        c = getopt_long_only(argc, argv, "vp:r:C", long_options, &option_index);
+        c = getopt_long_only(argc, argv, "hvVucp:lr:C", long_options, &option_index);
 
         /* reached the end, bail out */
         if (c == -1) {
@@ -118,6 +118,26 @@ int main(int argc, char **argv) {
 
         case 'C':
             color_flag = 1;
+            break;
+
+        case 'h':
+            help_flag = 1;
+            break;
+
+        case 'l':
+            list_flag = 1;
+            break;
+
+        case 'V':
+            verbose_flag = 1;
+            break;
+
+        case 'u':
+            update_flag = 1;
+            break;
+
+        case 'c':
+            clear_flag = 1;
             break;
 
         default:
@@ -229,9 +249,9 @@ void print_usage(char const *arg){
             "render a local page for testing purposes");
     fprintf(stdout, "    %-23s %s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-23s %s\n", "-v, --version", "print version and exit");
-    fprintf(stdout, "    %-23s %s\n", "--clear-cache", "clear local database");
-    fprintf(stdout, "    %-23s %s\n", "--verbose", "display verbose output (when used with --clear-cache or --update)");
-    fprintf(stdout, "    %-23s %s\n", "--list", "list all entries in the local database");
+    fprintf(stdout, "    %-23s %s\n", "-c, --clear-cache", "clear local database");
+    fprintf(stdout, "    %-23s %s\n", "-V, --verbose", "display verbose output (when used with --clear-cache or --update)");
+    fprintf(stdout, "    %-23s %s\n", "-l, --list", "list all entries in the local database");
     fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
     fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
     fprintf(stdout, "    %-23s %s\n", "--sunos", "show command page for SunOS");
