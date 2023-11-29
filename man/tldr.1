@@ -1,15 +1,17 @@
 .\" Manpage for tldr.
 .\" Contact ag@arvid.io to correct errors or typos.
-.mso www.tmac
 .TH TLDR 1
 .SH NAME
 tldr \- A collection of simplified and community-driven man pages.
 .SH SYNOPSIS
 .B tldr
-[\fB\-C\fR] [\fB\-v\fR] [\fB\-\-clear-cache\fR] [\fB\-\-update\fR] [\fB\-\-list\fR] [\fB\-p\fR \fIPLATFORM\fR]... [\fB\-r\fR \fIPATH\fR] \fIPAGE\fR
+[\fB\-C\fR] [\fB\-v\fR] [\fB\-c\fR] [\fB\-u\fR] [\fB\-l\fR] [\fB\-p\fR \fIPLATFORM\fR]... [\fB\-r\fR \fIPATH\fR] \fIPAGE\fR
 .SH DESCRIPTION
 tldr is a collection of simplified and community-driven man pages for commonly used command-line tools.
 .SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Print help to standard output and exit.
 .TP
 .BR \-C ", " \-\-color
 Force color display.
@@ -26,23 +28,14 @@ Select platform, supported platforms are \fIlinux\fR / \fIosx\fR / \fIsunos\fR /
 .BR \-r ", " \-\-render=\fIPATH\fR
 Render a local page for testing purposes.
 .TP
-.BR \-\-clear-cache
+.BR \-c ", " \-\-clear-cache
 Remove the local database and exit.
 .TP
-.BR \-\-linux
-Show command page for Linux.
-.TP
-.BR \-\-list
+.BR \-l ", " \-\-list
 List all entries in the local database.
 .TP
-.BR \-\-osx
-Show command page for OSX.
-.TP
-.BR \-\-sunos
-Show command page for SunOS.
-.TP
-.BR \-\-verbose
-Print verbose output (when used with \fB\-\-clear-cache\fR or \fB\-\-update\fR).
+.BR \-V ", " \-\-verbose
+Print verbose output (when used with \fB\-c\fR or \fB\-u\fR).
 .SH EXIT STATUS
 0 on success, any other positive value otherwise.
 .SH SEE ALSO

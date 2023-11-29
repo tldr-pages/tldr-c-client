@@ -37,19 +37,17 @@ static int render_flag;
 static int color_flag;
 static char pbuf[STRBUFSIZ];
 static struct option long_options[] = {
-    {"help", no_argument, &help_flag, 'h'},
-    {"version", no_argument, &version_flag, 'v'},
-    {"verbose", no_argument, &verbose_flag, 'V'},
-    {"update", no_argument, &update_flag, 'u'},
-    {"clear-cache", no_argument, &clear_flag, 'c'},
+    {"help", no_argument, &help_flag, 1},
+    {"version", no_argument, &version_flag, 1},
+    {"verbose", no_argument, &verbose_flag, 1},
+    {"update", no_argument, &update_flag, 1},
+    {"clear-cache", no_argument, &clear_flag, 1},
     {"platform", required_argument, 0, 'p'},
-    {"linux", no_argument, 0, 'p'},
-    {"osx", no_argument, 0, 'p'},
-    {"sunos", no_argument, 0, 'p'},
-    {"list", no_argument, &list_flag, 'l'},
+    {"list", no_argument, &list_flag, 1},
     {"render", required_argument, 0, 'r'},
-    {"color", no_argument, &color_flag, 'C'},
-    {0, 0, 0, 0}};
+    {"color", no_argument, &color_flag, 1},
+    { 0 }
+};
 
 int main(int argc, char **argv) {
     int c;
@@ -70,7 +68,7 @@ int main(int argc, char **argv) {
 
     while (1) {
         option_index = 0;
-        c = getopt_long_only(argc, argv, "hvVucp:lr:C", long_options, &option_index);
+        c = getopt_long(argc, argv, "hvVucp:lr:C", long_options, &option_index);
 
         /* reached the end, bail out */
         if (c == -1) {
@@ -91,20 +89,10 @@ int main(int argc, char **argv) {
             return EXIT_FAILURE;
             break;
 
-        case 'p': {
-            const char *platform_name = long_options[option_index].name;
-            if (strcmp(platform_name, "platform") == 0) {
-                size_t len = strlen(optarg);
-                if (len > STRBUFSIZ)
-                    exit(EXIT_FAILURE);
-
-                memcpy(pbuf, optarg, len);
-                pbuf[len] = '\0';
-            } else {
-                memcpy(pbuf, platform_name, strlen(platform_name));
-            }
+        case 'p':
+            memcpy(pbuf, optarg, strlen(optarg));
             platform_flag = 1;
-        } break;
+            break;
 
         case 'r': {
             size_t len = strlen(optarg);
@@ -236,13 +224,13 @@ void print_version(char const *arg) {
 }
 
 void print_usage(char const *arg){
-    char const *out = "usage: %s [--verbose] [OPTION]... [PAGE]\n\n";
+    char const *out = "usage: %s [OPTION]... PAGE\n\n";
 
     /* *INDENT-OFF* */
     fprintf(stdout, out, arg);
     fprintf(stdout, "available commands:\n");
-    fprintf(stdout, "    %-23s %s\n", "-C, --color", "force color display");
     fprintf(stdout, "    %-23s %s\n", "-h, --help", "print this help and exit");
+    fprintf(stdout, "    %-23s %s\n", "-C, --color", "force color display");
     fprintf(stdout, "    %-23s %s\n", "-p, --platform=PLATFORM",
             "select platform, supported are linux / osx / sunos / windows / common");
     fprintf(stdout, "    %-23s %s\n", "-r, --render=PATH",
@@ -252,8 +240,5 @@ void print_usage(char const *arg){
     fprintf(stdout, "    %-23s %s\n", "-c, --clear-cache", "clear local database");
     fprintf(stdout, "    %-23s %s\n", "-V, --verbose", "display verbose output (when used with --clear-cache or --update)");
     fprintf(stdout, "    %-23s %s\n", "-l, --list", "list all entries in the local database");
-    fprintf(stdout, "    %-23s %s\n", "--linux", "show command page for Linux");
-    fprintf(stdout, "    %-23s %s\n", "--osx", "show command page for OSX");
-    fprintf(stdout, "    %-23s %s\n", "--sunos", "show command page for SunOS");
     /* *INDENT-ON* */
 }
