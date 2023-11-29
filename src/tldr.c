@@ -238,7 +238,7 @@ void print_usage(char const *arg){
     fprintf(stdout, "    %-23s %s\n", "-u, --update", "update local database");
     fprintf(stdout, "    %-23s %s\n", "-v, --version", "print version and exit");
     fprintf(stdout, "    %-23s %s\n", "-c, --clear-cache", "clear local database");
-    fprintf(stdout, "    %-23s %s\n", "-V, --verbose", "display verbose output (when used with --clear-cache or --update)");
+    fprintf(stdout, "    %-23s %s\n", "-V, --verbose", "display verbose output (when used with -c or -u)");
     fprintf(stdout, "    %-23s %s\n", "-l, --list", "list all entries in the local database");
     /* *INDENT-ON* */
 }
