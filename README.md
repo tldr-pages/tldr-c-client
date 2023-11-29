@@ -8,7 +8,7 @@ A command line client for tldr, written in plain ISO C90.
 
 On OS X, the client can be installed through [Homebrew](http://brew.sh/).
 
-```shell
+```sh
 # To install the latest development version
 brew install tldr --HEAD
 
@@ -18,13 +18,13 @@ brew install tldr
 
 On Arch Linux, the client can be installed through [the AUR](https://aur.archlinux.org/packages/tldr-git) using an AUR helper such as yay.
 
-```shell
+```sh
 yay -S tldr-git
 ```
 
 To build the latest version from the source:
 
-```shell
+```sh
 git clone https://github.com/tldr-pages/tldr-c-client.git
 cd tldr-c-client
 
@@ -35,7 +35,7 @@ sudo make install        # install tldr
 
 To remove the version installed from the source:
 
-```shell
+```sh
 sudo make uninstall
 ```
 
@@ -60,7 +60,7 @@ in the root directory has all you need for building the project.
 
 Just call `make` and `tldr` will build itself.
 
-```shell
+```sh
 make
 ```
 
@@ -79,29 +79,26 @@ to access the directory (like your home directory), and source it in your `.bash
 
 Example for zsh:
 
-```shell
+```sh
 mv autocomplete/complete.zsh ~/.tldr.complete
 echo "source ~/.tldr.complete" >> ~/.zshrc
 ```
 
 ## Usage
 
-```shell
-usage: tldr [-v] [OPTION]... SEARCH
+```sh
+usage: tldr [OPTION]... PAGE
 
 available commands:
-    -v                   print verbose output          
-    --version            print version and exit        
-    -h, --help           print this help and exit      
-    -u, --update         update local database         
-    -c, --clear-cache    clear local database          
-    -l, --list           list all entries in the local database
+    -h, --help              print this help and exit
+    -C, --color             force color display
     -p, --platform=PLATFORM select platform, supported are linux / osx / sunos / windows / common
-    --linux              show command page for Linux   
-    --osx                show command page for OSX     
-    --sunos              show command page for SunOS   
-    -r, --render=PATH    render a local page for testing purposes
-    -C, --color          force color display
+    -r, --render=PATH       render a local page for testing purposes
+    -u, --update            update local database
+    -v, --version           print version and exit
+    -c, --clear-cache       clear local database
+    -V, --verbose           display verbose output (when used with --clear-cache or --update)
+    -l, --list              list all entries in the local database
 ```
 
 ## Configuration
