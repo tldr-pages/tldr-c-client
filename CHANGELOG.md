@@ -10,22 +10,22 @@ will be removed after two major releases.
 
 ## v1.6.1 - 2023-12-13
 
-## Added
+### Added
 
 - Option to disable color highlighting
-- Add support for `NO_COLOR` environment variable.
+- Add support for the `NO_COLOR` environment variable.
 
-## Changed
+### Changed
 
 - Update manpage to reflect new and updated flags
 
 ### Fixed
 
-- Fix updating local database
-- Prevent freezing of autocompletion in zsh
+- Fix updating a local database
+- Prevent freezing of auto-completion in zsh
 - Fix print usage of flags
 
-## Removed
+### Removed
 
 - Platform specific long flags like `--linux`, `--osx`, and `--sunos` are removed in favor of `--platform=<platform>` option.
 
