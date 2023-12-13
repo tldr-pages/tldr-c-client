@@ -14,7 +14,7 @@
 #include <time.h>
 #include <unistd.h> //for isatty
 
-#define VERSION_TAG "v1.6.0"
+#define VERSION_TAG "v1.6.1"
 #ifndef VERSION
 #define VERSION_PRETTY ""
 #else

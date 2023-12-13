@@ -8,6 +8,27 @@ will be removed after two major releases.
 
 ## [Unreleased]
 
+## v1.6.1 - 2023-12-13
+
+## Added
+
+- Option to disable color highlighting
+- Add support for `NO_COLOR` environment variable.
+
+## Changed
+
+- Update manpage to reflect new and updated flags
+
+### Fixed
+
+- Fix updating local database
+- Prevent freezing of autocompletion in zsh
+- Fix print usage of flags
+
+## Removed
+
+- Platform specific long flags like `--linux`, `--osx`, and `--sunos` are removed in favor of `--platform=<platform>` option.
+
 ## v1.6.0 - 2023-05-09
 
 ### Added
@@ -112,22 +133,29 @@ will be removed after two major releases.
 <!-- This is an example how a section should look like:
 
 ### [0.1.0-beta1] - YYYY-MM-DD
+
 ### Added
+
 - New features
 
 ### Changed
+
 - Changes in existing functionality
 
 ### Deprecated
+
 - Once-stable features, to be removed in upcoming releases
 
 ### Removed
+
 - Deprecated features removed in this release
 
 ### Fixed
+
 - Bug fixes
 
 ### Security
+
 - Mentioning any security vulnarabilities
 
 -->
