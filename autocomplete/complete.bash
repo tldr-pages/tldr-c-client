@@ -4,38 +4,36 @@
 # Copyright (C) 2016 Arvid Gerstmann
 #
 
+# usage: _tldr_get_files [architecture] [semi-completed word to search]
 _tldr_get_files() {
-	local ret
-	local files="$(find $HOME/.tldrc/tldr/pages/$1 -name '*.md' -exec basename {} .md \;)"
-
-	IFS=$'\n\t'
-	for f in $files; do
-	    echo $f
-	done
+    find "$HOME"/.tldrc/tldr/pages/"$1" -name "$2"'*.md' -exec basename {} .md \;
 }
 
 _tldr_complete() {
     COMPREPLY=()
-	local word="${COMP_WORDS[COMP_CWORD]}"
-	local cmpl=""
+    local word="${COMP_WORDS[COMP_CWORD]}"
+    local cmpl=""
     if [ "$word" = "-" ]; then
-        cmpl=$(echo $'\n-v\n-h\n-u\n-c\n-p\n-r' | sort)
+        cmpl=$'\n-v\n-h\n-u\n-c\n-p\n-r'
     elif [ "$word" = "--" ]; then
-        cmpl=$(echo $'--version\n--help\n--update\n--clear-cache\n--platform\n--render' | sort)
+        cmpl=$'--version\n--help\n--update\n--clear-cache\n--platform\n--render'
     else
         if [ -d "$HOME/.tldrc/tldr/pages" ]; then
-            local platform="$(uname)"
-            cmpl="$(_tldr_get_files common | sort | uniq)"
+            local platform
+            platform="$(uname)"
+            cmpl="$(_tldr_get_files common "$word")"
             if [ "$platform" = "Darwin" ]; then
-                cmpl="${cmpl}$(_tldr_get_files osx | sort | uniq)"
+                cmpl="${cmpl}$(_tldr_get_files osx "$word")"
             elif [ "$platform" = "Linux" ]; then
-                cmpl="${cmpl}$(_tldr_get_files linux | sort | uniq)"
+                cmpl="${cmpl}$(_tldr_get_files linux "$word")"
             elif [ "$platform" = "SunOS" ]; then
-                cmpl="${cmpl}$(_tldr_get_files sunos | sort | uniq)"
+                cmpl="${cmpl}$(_tldr_get_files sunos "$word")"
             fi
         fi
     fi
-    COMPREPLY=( $(compgen -W "$cmpl" -- "$word") )
+    local cmpl_sorted_n_uniq
+    cmpl_sorted_n_uniq=$(printf "%s" "$cmpl" | sort | uniq)
+    COMPREPLY=( $(compgen -W "$cmpl_sorted_n_uniq" -- "$word") )
 }
 
 complete -F _tldr_complete tldr
