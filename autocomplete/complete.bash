@@ -14,9 +14,9 @@ _tldr_complete() {
     local word="${COMP_WORDS[COMP_CWORD]}"
     local cmpl=""
     if [[ "$word" == "--"* ]] || [ -z "$word" ]; then
-        cmpl=$'--version\n--help\n--update\n--clear-cache\n--platform\n--render'
+        cmpl=$'--help\n--color\n--platform\n--render\n--update\n--version\n--clear-cache\n--verbose\n--list'
     elif [[ "$word" == "-"* ]]; then
-        cmpl=$'\n-v\n-h\n-u\n-c\n-p\n-r'
+        cmpl=$'-h\n-C\n-p\n-r\n-u\n-v\n-c\n-V\n-l'
     elif [[ "$word" == *"/"* ]]; then # the file command will give an error if passed directly since this will be a directory name - an invalid command
         cmpl=""
     else
