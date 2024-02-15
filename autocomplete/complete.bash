@@ -25,11 +25,14 @@ _tldr_complete() {
             platform="$(uname)"
             cmpl="$(_tldr_get_files common "$word")"
             if [ "$platform" = "Darwin" ]; then
-                cmpl="${cmpl}$(_tldr_get_files osx "$word")"
+                cmpl="${cmpl}
+$(_tldr_get_files osx "$word")"
             elif [ "$platform" = "Linux" ]; then
-                cmpl="${cmpl}$(_tldr_get_files linux "$word")"
+                cmpl="${cmpl}
+$(_tldr_get_files linux "$word")"
             elif [ "$platform" = "SunOS" ]; then
-                cmpl="${cmpl}$(_tldr_get_files sunos "$word")"
+                cmpl="${cmpl}
+$(_tldr_get_files sunos "$word")"
             fi
         fi
     fi
