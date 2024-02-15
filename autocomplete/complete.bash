@@ -13,10 +13,12 @@ _tldr_complete() {
     COMPREPLY=()
     local word="${COMP_WORDS[COMP_CWORD]}"
     local cmpl=""
-    if [ "$word" = "-" ]; then
-        cmpl=$'\n-v\n-h\n-u\n-c\n-p\n-r'
-    elif [ "$word" = "--" ]; then
+    if [[ "$word" == "--"* ]] || [ -z "$word" ]; then
         cmpl=$'--version\n--help\n--update\n--clear-cache\n--platform\n--render'
+    elif [[ "$word" == "-"* ]]; then
+        cmpl=$'\n-v\n-h\n-u\n-c\n-p\n-r'
+    elif [[ "$word" == *"/"* ]]; then # the file command will give an error if passed directly since this will be a directory name - an invalid command
+        cmpl=""
     else
         if [ -d "$HOME/.tldrc/tldr/pages" ]; then
             local platform
@@ -35,5 +37,4 @@ _tldr_complete() {
     cmpl_sorted_n_uniq=$(printf "%s" "$cmpl" | sort | uniq)
     COMPREPLY=( $(compgen -W "$cmpl_sorted_n_uniq" -- "$word") )
 }
-
 complete -F _tldr_complete tldr
