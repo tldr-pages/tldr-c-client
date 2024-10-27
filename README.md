@@ -2,6 +2,11 @@
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/tldr-pages/tldr-c-client/.github/workflows/tests.yml?branch=main)](https://github.com/tldr-pages/tldr-c-client/actions)
 
+> [!WARNING]
+> _**This client is currently unmaintained.**_
+> It lacks features that other official clients have (e.g. translation support).
+> Consider using the [Node.js](https://github.com/tldr-pages/tldr-node-client), [Python](https://github.com/tldr-pages/tldr-python-client) or [Rust](https://github.com/tldr-pages/tlrc) client instead.
+
 A command line client for tldr, written in plain ISO C90.
 
 ## Installing
