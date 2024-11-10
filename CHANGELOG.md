@@ -24,6 +24,7 @@ will be removed after two major releases.
 - Fix updating a local database
 - Prevent freezing of auto-completion in zsh
 - Fix print usage of flags
+- Search a command in all platforms if it is not found in user's platform.
 
 ### Removed
 

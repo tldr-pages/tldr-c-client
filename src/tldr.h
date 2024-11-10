@@ -53,6 +53,8 @@
 #define ANSI_BOLD_ON                            "\x1b[1m"
 #define ANSI_BOLD_OFF                           "\x1b[22m"
 
+#define PLATFORM_CNT 5
+extern const char * const platformlist[PLATFORM_CNT];
 /* local.c */
 long        check_localdate         (void);
 int         update_localdate        (void);

@@ -12,6 +12,9 @@
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <stdbool.h>
+
+const char * const platformlist[PLATFORM_CNT] = {"linux", "common", "osx", "sunos", "windows"};
 
 int
 construct_url(char *buf, size_t buflen, char const *input, char const *platform)
@@ -149,6 +152,23 @@ parse_tldrpage(char const *input, int color_enabled)
     return 0;
 }
 
+bool
+IsPageInPlatformList(char const* const command, char const * const curPlatform, /* out */char **output)
+{
+    char url[URLBUFSIZ];
+    construct_url(url, URLBUFSIZ, command, curPlatform);
+    download_content(url, output, 0);
+    if(*output == NULL) {
+        for(int i = 0 ; i < PLATFORM_CNT ; i++) {
+            if(strcmp(platformlist[i], curPlatform) == 0)  continue;
+            construct_url(url, URLBUFSIZ, command, platformlist[i]);
+            download_content(url, output, 0);
+            if(*output != NULL)  break;
+        }
+    }
+    return *output != NULL;
+}
+
 int
 print_tldrpage(char const *input, char const *poverride, int color_enabled)
 {
@@ -206,19 +226,10 @@ print_tldrpage(char const *input, char const *poverride, int color_enabled)
 
     if (getenv(PREVENT_UPDATE_ENV_VARIABLE))
         return 1;
-
-    construct_url(url, URLBUFSIZ, input, platform);
-
-    /* make clang's static analyzer happy */
     output = NULL;
-    download_content(url, &output, 0);
-    if (output == NULL) {
-        construct_url(url, URLBUFSIZ, input, "common");
-        download_content(url, &output, 0);
-        if (output == NULL)
-            return 1;
+    if(IsPageInPlatformList(input, platform, &output) == false) {
+        return 1;
     }
-
     parse_tldrpage(output, color_enabled);
 
     free(output);
