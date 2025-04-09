@@ -18,7 +18,7 @@
 #define BASE_URL_LEN (sizeof(BASE_URL) - 1)
 
 #define ZIP_URL "https://github.com/tldr-pages/tldr/archive/main.zip"
-#define ZIP_URL_LEN (sizeof(ZIP_URL_LEN) - 1)
+#define ZIP_URL_LEN (sizeof(ZIP_URL) - 1)
 
 /* Relative to TLDR_HOME */
 #define TMP_DIR "/tmp"
