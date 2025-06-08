@@ -5,7 +5,7 @@
 > [!WARNING]
 > _**This client is currently unmaintained.**_
 > It lacks features that other official clients have (e.g. translation support).
-> Consider using the [Node.js](https://github.com/tldr-pages/tldr-node-client), [Python](https://github.com/tldr-pages/tldr-python-client) or [Rust](https://github.com/tldr-pages/tlrc) client instead.
+> Consider using the [Python](https://github.com/tldr-pages/tldr-python-client) or [Rust](https://github.com/tldr-pages/tlrc) client instead.
 
 A command line client for tldr, written in plain ISO C90.
 
